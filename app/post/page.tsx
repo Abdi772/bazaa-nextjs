@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -10,7 +10,7 @@ import { listingSlug } from '../../lib/listings';
 const MAX_PHOTOS = 5;
 
 const inputClass =
-  'w-full border border-gray-300 rounded-lg px-3 py-2 text-base bg-white focus:outline-none focus:border-amber-500';
+  'w-full border border-gray-300 rounded-lg px-3 py-2 text-base bg-white focus:outline-none focus:border-ink';
 const labelClass = 'block text-sm font-medium mb-1';
 
 export default function PostPage() {
@@ -136,7 +136,7 @@ export default function PostPage() {
       <div className="py-10 text-center">
         <h1 className="text-xl font-semibold mb-2">Log in to post a listing</h1>
         <p className="text-gray-600 mb-4">Use the Log in / Sign up button at the top of the page, then come back here.</p>
-        <a href="/" className="text-amber-600 underline">
+        <a href="/" className="text-ink underline">
           Back to home
         </a>
       </div>
@@ -240,7 +240,7 @@ export default function PostPage() {
         <button
           type="submit"
           disabled={busy}
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg py-3 disabled:opacity-60"
+          className="w-full bg-amber text-ink font-semibold rounded-lg py-3 disabled:opacity-60"
         >
           {busy ? status || 'Working...' : 'Publish listing'}
         </button>
