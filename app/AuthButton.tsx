@@ -1,6 +1,7 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 
@@ -68,6 +69,12 @@ export default function AuthButton() {
   if (user) {
     return (
       <div className="flex items-center gap-3 text-sm">
+        <Link
+          href="/post"
+          className="bg-amber text-ink font-semibold rounded-md px-3 py-1.5"
+        >
+          + Post listing
+        </Link>
         <span className="hidden sm:inline opacity-80 truncate max-w-[180px]">{user.email}</span>
         <button
           onClick={() => supabase.auth.signOut()}
