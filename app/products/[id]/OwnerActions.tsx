@@ -1,21 +1,30 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../../lib/supabaseClient';
 
-export default function OwnerActions({ id, ownerId }: { id: string | number; ownerId: string }) {
+export default function OwnerActions({ id }: { id: string | number }) {
   const router = useRouter();
   const [isOwner, setIsOwner] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setIsOwner(data.user?.id === ownerId);
-    });
-  }, [ownerId]);
+    async function check() {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
+      if (!user) return;
+      const { data } = await supabase
+        .from('listings')
+        .select('user_id')
+        .eq('id', id)
+        .single();
+      setIsOwner(data?.user_id === user.id);
+    }
+    check();
+  }, [id]);
 
   async function onDelete() {
     if (!window.confirm('Delete this listing permanently?')) return;
