@@ -1,6 +1,7 @@
-import type { Metadata } from 'next';
+ import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
+import AuthButton from './AuthButton';
 
 export const metadata: Metadata = {
   title: 'Bazaa — Buy & Sell Marketplace',
@@ -16,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" className="font-serif text-2xl font-bold">
               Baz<span className="text-amber">aa</span>
             </Link>
+            <AuthButton />
           </div>
         </header>
         <main className="max-w-5xl mx-auto px-5 py-6">{children}</main>
