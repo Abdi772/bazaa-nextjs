@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -53,7 +53,11 @@ export async function getListings(filters: ListingFilters = {}): Promise<Listing
   if (filters.condition) q = q.eq('condition', filters.condition);
   if (filters.minPrice != null) q = q.gte('price', filters.minPrice);
   if (filters.maxPrice != null) q = q.lte('price', filters.maxPrice);
-  if (filters.query) q = q.or(`title.ilike.%${filters.query}%,description.ilike.%${filters.query}%`);
+
+  // Remove characters that could break the search filter
+  const safe = (filters.query ?? '').replace(/[,()%*\\]/g, ' ').trim();
+  if (safe) q = q.or(`title.ilike.%${safe}%,description.ilike.%${safe}%`);
+
   if (filters.limit) q = q.limit(filters.limit);
 
   const { data, error } = await q;
@@ -116,4 +120,4 @@ export function listingSlug(listing: Pick<Listing, 'id' | 'title'>): string {
 export function idFromSlug(slug: string): number | null {
   const match = slug.match(/(\d+)$/);
   return match ? parseInt(match[1], 10) : null;
-}
+                            }
