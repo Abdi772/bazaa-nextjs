@@ -1,301 +1,138 @@
- 'use client';
+ import Link from 'next/link';
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { getListingById, getSimilarListings, idFromSlug, listingSlug } from '@/lib/listings';
+import { CATEGORY_CONFIG } from '@/lib/categories';
+import Gallery from './Gallery';
+import OwnerActions from './OwnerActions';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { supabase } from '../../../lib/supabaseClient';
-import { CATEGORY_CONFIG, ETHIOPIA_REGIONS, CONDITIONS } from '../../../lib/categories';
-import { listingSlug } from '../../../lib/listings';
+type Props = { params: { id: string } };
 
-const MAX_PHOTOS = 5;
+async function loadListing(slug: string) {
+  const id = idFromSlug(slug);
+  if (id == null) return null;
+  return getListingById(id);
+}
 
-const inputClass =
-  'w-full border border-gray-300 rounded-lg px-3 py-2 text-base bg-white focus:outline-none focus:border-ink';
-const labelClass = 'block text-sm font-medium mb-1';
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const listing = await loadListing(params.id);
+  if (!listing) return { title: 'Listing not found — Bazaa' };
+  return {
+    title: `${listing.title} — ETB ${Number(listing.price).toLocaleString()} — Bazaa`,
+    description: listing.description?.slice(0, 160),
+    openGraph: {
+      title: listing.title,
+      description: listing.description?.slice(0, 160),
+      images: listing.image_url ? [listing.image_url] : [],
+    },
+  };
+}
 
-export default function EditPage() {
-  const router = useRouter();
-  const params = useParams<{ id: string }>();
-  const id = params.id;
+function intlPhone(raw: string) {
+  let d = raw.replace(/\D/g, '');
+  if (d.startsWith('00')) d = d.slice(2);
+  else if (d.startsWith('0')) d = '251' + d.slice(1);
+  else if (d.length === 9) d = '251' + d;
+  return d;
+}
 
-  const [loaded, setLoaded] = useState(false);
-  const [blocked, setBlocked] = useState('');
+function timeAgo(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return 'today';
+  if (days === 1) return '1 day ago';
+  return `${days} days ago`;
+}
 
-  const [existing, setExisting] = useState<string[]>([]);
-  const [files, setFiles] = useState<File[]>([]);
-  const [title, setTitle] = useState('');
-  const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('Electronics');
-  const [subcategory, setSubcategory] = useState('');
-  const [brand, setBrand] = useState('');
-  const [condition, setCondition] = useState<string>('');
-  const [region, setRegion] = useState<string>('');
-  const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+export default async function ProductPage({ params }: Props) {
+  const listing = await loadListing(params.id);
+  if (!listing) notFound();
 
-  const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    async function load() {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData.user;
-      const { data: l, error: loadError } = await supabase
-        .from('listings')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (loadError || !l) {
-        setBlocked('Listing not found.');
-      } else if (!user || l.user_id !== user.id) {
-        setBlocked('You can only edit your own listings.');
-      } else {
-        setTitle(l.title ?? '');
-        setPrice(String(l.price ?? ''));
-        setCategory(l.category ?? 'Electronics');
-        setSubcategory(l.subcategory ?? '');
-        setBrand(l.brand ?? '');
-        setCondition(l.condition ?? CONDITIONS[0]);
-        setRegion(l.region ?? ETHIOPIA_REGIONS[0]);
-        setLocation(l.location ?? '');
-        setDescription(l.description ?? '');
-        setPhone(l.phone ?? '');
-        setEmail(l.email ?? '');
-        setExisting(l.image_urls?.length ? l.image_urls : l.image_url ? [l.image_url] : []);
-      }
-      setLoaded(true);
-    }
-    load();
-  }, [id]);
-
-  const subcategories = Object.keys(CATEGORY_CONFIG[category]?.subcategories ?? {});
-  const brands = subcategory ? CATEGORY_CONFIG[category]?.subcategories[subcategory] ?? [] : [];
-
-  function onCategoryChange(value: string) {
-    setCategory(value);
-    setSubcategory('');
-    setBrand('');
-  }
-
-  function onSubcategoryChange(value: string) {
-    setSubcategory(value);
-    setBrand('');
-  }
-
-  function removeExisting(index: number) {
-    setExisting(existing.filter((_, i) => i !== index));
-  }
-
-  function onFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const picked = Array.from(e.target.files ?? []);
-    const room = MAX_PHOTOS - existing.length;
-    if (picked.length > room) {
-      setError(`You can have up to ${MAX_PHOTOS} photos in total.`);
-    } else {
-      setError('');
-    }
-    setFiles(picked.slice(0, Math.max(room, 0)));
-  }
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setError('');
-
-    const imageUrls: string[] = [...existing];
-    for (let i = 0; i < files.length; i++) {
-      setStatus(`Uploading photo ${i + 1} of ${files.length}...`);
-      const file = files[i];
-      const ext = file.name.split('.').pop() || 'jpg';
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('listing-images')
-        .upload(fileName, file);
-
-      if (uploadError) {
-        setError(`Could not upload photo ${i + 1}: ${uploadError.message}`);
-        setBusy(false);
-        setStatus('');
-        return;
-      }
-
-      const { data: urlData } = supabase.storage.from('listing-images').getPublicUrl(fileName);
-      imageUrls.push(urlData.publicUrl);
-    }
-
-    setStatus('Saving...');
-    const { data, error: updateError } = await supabase
-      .from('listings')
-      .update({
-        title: title.trim(),
-        price: Number(price),
-        category,
-        subcategory: subcategory || null,
-        brand: brand || null,
-        condition,
-        region,
-        location: location.trim(),
-        description: description.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        image_url: imageUrls[0] ?? null,
-        image_urls: imageUrls,
-      })
-      .eq('id', id)
-      .select('id, title')
-      .single();
-
-    if (updateError || !data) {
-      setError(updateError?.message ?? 'Could not save your changes.');
-      setBusy(false);
-      setStatus('');
-      return;
-    }
-
-    router.push(`/products/${listingSlug(data)}`);
-  }
-
-  if (!loaded) {
-    return <p className="py-10 text-center text-gray-500">Loading...</p>;
-  }
-
-  if (blocked) {
-    return (
-      <div className="py-10 text-center">
-        <h1 className="text-xl font-semibold mb-2">{blocked}</h1>
-        <a href="/" className="text-ink underline">
-          Back to home
-        </a>
-      </div>
-    );
-  }
+  const images = listing.image_urls?.length ? listing.image_urls : listing.image_url ? [listing.image_url] : [];
+  const similar = await getSimilarListings(listing.category, listing.id);
 
   return (
-    <div className="max-w-xl mx-auto py-4">
-      <h1 className="text-2xl font-semibold mb-4">Edit listing</h1>
+    <div className="max-w-2xl mx-auto">
+      <Link href="/" className="text-sm text-muted underline">
+        ← Back
+      </Link>
 
-      <form onSubmit={onSubmit} className="space-y-4">
+      {images.length > 0 && <Gallery images={images} title={listing.title} />}
+
+      <div className="flex items-start justify-between gap-3">
+        <h1 className="text-xl font-serif font-bold flex-1">{listing.title}</h1>
+        {listing.condition && (
+          <span className="bg-[#EAF5EC] text-[#2F6B3E] border border-[#B9DDC1] rounded-full px-2.5 py-1 text-xs font-bold whitespace-nowrap">
+            {listing.condition}
+          </span>
+        )}
+      </div>
+      <div className="text-2xl font-serif font-bold text-amberDeep mt-1">
+        ETB {Number(listing.price).toLocaleString()}
+      </div>
+
+      <OwnerActions id={listing.id} />
+
+      <div className="text-xs text-muted border-b border-line pb-3 mb-3">
+        {listing.category}
+        {listing.subcategory ? ` · ${listing.subcategory}` : ''}
+        {listing.brand ? ` · ${listing.brand}` : ''} · {listing.location}
+        {listing.region ? `, ${listing.region}` : ''} · {timeAgo(listing.created_at)}
+      </div>
+      <p className="text-sm whitespace-pre-wrap mb-5">{listing.description}</p>
+
+      {listing.phone && (
+        <div className="flex gap-2 mb-2">
+          <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="flex-1 text-center bg-green text-white rounded py-3 text-sm font-semibold">
+            📞 Call
+          </a>
+          <a
+            href={`https://wa.me/${intlPhone(listing.phone)}?text=${encodeURIComponent('Hi, I am interested in: ' + listing.title)}`}
+            target="_blank"
+            rel="noopener"
+            className="flex-1 text-center bg-[#1FA855] text-white rounded py-3 text-sm font-semibold"
+          >
+            WhatsApp
+          </a>
+        </div>
+      )}
+      <a
+        href={`mailto:${listing.email}?subject=${encodeURIComponent('Re: ' + listing.title)}`}
+        className="block text-center bg-ink text-paper rounded py-3 text-sm font-semibold mb-5"
+      >
+        ✉️ Email seller
+      </a>
+
+      <div className="bg-[#FFF6E8] border border-[#F0D9A8] rounded-lg p-3 text-xs text-[#6E5620] mb-6">
+        <strong>Safety tips</strong>
+        <ul className="list-disc ml-4 mt-1 space-y-0.5">
+          <li>Meet in a public place and inspect the item before paying.</li>
+          <li>Don&apos;t send money in advance to someone you haven&apos;t met.</li>
+          <li>Be cautious of requests to move the conversation off this site.</li>
+        </ul>
+      </div>
+
+      {similar.length > 0 && (
         <div>
-          <label className={labelClass}>Photos (up to {MAX_PHOTOS})</label>
-          {existing.length > 0 && (
-            <div className="flex gap-2 flex-wrap mb-2">
-              {existing.map((url, i) => (
-                <div key={url} className="relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt="" className="w-20 h-20 object-cover rounded-lg" />
-                  <button
-                    type="button"
-                    onClick={() => removeExisting(i)}
-                    className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 text-sm leading-6"
-                    aria-label="Remove photo"
-                  >
-                    ×
-                  </button>
+          <div className="font-serif font-bold mb-2">Similar listings</div>
+          <div className="grid grid-cols-2 gap-3">
+            {similar.map((s) => (
+              <Link key={s.id} href={`/products/${listingSlug(s)}`} className="bg-white border border-line rounded overflow-hidden">
+                <div className="aspect-[4/3] bg-[#EDE7D9] flex items-center justify-center relative">
+                  {s.image_url ? (
+                    <Image src={s.image_url} alt={s.title} fill sizes="200px" className="object-cover" />
+                  ) : (
+                    <span className="text-2xl">{CATEGORY_CONFIG[s.category]?.icon || '📦'}</span>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-          {existing.length < MAX_PHOTOS && (
-            <input type="file" accept="image/*" multiple onChange={onFilesChange} className="w-full text-sm" />
-          )}
-          {files.length > 0 && <p className="text-xs text-gray-500 mt-1">{files.length} new photo(s) selected</p>}
-        </div>
-
-        <div>
-          <label className={labelClass}>Title</label>
-          <input className={inputClass} required value={title} onChange={(e) => setTitle(e.target.value)} />
-        </div>
-
-        <div>
-          <label className={labelClass}>Price (ETB)</label>
-          <input className={inputClass} type="number" inputMode="numeric" min="0" required value={price} onChange={(e) => setPrice(e.target.value)} />
-        </div>
-
-        <div>
-          <label className={labelClass}>Category</label>
-          <select className={inputClass} value={category} onChange={(e) => onCategoryChange(e.target.value)}>
-            {Object.keys(CATEGORY_CONFIG).map((c) => (
-              <option key={c} value={c}>{c}</option>
+                <div className="px-2 pt-1.5 font-bold text-amberDeep text-sm">ETB {Number(s.price).toLocaleString()}</div>
+                <div className="px-2 pb-2 text-xs truncate">{s.title}</div>
+              </Link>
             ))}
-          </select>
-        </div>
-
-        {subcategories.length > 0 && (
-          <div>
-            <label className={labelClass}>Subcategory</label>
-            <select className={inputClass} required value={subcategory} onChange={(e) => onSubcategoryChange(e.target.value)}>
-              <option value="">Select...</option>
-              {subcategories.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
           </div>
-        )}
-
-        {brands.length > 0 && (
-          <div>
-            <label className={labelClass}>Brand</label>
-            <select className={inputClass} required value={brand} onChange={(e) => setBrand(e.target.value)}>
-              <option value="">Select...</option>
-              {brands.map((b) => (
-                <option key={b} value={b}>{b}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div>
-          <label className={labelClass}>Condition</label>
-          <select className={inputClass} value={condition} onChange={(e) => setCondition(e.target.value)}>
-            {CONDITIONS.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
         </div>
-
-        <div>
-          <label className={labelClass}>Region</label>
-          <select className={inputClass} value={region} onChange={(e) => setRegion(e.target.value)}>
-            {ETHIOPIA_REGIONS.map((r) => (
-              <option key={r} value={r}>{r}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className={labelClass}>Location (city/area)</label>
-          <input className={inputClass} required value={location} onChange={(e) => setLocation(e.target.value)} />
-        </div>
-
-        <div>
-          <label className={labelClass}>Description</label>
-          <textarea className={inputClass} rows={4} required value={description} onChange={(e) => setDescription(e.target.value)} />
-        </div>
-
-        <div>
-          <label className={labelClass}>Phone number</label>
-          <input className={inputClass} type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} />
-        </div>
-
-        <div>
-          <label className={labelClass}>Contact email</label>
-          <input className={inputClass} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        </div>
-
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full bg-amber text-ink font-semibold rounded-lg py-3 disabled:opacity-60"
-        >
-          {busy ? status || 'Working...' : 'Save changes'}
-        </button>
-      </form>
+      )}
     </div>
   );
-                  }
+}
