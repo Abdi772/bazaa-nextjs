@@ -86,4 +86,4 @@ export function subcategorySlug(name: string): string {
 export function subcategoryImage(name: string): string | null {
   const slug = subcategorySlug(name);
   return SUB_IMAGES.has(slug) ? `/categories/sub/${slug}.jpg` : null;
-}
+ }
