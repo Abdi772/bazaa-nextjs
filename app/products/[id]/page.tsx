@@ -7,6 +7,7 @@ import { CATEGORY_CONFIG } from '@/lib/categories';
 import Gallery from './Gallery';
 import OwnerActions from './OwnerActions';
 import ReportButton from '../../ReportButton';
+import FavoriteButton from '../../FavoriteButton';
 
 type Props = { params: { id: string } };
 
@@ -100,10 +101,14 @@ export default async function ProductPage({ params }: Props) {
       )}
       <a
         href={`mailto:${listing.email}?subject=${encodeURIComponent('Re: ' + listing.title)}`}
-        className="block text-center bg-ink text-paper rounded py-3 text-sm font-semibold mb-5"
+        className="block text-center bg-ink text-paper rounded py-3 text-sm font-semibold mb-3"
       >
         ✉️ Email seller
       </a>
+
+      <div className="mb-3">
+        <FavoriteButton listingId={listing.id} />
+      </div>
 
       <div className="mb-5 text-center">
         <ReportButton
@@ -144,4 +149,4 @@ export default async function ProductPage({ params }: Props) {
       )}
     </div>
   );
-}
+         }
