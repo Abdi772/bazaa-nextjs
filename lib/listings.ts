@@ -1,4 +1,4 @@
- import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -102,6 +102,17 @@ export async function getCategoryCounts(): Promise<Record<string, number>> {
   return counts;
 }
 
+export async function getSubcategoryCounts(category: string): Promise<Record<string, number>> {
+  const db = serverClient();
+  const { data, error } = await db.from('listings').select('subcategory').eq('category', category);
+  if (error || !data) return {};
+  const counts: Record<string, number> = {};
+  for (const row of data as { subcategory: string | null }[]) {
+    if (row.subcategory) counts[row.subcategory] = (counts[row.subcategory] || 0) + 1;
+  }
+  return counts;
+}
+
 // Builds a URL-safe slug for a listing, e.g. "iphone-15-pro-123".
 // The trailing id is what actually gets looked up — the words before it
 // are just for readability and SEO, so they don't need to be unique.
@@ -120,4 +131,4 @@ export function listingSlug(listing: Pick<Listing, 'id' | 'title'>): string {
 export function idFromSlug(slug: string): number | null {
   const match = slug.match(/(\d+)$/);
   return match ? parseInt(match[1], 10) : null;
-                            }
+} 
