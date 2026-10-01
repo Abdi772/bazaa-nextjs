@@ -82,17 +82,23 @@ export default function AuthButton() {
 
   if (user) {
     return (
-      <div className="flex items-center gap-3 text-sm">
+      <div className="flex items-center gap-2 text-xs sm:text-sm">
         <Link
           href="/post"
-          className="bg-amber text-ink font-semibold rounded-md px-3 py-1.5"
+          className="bg-amber text-ink font-semibold rounded-md px-2.5 py-1.5"
         >
           + Post listing
+        </Link>
+        <Link
+          href="/favorites"
+          className="border border-white/30 rounded-md px-2.5 py-1.5"
+        >
+          ♥ Saved
         </Link>
         {isAdmin && (
           <Link
             href="/admin"
-            className="border border-white/30 rounded-md px-3 py-1.5"
+            className="border border-white/30 rounded-md px-2.5 py-1.5"
           >
             Admin
           </Link>
@@ -100,7 +106,7 @@ export default function AuthButton() {
         <span className="hidden sm:inline opacity-80 truncate max-w-[180px]">{user.email}</span>
         <button
           onClick={() => supabase.auth.signOut()}
-          className="border border-white/30 rounded-md px-3 py-1.5"
+          className="border border-white/30 rounded-md px-2.5 py-1.5"
         >
           Log out
         </button>
@@ -183,4 +189,4 @@ export default function AuthButton() {
       )}
     </>
   );
-     }
+}
