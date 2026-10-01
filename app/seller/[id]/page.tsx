@@ -1,0 +1,107 @@
+import Link from 'next/link';
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { supabase } from '../../../lib/supabaseClient';
+import { listingSlug } from '@/lib/listings';
+import { CATEGORY_CONFIG } from '@/lib/categories';
+
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: 'Seller listings — Bazaa',
+};
+
+type Props = { params: { id: string } };
+
+type Row = {
+  id: number;
+  title: string;
+  price: number;
+  image_url: string | null;
+  location: string | null;
+  category: string;
+  email: string | null;
+  created_at: string;
+};
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export default async function SellerPage({ params }: Props) {
+  if (!UUID.test(params.id)) notFound();
+
+  const { data } = await supabase
+    .from('listings')
+    .select('id, title, price, image_url, location, category, email, created_at')
+    .eq('user_id', params.id)
+    .order('created_at', { ascending: false });
+
+  const items = (data ?? []) as Row[];
+  const initial = (items[0]?.email || '?').charAt(0).toUpperCase();
+  const since =
+    items.length > 0
+      ? new Date(items[items.length - 1].created_at).toLocaleDateString('en-US', {
+          month: 'long',
+          year: 'numeric',
+        })
+      : null;
+
+  return (
+    <div>
+      <Link href="/" className="text-sm text-muted underline">
+        ← Back
+      </Link>
+
+      <div className="flex items-center gap-3 my-4">
+        <div className="w-14 h-14 rounded-full bg-ink text-paper flex items-center justify-center text-xl font-bold">
+          {initial}
+        </div>
+        <div>
+          <div className="font-serif text-xl font-bold">Seller</div>
+          <div className="text-sm text-muted">
+            {items.length} listing{items.length === 1 ? '' : 's'}
+            {since ? ` · selling since ${since}` : ''}
+          </div>
+        </div>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="text-center py-16 text-muted">
+          <h3 className="text-ink font-semibold mb-2">No listings</h3>
+          <p>This seller has no active listings right now.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {items.map((l) => (
+            <Link
+              key={l.id}
+              href={`/products/${listingSlug(l as unknown as Parameters<typeof listingSlug>[0])}`}
+              className="bg-white border border-line rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+            >
+              <div className="aspect-[4/3] bg-[#EDE7D9] flex items-center justify-center relative">
+                {l.image_url ? (
+                  <Image
+                    src={l.image_url}
+                    alt={l.title}
+                    fill
+                    sizes="(max-width: 640px) 50vw, 25vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span className="text-4xl">{CATEGORY_CONFIG[l.category]?.icon || '📦'}</span>
+                )}
+              </div>
+              <div className="p-3">
+                <div className="font-serif font-bold text-amberDeep">
+                  ETB {Number(l.price).toLocaleString()}
+                </div>
+                <div className="text-sm font-semibold mt-1 line-clamp-1">{l.title}</div>
+                <div className="text-xs text-muted mt-1">{l.location}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
