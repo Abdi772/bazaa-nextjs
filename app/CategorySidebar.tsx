@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { CATEGORY_CONFIG } from '@/lib/categories';
+import { getBrandLogo } from '@/lib/brandLogos';
 
 function buildUrl(category?: string, subcategory?: string, brand?: string) {
   const params = new URLSearchParams();
@@ -112,15 +113,20 @@ export default function CategorySidebar({
                             {brands.map((brand) => {
                               const isBrandActive =
                                 currentCategory === catName && currentSubcategory === subName && currentBrand === brand;
+                              const logo = getBrandLogo(brand);
                               return (
                                 <Link
                                   key={brand}
                                   href={buildUrl(catName, subName, brand)}
-                                  className={`px-2 py-1 rounded text-xs ${
+                                  className={`px-2 py-1 rounded text-xs flex items-center gap-1.5 ${
                                     isBrandActive ? 'bg-amber text-ink font-semibold' : 'text-muted hover:bg-amber/10 hover:text-ink'
                                   }`}
                                 >
-                                  {brand}
+                                  {logo ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img src={logo} alt="" className="w-4 h-4 object-contain rounded-sm" />
+                                  ) : null}
+                                  <span>{brand}</span>
                                 </Link>
                               );
                             })}
@@ -137,4 +143,4 @@ export default function CategorySidebar({
       </div>
     </nav>
   );
-}
+                            }
