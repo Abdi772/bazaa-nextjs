@@ -6,6 +6,7 @@ import { getListingById, getSimilarListings, idFromSlug, listingSlug } from '@/l
 import { CATEGORY_CONFIG } from '@/lib/categories';
 import Gallery from './Gallery';
 import OwnerActions from './OwnerActions';
+import ReportButton from '../../ReportButton';
 
 type Props = { params: { id: string } };
 
@@ -103,6 +104,14 @@ export default async function ProductPage({ params }: Props) {
       >
         ✉️ Email seller
       </a>
+
+      <div className="mb-5 text-center">
+        <ReportButton
+          listingId={listing.id}
+          title={listing.title}
+          ownerId={(listing as unknown as { user_id?: string | null }).user_id ?? null}
+        />
+      </div>
 
       <div className="bg-[#FFF6E8] border border-[#F0D9A8] rounded-lg p-3 text-xs text-[#6E5620] mb-6">
         <strong>Safety tips</strong>
