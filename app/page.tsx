@@ -56,15 +56,25 @@ export default async function HomePage({
             <div className="mb-2 font-serif text-xl font-bold">Popular categories</div>
             <div className="text-sm text-muted mb-4">Browse by what you&apos;re looking for</div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-8">
-              {Object.entries(CATEGORY_CONFIG).map(([name, config]) => (
+              {Object.entries(CATEGORY_CONFIG).map(([name]) => (
                 <Link
                   key={name}
                   href={`/?category=${encodeURIComponent(name)}`}
-                  className="bg-white border border-line rounded-lg p-4 text-center hover:shadow-md transition-shadow"
+                  className="bg-white border border-line rounded-lg overflow-hidden text-center hover:shadow-md transition-shadow"
                 >
-                  <div className="text-2xl mb-2">{config.icon}</div>
-                  <div className="text-sm font-semibold">{name}</div>
-                  <div className="text-xs text-muted">{counts[name] || 0} listings</div>
+                  <div className="relative aspect-square bg-white">
+                    <Image
+                      src={`/categories/${name.toLowerCase()}.jpg`}
+                      alt={name}
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-2">
+                    <div className="text-sm font-semibold">{name}</div>
+                    <div className="text-xs text-muted">{counts[name] || 0} listings</div>
+                  </div>
                 </Link>
               ))}
             </div>
