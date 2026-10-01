@@ -1,6 +1,6 @@
-'use client';
+ 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { CATEGORY_CONFIG } from '@/lib/categories';
 
@@ -24,6 +24,18 @@ export default function CategorySidebar({
 }) {
   const [openCategory, setOpenCategory] = useState<string | null>(currentCategory || null);
   const [openSubcategory, setOpenSubcategory] = useState<string | null>(currentSubcategory || null);
+
+  // Keeps the sidebar in sync after a Link navigation changes the URL.
+  // Without this, tapping "Electronics" navigates to that category's
+  // listings, but the subcategory list underneath it stays closed because
+  // this component doesn't remount on the new page — only its props change.
+  useEffect(() => {
+    if (currentCategory) setOpenCategory(currentCategory);
+  }, [currentCategory]);
+
+  useEffect(() => {
+    if (currentSubcategory) setOpenSubcategory(currentSubcategory);
+  }, [currentSubcategory]);
 
   return (
     <nav className="w-full md:w-48 shrink-0 bg-white md:bg-transparent border md:border-0 border-line rounded-lg p-3 md:p-0 mb-6 md:mb-0">
