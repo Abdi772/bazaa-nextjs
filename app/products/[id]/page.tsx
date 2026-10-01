@@ -53,6 +53,7 @@ export default async function ProductPage({ params }: Props) {
 
   const images = listing.image_urls?.length ? listing.image_urls : listing.image_url ? [listing.image_url] : [];
   const similar = await getSimilarListings(listing.category, listing.id);
+  const sellerId = (listing as unknown as { user_id?: string | null }).user_id ?? null;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -84,6 +85,22 @@ export default async function ProductPage({ params }: Props) {
       </div>
       <p className="text-sm whitespace-pre-wrap mb-5">{listing.description}</p>
 
+      {sellerId && (
+        <Link
+          href={`/seller/${sellerId}`}
+          className="flex items-center gap-3 bg-white border border-line rounded-lg p-3 mb-5"
+        >
+          <div className="w-10 h-10 rounded-full bg-ink text-paper flex items-center justify-center font-bold">
+            {(listing.email || '?').charAt(0).toUpperCase()}
+          </div>
+          <div className="flex-1">
+            <div className="text-sm font-semibold">Seller</div>
+            <div className="text-xs text-muted">View all listings from this seller</div>
+          </div>
+          <span className="text-muted">→</span>
+        </Link>
+      )}
+
       {listing.phone && (
         <div className="flex gap-2 mb-2">
           <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="flex-1 text-center bg-green text-white rounded py-3 text-sm font-semibold">
@@ -111,11 +128,7 @@ export default async function ProductPage({ params }: Props) {
       </div>
 
       <div className="mb-5 text-center">
-        <ReportButton
-          listingId={listing.id}
-          title={listing.title}
-          ownerId={(listing as unknown as { user_id?: string | null }).user_id ?? null}
-        />
+        <ReportButton listingId={listing.id} title={listing.title} ownerId={sellerId} />
       </div>
 
       <div className="bg-[#FFF6E8] border border-[#F0D9A8] rounded-lg p-3 text-xs text-[#6E5620] mb-6">
@@ -149,4 +162,4 @@ export default async function ProductPage({ params }: Props) {
       )}
     </div>
   );
-         }
+       }
