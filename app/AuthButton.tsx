@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabaseClient';
 
 export default function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
@@ -22,6 +23,19 @@ export default function AuthButton() {
     });
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+    supabase
+      .from('admins')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
 
   function close() {
     setOpen(false);
@@ -75,6 +89,14 @@ export default function AuthButton() {
         >
           + Post listing
         </Link>
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="border border-white/30 rounded-md px-3 py-1.5"
+          >
+            Admin
+          </Link>
+        )}
         <span className="hidden sm:inline opacity-80 truncate max-w-[180px]">{user.email}</span>
         <button
           onClick={() => supabase.auth.signOut()}
@@ -161,4 +183,4 @@ export default function AuthButton() {
       )}
     </>
   );
-}
+     }
