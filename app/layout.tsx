@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import './globals.css';
 import AuthButton from './AuthButton';
+import BottomNav from './BottomNav';
 
 export const metadata: Metadata = {
   title: 'Bazaa — Buy & Sell Marketplace',
@@ -20,7 +21,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AuthButton />
           </div>
         </header>
-        <main className="max-w-5xl mx-auto px-5 py-6">{children}</main>
+        <main className="max-w-5xl mx-auto px-5 py-6 pb-24 md:pb-6">{children}</main>
+        <BottomNav />
       </body>
     </html>
   );
