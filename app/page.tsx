@@ -4,7 +4,6 @@ import { getListings, getCategoryCounts, getSubcategoryCounts, listingSlug } fro
 import { CATEGORY_CONFIG } from '@/lib/categories';
 import { getBrandLogo } from '@/lib/brandLogos';
 import CategorySidebar from './CategorySidebar';
-import SubImage from './SubImage';
 
 export const revalidate = 60; // re-fetch fresh data at most once a minute
 
@@ -15,6 +14,11 @@ function buildUrl(category?: string, subcategory?: string, brand?: string) {
   if (brand) params.set('brand', brand);
   const qs = params.toString();
   return qs ? `/?${qs}` : '/';
+}
+
+// "Computers & Tablets" -> "computers-tablets"  (matches public/subcategories/computers-tablets.jpg)
+function subSlug(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 export default async function HomePage({
@@ -155,8 +159,13 @@ export default async function HomePage({
                 className="flex items-center justify-between px-4 py-4 hover:bg-amber/10"
               >
                 <span className="flex items-center gap-4">
-                  <span className="w-14 h-14 rounded-lg bg-[#E8EEF5] flex items-center justify-center shrink-0 overflow-hidden">
-                    <SubImage name={subName} />
+                  <span className="w-14 h-14 rounded-lg bg-[#E8EEF5] shrink-0 overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/subcategories/${subSlug(subName)}.jpg`}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   </span>
                   <span>
                     <span className="block text-base font-semibold">{subName}</span>
@@ -248,4 +257,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-                    }
+                 }
