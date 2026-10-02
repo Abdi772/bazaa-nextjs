@@ -102,23 +102,28 @@ export default async function HomePage({
       <div className="flex-1 min-w-0">
         {showHome && (
           <>
-            <div className="bg-gradient-to-br from-ink via-[#2A2850] to-amberDeep rounded-xl p-8 text-paper mb-6">
+            {/* Banner scrolls away normally */}
+            <div className="bg-gradient-to-br from-ink via-[#2A2850] to-amberDeep rounded-xl p-8 text-paper mb-3">
               <h1 className="text-2xl font-serif font-bold mb-1">
                 Buy and sell anything, right in your area
               </h1>
-              <p className="text-sm text-paper/85 mb-4">
+              <p className="text-sm text-paper/85">
                 Find what you need nearby, or list something in minutes.
               </p>
-              <form action="/" className="flex flex-wrap gap-2">
+            </div>
+
+            {/* Search box stays at the top while you scroll */}
+            <div className="sticky top-16 z-[5] bg-paper py-2 mb-4">
+              <form action="/" className="flex gap-2">
                 <input
                   name="q"
                   type="text"
                   placeholder="What are you looking for?"
-                  className="flex-1 min-w-[140px] rounded px-3 py-2.5 text-sm text-ink"
+                  className="flex-1 min-w-0 rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink"
                 />
                 <button
                   type="submit"
-                  className="bg-amber hover:bg-amberDeep text-ink font-bold px-5 py-2.5 rounded text-sm"
+                  className="bg-amber hover:bg-amberDeep text-ink font-bold px-5 py-2.5 rounded-lg text-sm"
                 >
                   Search
                 </button>
@@ -297,4 +302,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-        }
+                       }
