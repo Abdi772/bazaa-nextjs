@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -31,14 +31,19 @@ type Props = {
   typeOptions: Option[];
 };
 
-type Sheet = null | 'type' | 'brand' | 'model';
+type Sheet =
+  | null
+  | 'type'
+  | 'brand'
+  | 'model'
+  | 'condition'
+  | 'budget'
+  | 'more';
 
-/*
- * Phone models.
- *
- * This is the first model database.
- * We will expand this later for vehicles and other categories.
- */
+/* =========================================================
+   PHONE MODELS
+   ========================================================= */
+
 const PHONE_MODELS: Record<string, string[]> = {
   Apple: [
     'iPhone 8',
@@ -246,6 +251,25 @@ const PHONE_MODELS: Record<string, string[]> = {
   Other: ['Other model'],
 };
 
+/* =========================================================
+   FILTER OPTIONS
+   ========================================================= */
+
+const CONDITIONS = [
+  'New',
+  'Like New',
+  'Used',
+  'Refurbished',
+];
+
+const BUDGETS = [
+  'Under ETB 10,000',
+  'ETB 10,000 – 25,000',
+  'ETB 25,000 – 50,000',
+  'ETB 50,000 – 100,000',
+  'Over ETB 100,000',
+];
+
 function adsLabel(count: number) {
   return `${count} ${count === 1 ? 'ad' : 'ads'}`;
 }
@@ -266,32 +290,28 @@ export default function FilterBar({
   const [max, setMax] = useState(maxPrice);
 
   const [sheet, setSheet] = useState<Sheet>(null);
-
   const [search, setSearch] = useState('');
 
-  /*
-   * The brand currently being viewed in the model screen.
-   */
   const [modelBrand, setModelBrand] = useState(brand);
 
-  /*
-   * Read the selected model from the URL.
-   */
-  function getCurrentModel() {
+  function getParam(name: string) {
     if (typeof window === 'undefined') {
       return '';
     }
 
     return (
-      new URLSearchParams(window.location.search).get('model') || ''
+      new URLSearchParams(window.location.search).get(name) || ''
     );
   }
 
-  const currentModel = getCurrentModel();
+  const currentModel = getParam('model');
+  const currentCondition = getParam('condition');
+  const currentBudget = getParam('budget');
 
-  /*
-   * Update URL while preserving the other filters.
-   */
+  /* =========================================================
+     UPDATE URL
+     ========================================================= */
+
   function update(changes: Record<string, string>) {
     const params = new URLSearchParams(window.location.search);
 
@@ -308,6 +328,10 @@ export default function FilterBar({
     router.push(query ? `/?${query}` : '/');
   }
 
+  /* =========================================================
+     ACTIVE STATES
+     ========================================================= */
+
   const priceActive = Boolean(minPrice || maxPrice);
 
   const anyActive = Boolean(
@@ -316,8 +340,14 @@ export default function FilterBar({
       maxPrice ||
       subcategory ||
       brand ||
-      currentModel
+      currentModel ||
+      currentCondition ||
+      currentBudget
   );
+
+  /* =========================================================
+     COMMON STYLES
+     ========================================================= */
 
   const pill =
     'shrink-0 rounded-full border-[1.5px] bg-white px-4 py-2 text-sm font-semibold transition-colors';
@@ -331,9 +361,10 @@ export default function FilterBar({
   const row =
     'flex w-full items-center justify-between border-b-[1.5px] border-line px-4 py-4 text-left transition-colors hover:bg-amberSoft';
 
-  /*
-   * Search brands.
-   */
+  /* =========================================================
+     SEARCH
+     ========================================================= */
+
   const query = search.trim().toLowerCase();
 
   const filteredBrands = brandOptions.filter((option) =>
@@ -355,25 +386,31 @@ export default function FilterBar({
       return a.name.localeCompare(b.name);
     });
 
-  /*
-   * Models for the selected brand.
-   */
-  const models = PHONE_MODELS[modelBrand] || ['Other model'];
+  /* =========================================================
+     MODELS
+     ========================================================= */
+
+  const models =
+    PHONE_MODELS[modelBrand] || ['Other model'];
 
   const filteredModels = models.filter((model) =>
     model.toLowerCase().includes(query)
   );
+
+  /* =========================================================
+     OPEN BRAND
+     ========================================================= */
 
   function openBrandSheet() {
     setSearch('');
     setSheet('brand');
   }
 
+  /* =========================================================
+     CHOOSE BRAND
+     ========================================================= */
+
   function chooseBrand(name: string) {
-    /*
-     * Brand selected.
-     * Clear any old model.
-     */
     update({
       brand: name,
       model: '',
@@ -383,10 +420,14 @@ export default function FilterBar({
     setSearch('');
 
     /*
-     * Immediately continue to that brand's models.
+     * After choosing a brand, immediately show its models.
      */
     setSheet('model');
   }
+
+  /* =========================================================
+     CHOOSE MODEL
+     ========================================================= */
 
   function chooseModel(name: string) {
     update({
@@ -396,6 +437,10 @@ export default function FilterBar({
     setSearch('');
     setSheet(null);
   }
+
+  /* =========================================================
+     BRAND ROW
+     ========================================================= */
 
   function brandRow(option: Option) {
     return (
@@ -418,21 +463,34 @@ export default function FilterBar({
           </span>
         </span>
 
-        <span className="text-lg text-muted">
-          ›
-        </span>
+        {option.name === brand ? (
+          <span className="font-bold text-amberDeep">
+            ✓
+          </span>
+        ) : (
+          <span className="text-lg text-muted">
+            ›
+          </span>
+        )}
       </button>
     );
   }
 
+  /* =========================================================
+     RETURN
+     ========================================================= */
+
   return (
     <div className="mb-5">
+
       {/* =====================================================
           FILTER PILLS
       ===================================================== */}
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {/* Region */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
+
+        {/* REGION */}
+
         <select
           value={region}
           onChange={(event) =>
@@ -444,16 +502,22 @@ export default function FilterBar({
             region ? activePill : inactivePill
           }`}
         >
-          <option value="">Region</option>
+          <option value="">
+            Region
+          </option>
 
           {REGIONS.map((item) => (
-            <option key={item} value={item}>
+            <option
+              key={item}
+              value={item}
+            >
               {item}
             </option>
           ))}
         </select>
 
-        {/* Price */}
+        {/* PRICE */}
+
         <button
           type="button"
           onClick={() =>
@@ -464,16 +528,17 @@ export default function FilterBar({
           }`}
         >
           Price, ETB
+
           <span className="ml-1 text-xs">
             {priceOpen ? '▲' : '▼'}
           </span>
         </button>
 
-        {/*
-         * Type is only shown BEFORE a subcategory has been chosen.
-         *
-         * Once the user chooses Phones, this button disappears.
-         */}
+        {/* =================================================
+            IMPORTANT:
+            TYPE / PHONE DISAPPEARS AFTER SUBCATEGORY.
+        ================================================= */}
+
         {!subcategory && typeOptions.length > 0 && (
           <button
             type="button"
@@ -481,34 +546,96 @@ export default function FilterBar({
             className={`${pill} ${inactivePill}`}
           >
             Type
+
             <span className="ml-1 text-xs">
               ▼
             </span>
           </button>
         )}
 
-        {/*
-         * Brand appears after the user has selected
-         * a subcategory such as Phones.
-         */}
-        {subcategory && brandOptions.length > 0 && (
+        {/* =================================================
+            CONDITION
+
+            This replaces the old Phone/Type filter after
+            Mobile Phones has been selected.
+        ================================================= */}
+
+        {subcategory && (
           <button
             type="button"
-            onClick={openBrandSheet}
+            onClick={() => {
+              setSearch('');
+              setSheet('condition');
+            }}
             className={`${pill} ${
-              brand ? activePill : inactivePill
+              currentCondition
+                ? activePill
+                : inactivePill
             }`}
           >
-            {brand || 'Brand'}
+            {currentCondition || 'Condition'}
+
             <span className="ml-1 text-xs">
               ▼
             </span>
           </button>
         )}
 
-        {/*
-         * Model appears after a brand has been selected.
-         */}
+        {/* =================================================
+            BUDGET
+        ================================================= */}
+
+        {subcategory && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearch('');
+              setSheet('budget');
+            }}
+            className={`${pill} ${
+              currentBudget
+                ? activePill
+                : inactivePill
+            }`}
+          >
+            {currentBudget || 'Budget'}
+
+            <span className="ml-1 text-xs">
+              ▼
+            </span>
+          </button>
+        )}
+
+        {/* =================================================
+            BRAND
+        ================================================= */}
+
+        {subcategory &&
+          brandOptions.length > 0 && (
+            <button
+              type="button"
+              onClick={openBrandSheet}
+              className={`${pill} ${
+                brand
+                  ? activePill
+                  : inactivePill
+              }`}
+            >
+              {brand || 'Brand'}
+
+              <span className="ml-1 text-xs">
+                ▼
+              </span>
+            </button>
+          )}
+
+        {/* =================================================
+            MODEL
+
+            IMPORTANT:
+            Always appears once a brand is selected.
+        ================================================= */}
+
         {subcategory && brand && (
           <button
             type="button"
@@ -518,17 +645,44 @@ export default function FilterBar({
               setSheet('model');
             }}
             className={`${pill} ${
-              currentModel ? activePill : inactivePill
+              currentModel
+                ? activePill
+                : inactivePill
             }`}
           >
             {currentModel || 'Model'}
+
             <span className="ml-1 text-xs">
               ▼
             </span>
           </button>
         )}
 
-        {/* Clear */}
+        {/* =================================================
+            MORE / OTHER
+        ================================================= */}
+
+        {subcategory && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearch('');
+              setSheet('more');
+            }}
+            className={`${pill} ${inactivePill}`}
+          >
+            More
+
+            <span className="ml-1 text-xs">
+              ▼
+            </span>
+          </button>
+        )}
+
+        {/* =================================================
+            CLEAR
+        ================================================= */}
+
         {anyActive && (
           <button
             type="button"
@@ -546,6 +700,8 @@ export default function FilterBar({
                 subcategory: '',
                 brand: '',
                 model: '',
+                condition: '',
+                budget: '',
               });
             }}
             className={`${pill} border-line bg-paper text-muted hover:border-danger hover:bg-dangerSoft hover:text-danger`}
@@ -644,6 +800,231 @@ export default function FilterBar({
                     subcategory: option.name,
                     brand: '',
                     model: '',
+                    condition: '',
+                    budget: '',
+                  });
+
+                  setModelBrand('');
+                  setSheet(null);
+                }}
+                className={row}
+              >
+                <span
+                  className={
+                    option.name === subcategory
+                      ? 'font-bold text-amberDeep'
+                      : 'text-ink'
+                  }
+                >
+                  {option.name}{' '}
+                  <span className="text-sm font-normal text-muted">
+                    • {adsLabel(option.count)}
+                  </span>
+                </span>
+
+                {option.name === subcategory && (
+                  <span className="font-bold text-amberDeep">
+                    ✓
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+             {/* =====================================================
+          CONDITION SHEET
+      ===================================================== */}
+
+      {sheet === 'condition' && (
+        <div
+          className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
+          onClick={() => setSheet(null)}
+        >
+          <div
+            className="max-h-[75vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="sticky top-0 z-10 border-b-[1.5px] border-line bg-white px-4 py-4">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Filter by
+              </div>
+
+              <div className="mt-1 font-serif text-xl font-bold text-ink">
+                Condition
+              </div>
+            </div>
+
+            {/* All conditions */}
+            <button
+              type="button"
+              onClick={() => {
+                update({
+                  condition: '',
+                });
+
+                setSheet(null);
+              }}
+              className={row}
+            >
+              <span
+                className={
+                  !new URLSearchParams(window.location.search).get(
+                    'condition'
+                  )
+                    ? 'font-bold text-amberDeep'
+                    : 'text-ink'
+                }
+              >
+                All conditions
+              </span>
+
+              {!new URLSearchParams(window.location.search).get(
+                'condition'
+              ) && (
+                <span className="font-bold text-amberDeep">
+                  ✓
+                </span>
+              )}
+            </button>
+
+            {/* New */}
+            <button
+              type="button"
+              onClick={() => {
+                update({
+                  condition: 'New',
+                });
+
+                setSheet(null);
+              }}
+              className={row}
+            >
+              <span
+                className={
+                  new URLSearchParams(window.location.search).get(
+                    'condition'
+                  ) === 'New'
+                    ? 'font-bold text-amberDeep'
+                    : 'text-ink'
+                }
+              >
+                New
+              </span>
+
+              {new URLSearchParams(window.location.search).get(
+                'condition'
+              ) === 'New' && (
+                <span className="font-bold text-amberDeep">
+                  ✓
+                </span>
+              )}
+            </button>
+
+            {/* Used */}
+            <button
+              type="button"
+              onClick={() => {
+                update({
+                  condition: 'Used',
+                });
+
+                setSheet(null);
+              }}
+              className={row}
+            >
+              <span
+                className={
+                  new URLSearchParams(window.location.search).get(
+                    'condition'
+                  ) === 'Used'
+                    ? 'font-bold text-amberDeep'
+                    : 'text-ink'
+                }
+              >
+                Used
+              </span>
+
+              {new URLSearchParams(window.location.search).get(
+                'condition'
+              ) === 'Used' && (
+                <span className="font-bold text-amberDeep">
+                  ✓
+                </span>
+              )}
+            </button>
+
+            {/* Refurbished */}
+            <button
+              type="button"
+              onClick={() => {
+                update({
+                  condition: 'Refurbished',
+                });
+
+                setSheet(null);
+              }}
+              className={row}
+            >
+              <span
+                className={
+                  new URLSearchParams(window.location.search).get(
+                    'condition'
+                  ) === 'Refurbished'
+                    ? 'font-bold text-amberDeep'
+                    : 'text-ink'
+                }
+              >
+                Refurbished
+              </span>
+
+              {new URLSearchParams(window.location.search).get(
+                'condition'
+              ) === 'Refurbished' && (
+                <span className="font-bold text-amberDeep">
+                  ✓
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================
+          TYPE SHEET
+      ===================================================== */}
+
+      {sheet === 'type' && (
+        <div
+          className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
+          onClick={() => setSheet(null)}
+        >
+          <div
+            className="max-h-[70vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="sticky top-0 z-10 border-b-[1.5px] border-line bg-white px-4 py-4">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Filter by
+              </div>
+
+              <div className="mt-1 font-serif text-xl font-bold text-ink">
+                Type
+              </div>
+            </div>
+
+            {typeOptions.map((option) => (
+              <button
+                key={option.name}
+                type="button"
+                onClick={() => {
+                  update({
+                    subcategory: option.name,
+                    brand: '',
+                    model: '',
+                    condition: '',
                   });
 
                   setModelBrand('');
@@ -681,14 +1062,17 @@ export default function FilterBar({
 
       {sheet === 'brand' && (
         <div className="fixed inset-0 z-[60] flex flex-col bg-paper">
+
+          {/* Header */}
           <div className="flex items-center gap-3 border-b-[1.5px] border-white/20 bg-ink p-3 text-paper">
+
             <button
               type="button"
               onClick={() => {
                 setSheet(null);
                 setSearch('');
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-2xl transition-colors hover:bg-white/10"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl transition-colors hover:bg-white/10"
               aria-label="Back"
             >
               ‹
@@ -707,7 +1091,10 @@ export default function FilterBar({
             </div>
           </div>
 
+          {/* Brand list */}
           <div className="flex-1 overflow-y-auto">
+
+            {/* All brands */}
             {brand && !query && (
               <button
                 type="button"
@@ -728,6 +1115,7 @@ export default function FilterBar({
               </button>
             )}
 
+            {/* Popular brands */}
             {popularBrands.length > 0 && (
               <>
                 <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
@@ -738,6 +1126,7 @@ export default function FilterBar({
               </>
             )}
 
+            {/* Other brands */}
             {otherBrands.length > 0 && (
               <>
                 <div className="border-b-[1.5px] border-line bg-paper px-4 py-2 text-xs font-bold uppercase tracking-wider text-muted">
@@ -748,6 +1137,7 @@ export default function FilterBar({
               </>
             )}
 
+            {/* No result */}
             {filteredBrands.length === 0 && (
               <div className="px-6 py-16 text-center">
                 <div className="mb-2 text-2xl">
@@ -763,6 +1153,7 @@ export default function FilterBar({
                 </div>
               </div>
             )}
+
           </div>
         </div>
       )}
@@ -773,14 +1164,17 @@ export default function FilterBar({
 
       {sheet === 'model' && (
         <div className="fixed inset-0 z-[60] flex flex-col bg-paper">
+
+          {/* Header */}
           <div className="flex items-center gap-3 border-b-[1.5px] border-white/20 bg-ink p-3 text-paper">
+
             <button
               type="button"
               onClick={() => {
                 setSheet('brand');
                 setSearch('');
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-2xl transition-colors hover:bg-white/10"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl transition-colors hover:bg-white/10"
               aria-label="Back to brands"
             >
               ‹
@@ -809,7 +1203,10 @@ export default function FilterBar({
             </div>
           </div>
 
+          {/* Model list */}
           <div className="flex-1 overflow-y-auto">
+
+            {/* All models */}
             {currentModel && (
               <button
                 type="button"
@@ -822,66 +1219,63 @@ export default function FilterBar({
                 }}
                 className={row}
               >
-                 
-                  <span className="font-semibold text-amberDeep">
-  All {modelBrand} models
-</span>
-</button>
-)}
+                <span className="font-semibold text-amberDeep">
+                  All {modelBrand} models
+                </span>
+              </button>
+            )}
 
-{filteredModels.length > 0 && (
-  <>
-    <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
-      {modelBrand} models
-    </div>
+            {/* Model section */}
+            {filteredModels.length > 0 && (
+              <>
+                <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
+                  {modelBrand} models
+                </div>
 
-    {filteredModels.map((model) => (
-      <button
-        key={model}
-        type="button"
-        onClick={() => chooseModel(model)}
-        className={row}
-      >
-        <span
-          className={
-            model === currentModel
-              ? 'font-bold text-amberDeep'
-              : 'text-ink'
-          }
-        >
-          {model}
-        </span>
+                {filteredModels.map((model) => (
+                  <button
+                    key={model}
+                    type="button"
+                    onClick={() => chooseModel(model)}
+                    className={row}
+                  >
+                    <span
+                      className={
+                        model === currentModel
+                          ? 'font-bold text-amberDeep'
+                          : 'text-ink'
+                      }
+                    >
+                      {model}
+                    </span>
 
-        {model === currentModel && (
-          <span className="font-bold text-amberDeep">
-            ✓
-          </span>
-        )}
-      </button>
-    ))}
-  </>
-)}
+                    {model === currentModel && (
+                      <span className="font-bold text-amberDeep">
+                        ✓
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </>
+            )}
 
-{filteredModels.length === 0 && (
-  <div className="px-6 py-16 text-center">
-    <div className="mb-2 text-2xl">
-      ⌕
-    </div>
+            {/* No model */}
+            {filteredModels.length === 0 && (
+              <div className="px-6 py-16 text-center">
+                <div className="mb-2 text-2xl">
+                  ⌕
+                </div>
 
-    <div className="font-semibold text-ink">
-      No model found
-    </div>
+                <div className="font-semibold text-ink">
+                  No model found
+                </div>
 
-    <div className="mt-1 text-sm text-muted">
-      Try another model name.
-    </div>
-  </div>
-)}
-</div>
-</div>
-)}
+                <div className="mt-1 text-sm text-muted">
+                  Try another model name.
+                </div>
+              </div>
+            )}
 
-</div>
-);
-          }
-          
+          </div>
+        </div>
+      )}
