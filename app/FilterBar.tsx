@@ -40,10 +40,6 @@ type Sheet =
   | 'budget'
   | 'more';
 
-/* =========================================================
-   PHONE MODELS
-   ========================================================= */
-
 const PHONE_MODELS: Record<string, string[]> = {
   Apple: [
     'iPhone 8',
@@ -251,10 +247,6 @@ const PHONE_MODELS: Record<string, string[]> = {
   Other: ['Other model'],
 };
 
-/* =========================================================
-   FILTER OPTIONS
-   ========================================================= */
-
 const CONDITIONS = [
   'New',
   'Like New',
@@ -291,7 +283,6 @@ export default function FilterBar({
 
   const [sheet, setSheet] = useState<Sheet>(null);
   const [search, setSearch] = useState('');
-
   const [modelBrand, setModelBrand] = useState(brand);
 
   function getParam(name: string) {
@@ -307,10 +298,6 @@ export default function FilterBar({
   const currentModel = getParam('model');
   const currentCondition = getParam('condition');
   const currentBudget = getParam('budget');
-
-  /* =========================================================
-     UPDATE URL
-     ========================================================= */
 
   function update(changes: Record<string, string>) {
     const params = new URLSearchParams(window.location.search);
@@ -328,10 +315,6 @@ export default function FilterBar({
     router.push(query ? `/?${query}` : '/');
   }
 
-  /* =========================================================
-     ACTIVE STATES
-     ========================================================= */
-
   const priceActive = Boolean(minPrice || maxPrice);
 
   const anyActive = Boolean(
@@ -345,10 +328,6 @@ export default function FilterBar({
       currentBudget
   );
 
-  /* =========================================================
-     COMMON STYLES
-     ========================================================= */
-
   const pill =
     'shrink-0 rounded-full border-[1.5px] bg-white px-4 py-2 text-sm font-semibold transition-colors';
 
@@ -360,10 +339,6 @@ export default function FilterBar({
 
   const row =
     'flex w-full items-center justify-between border-b-[1.5px] border-line px-4 py-4 text-left transition-colors hover:bg-amberSoft';
-
-  /* =========================================================
-     SEARCH
-     ========================================================= */
 
   const query = search.trim().toLowerCase();
 
@@ -386,10 +361,6 @@ export default function FilterBar({
       return a.name.localeCompare(b.name);
     });
 
-  /* =========================================================
-     MODELS
-     ========================================================= */
-
   const models =
     PHONE_MODELS[modelBrand] || ['Other model'];
 
@@ -397,18 +368,10 @@ export default function FilterBar({
     model.toLowerCase().includes(query)
   );
 
-  /* =========================================================
-     OPEN BRAND
-     ========================================================= */
-
   function openBrandSheet() {
     setSearch('');
     setSheet('brand');
   }
-
-  /* =========================================================
-     CHOOSE BRAND
-     ========================================================= */
 
   function chooseBrand(name: string) {
     update({
@@ -418,16 +381,8 @@ export default function FilterBar({
 
     setModelBrand(name);
     setSearch('');
-
-    /*
-     * After choosing a brand, immediately show its models.
-     */
-    setSheet('model');
+    setSheet(null);
   }
-
-  /* =========================================================
-     CHOOSE MODEL
-     ========================================================= */
 
   function chooseModel(name: string) {
     update({
@@ -437,10 +392,6 @@ export default function FilterBar({
     setSearch('');
     setSheet(null);
   }
-
-  /* =========================================================
-     BRAND ROW
-     ========================================================= */
 
   function brandRow(option: Option) {
     return (
@@ -476,20 +427,10 @@ export default function FilterBar({
     );
   }
 
-  /* =========================================================
-     RETURN
-     ========================================================= */
-
   return (
     <div className="mb-5">
 
-      {/* =====================================================
-          FILTER PILLS
-      ===================================================== */}
-
       <div className="flex gap-2 overflow-x-auto pb-2">
-
-        {/* REGION */}
 
         <select
           value={region}
@@ -516,8 +457,6 @@ export default function FilterBar({
           ))}
         </select>
 
-        {/* PRICE */}
-
         <button
           type="button"
           onClick={() =>
@@ -534,31 +473,20 @@ export default function FilterBar({
           </span>
         </button>
 
-        {/* =================================================
-            IMPORTANT:
-            TYPE / PHONE DISAPPEARS AFTER SUBCATEGORY.
-        ================================================= */}
+        {!subcategory &&
+          typeOptions.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setSheet('type')}
+              className={`${pill} ${inactivePill}`}
+            >
+              Type
 
-        {!subcategory && typeOptions.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setSheet('type')}
-            className={`${pill} ${inactivePill}`}
-          >
-            Type
-
-            <span className="ml-1 text-xs">
-              ▼
-            </span>
-          </button>
-        )}
-
-        {/* =================================================
-            CONDITION
-
-            This replaces the old Phone/Type filter after
-            Mobile Phones has been selected.
-        ================================================= */}
+              <span className="ml-1 text-xs">
+                ▼
+              </span>
+            </button>
+          )}
 
         {subcategory && (
           <button
@@ -581,10 +509,6 @@ export default function FilterBar({
           </button>
         )}
 
-        {/* =================================================
-            BUDGET
-        ================================================= */}
-
         {subcategory && (
           <button
             type="button"
@@ -606,10 +530,6 @@ export default function FilterBar({
           </button>
         )}
 
-        {/* =================================================
-            BRAND
-        ================================================= */}
-
         {subcategory &&
           brandOptions.length > 0 && (
             <button
@@ -628,13 +548,6 @@ export default function FilterBar({
               </span>
             </button>
           )}
-
-        {/* =================================================
-            MODEL
-
-            IMPORTANT:
-            Always appears once a brand is selected.
-        ================================================= */}
 
         {subcategory && brand && (
           <button
@@ -658,10 +571,6 @@ export default function FilterBar({
           </button>
         )}
 
-        {/* =================================================
-            MORE / OTHER
-        ================================================= */}
-
         {subcategory && (
           <button
             type="button"
@@ -678,10 +587,6 @@ export default function FilterBar({
             </span>
           </button>
         )}
-
-        {/* =================================================
-            CLEAR
-        ================================================= */}
 
         {anyActive && (
           <button
@@ -711,17 +616,15 @@ export default function FilterBar({
         )}
       </div>
 
-      {/* =====================================================
-          PRICE PANEL
-      ===================================================== */}
-
       {priceOpen && (
         <div className="mt-3 rounded-card border-[1.5px] border-line bg-white p-4 shadow-card">
+
           <div className="mb-3 text-sm font-semibold text-ink">
             Price range
           </div>
 
           <div className="flex items-center gap-2">
+
             <input
               type="number"
               inputMode="numeric"
@@ -762,24 +665,18 @@ export default function FilterBar({
             >
               Apply
             </button>
+
           </div>
         </div>
       )}
-
-      {/* =====================================================
-          TYPE SHEET
-      ===================================================== */}
-
-      {sheet === 'type' && (
+           {sheet === 'type' && (
         <div
           className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
           onClick={() => setSheet(null)}
         >
           <div
-            className="max-h-[70vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
-            onClick={(event) =>
-              event.stopPropagation()
-            }
+            className="max-h-[75vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
+            onClick={(event) => event.stopPropagation()}
           >
             <div className="sticky top-0 border-b-[1.5px] border-line bg-white px-4 py-4">
               <div className="text-xs font-semibold uppercase tracking-wider text-muted">
@@ -833,10 +730,6 @@ export default function FilterBar({
         </div>
       )}
 
-             {/* =====================================================
-          CONDITION SHEET
-      ===================================================== */}
-
       {sheet === 'condition' && (
         <div
           className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
@@ -846,7 +739,6 @@ export default function FilterBar({
             className="max-h-[75vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
             onClick={(event) => event.stopPropagation()}
           >
-            {/* Header */}
             <div className="sticky top-0 z-10 border-b-[1.5px] border-line bg-white px-4 py-4">
               <div className="text-xs font-semibold uppercase tracking-wider text-muted">
                 Filter by
@@ -857,7 +749,6 @@ export default function FilterBar({
               </div>
             </div>
 
-            {/* All conditions */}
             <button
               type="button"
               onClick={() => {
@@ -871,9 +762,7 @@ export default function FilterBar({
             >
               <span
                 className={
-                  !new URLSearchParams(window.location.search).get(
-                    'condition'
-                  )
+                  !currentCondition
                     ? 'font-bold text-amberDeep'
                     : 'text-ink'
                 }
@@ -881,171 +770,37 @@ export default function FilterBar({
                 All conditions
               </span>
 
-              {!new URLSearchParams(window.location.search).get(
-                'condition'
-              ) && (
+              {!currentCondition && (
                 <span className="font-bold text-amberDeep">
                   ✓
                 </span>
               )}
             </button>
 
-            {/* New */}
-            <button
-              type="button"
-              onClick={() => {
-                update({
-                  condition: 'New',
-                });
-
-                setSheet(null);
-              }}
-              className={row}
-            >
-              <span
-                className={
-                  new URLSearchParams(window.location.search).get(
-                    'condition'
-                  ) === 'New'
-                    ? 'font-bold text-amberDeep'
-                    : 'text-ink'
-                }
-              >
-                New
-              </span>
-
-              {new URLSearchParams(window.location.search).get(
-                'condition'
-              ) === 'New' && (
-                <span className="font-bold text-amberDeep">
-                  ✓
-                </span>
-              )}
-            </button>
-
-            {/* Used */}
-            <button
-              type="button"
-              onClick={() => {
-                update({
-                  condition: 'Used',
-                });
-
-                setSheet(null);
-              }}
-              className={row}
-            >
-              <span
-                className={
-                  new URLSearchParams(window.location.search).get(
-                    'condition'
-                  ) === 'Used'
-                    ? 'font-bold text-amberDeep'
-                    : 'text-ink'
-                }
-              >
-                Used
-              </span>
-
-              {new URLSearchParams(window.location.search).get(
-                'condition'
-              ) === 'Used' && (
-                <span className="font-bold text-amberDeep">
-                  ✓
-                </span>
-              )}
-            </button>
-
-            {/* Refurbished */}
-            <button
-              type="button"
-              onClick={() => {
-                update({
-                  condition: 'Refurbished',
-                });
-
-                setSheet(null);
-              }}
-              className={row}
-            >
-              <span
-                className={
-                  new URLSearchParams(window.location.search).get(
-                    'condition'
-                  ) === 'Refurbished'
-                    ? 'font-bold text-amberDeep'
-                    : 'text-ink'
-                }
-              >
-                Refurbished
-              </span>
-
-              {new URLSearchParams(window.location.search).get(
-                'condition'
-              ) === 'Refurbished' && (
-                <span className="font-bold text-amberDeep">
-                  ✓
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* =====================================================
-          TYPE SHEET
-      ===================================================== */}
-
-      {sheet === 'type' && (
-        <div
-          className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
-          onClick={() => setSheet(null)}
-        >
-          <div
-            className="max-h-[70vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="sticky top-0 z-10 border-b-[1.5px] border-line bg-white px-4 py-4">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted">
-                Filter by
-              </div>
-
-              <div className="mt-1 font-serif text-xl font-bold text-ink">
-                Type
-              </div>
-            </div>
-
-            {typeOptions.map((option) => (
+            {CONDITIONS.map((condition) => (
               <button
-                key={option.name}
+                key={condition}
                 type="button"
                 onClick={() => {
                   update({
-                    subcategory: option.name,
-                    brand: '',
-                    model: '',
-                    condition: '',
+                    condition,
                   });
 
-                  setModelBrand('');
                   setSheet(null);
                 }}
                 className={row}
               >
                 <span
                   className={
-                    option.name === subcategory
+                    currentCondition === condition
                       ? 'font-bold text-amberDeep'
                       : 'text-ink'
                   }
                 >
-                  {option.name}{' '}
-                  <span className="text-sm font-normal text-muted">
-                    • {adsLabel(option.count)}
-                  </span>
+                  {condition}
                 </span>
 
-                {option.name === subcategory && (
+                {currentCondition === condition && (
                   <span className="font-bold text-amberDeep">
                     ✓
                   </span>
@@ -1056,23 +811,97 @@ export default function FilterBar({
         </div>
       )}
 
-      {/* =====================================================
-          BRAND SHEET
-      ===================================================== */}
+      {sheet === 'budget' && (
+        <div
+          className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
+          onClick={() => setSheet(null)}
+        >
+          <div
+            className="max-h-[75vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="sticky top-0 z-10 border-b-[1.5px] border-line bg-white px-4 py-4">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Filter by
+              </div>
+
+              <div className="mt-1 font-serif text-xl font-bold text-ink">
+                Budget
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                update({
+                  budget: '',
+                });
+
+                setSheet(null);
+              }}
+              className={row}
+            >
+              <span
+                className={
+                  !currentBudget
+                    ? 'font-bold text-amberDeep'
+                    : 'text-ink'
+                }
+              >
+                All budgets
+              </span>
+
+              {!currentBudget && (
+                <span className="font-bold text-amberDeep">
+                  ✓
+                </span>
+              )}
+            </button>
+
+            {BUDGETS.map((budget) => (
+              <button
+                key={budget}
+                type="button"
+                onClick={() => {
+                  update({
+                    budget,
+                  });
+
+                  setSheet(null);
+                }}
+                className={row}
+              >
+                <span
+                  className={
+                    currentBudget === budget
+                      ? 'font-bold text-amberDeep'
+                      : 'text-ink'
+                  }
+                >
+                  {budget}
+                </span>
+
+                {currentBudget === budget && (
+                  <span className="font-bold text-amberDeep">
+                    ✓
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {sheet === 'brand' && (
         <div className="fixed inset-0 z-[60] flex flex-col bg-paper">
-
-          {/* Header */}
           <div className="flex items-center gap-3 border-b-[1.5px] border-white/20 bg-ink p-3 text-paper">
-
             <button
               type="button"
               onClick={() => {
                 setSheet(null);
                 setSearch('');
               }}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl transition-colors hover:bg-white/10"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl hover:bg-white/10"
               aria-label="Back"
             >
               ‹
@@ -1091,10 +920,7 @@ export default function FilterBar({
             </div>
           </div>
 
-          {/* Brand list */}
           <div className="flex-1 overflow-y-auto">
-
-            {/* All brands */}
             {brand && !query && (
               <button
                 type="button"
@@ -1115,7 +941,6 @@ export default function FilterBar({
               </button>
             )}
 
-            {/* Popular brands */}
             {popularBrands.length > 0 && (
               <>
                 <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
@@ -1126,7 +951,6 @@ export default function FilterBar({
               </>
             )}
 
-            {/* Other brands */}
             {otherBrands.length > 0 && (
               <>
                 <div className="border-b-[1.5px] border-line bg-paper px-4 py-2 text-xs font-bold uppercase tracking-wider text-muted">
@@ -1137,7 +961,6 @@ export default function FilterBar({
               </>
             )}
 
-            {/* No result */}
             {filteredBrands.length === 0 && (
               <div className="px-6 py-16 text-center">
                 <div className="mb-2 text-2xl">
@@ -1153,28 +976,20 @@ export default function FilterBar({
                 </div>
               </div>
             )}
-
           </div>
         </div>
       )}
 
-      {/* =====================================================
-          MODEL SHEET
-      ===================================================== */}
-
       {sheet === 'model' && (
         <div className="fixed inset-0 z-[60] flex flex-col bg-paper">
-
-          {/* Header */}
           <div className="flex items-center gap-3 border-b-[1.5px] border-white/20 bg-ink p-3 text-paper">
-
             <button
               type="button"
               onClick={() => {
                 setSheet('brand');
                 setSearch('');
               }}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl transition-colors hover:bg-white/10"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl hover:bg-white/10"
               aria-label="Back to brands"
             >
               ‹
@@ -1203,10 +1018,7 @@ export default function FilterBar({
             </div>
           </div>
 
-          {/* Model list */}
           <div className="flex-1 overflow-y-auto">
-
-            {/* All models */}
             {currentModel && (
               <button
                 type="button"
@@ -1216,6 +1028,7 @@ export default function FilterBar({
                   });
 
                   setSearch('');
+                  setSheet(null);
                 }}
                 className={row}
               >
@@ -1225,7 +1038,6 @@ export default function FilterBar({
               </button>
             )}
 
-            {/* Model section */}
             {filteredModels.length > 0 && (
               <>
                 <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
@@ -1236,7 +1048,9 @@ export default function FilterBar({
                   <button
                     key={model}
                     type="button"
-                    onClick={() => chooseModel(model)}
+                    onClick={() =>
+                      chooseModel(model)
+                    }
                     className={row}
                   >
                     <span
@@ -1259,7 +1073,6 @@ export default function FilterBar({
               </>
             )}
 
-            {/* No model */}
             {filteredModels.length === 0 && (
               <div className="px-6 py-16 text-center">
                 <div className="mb-2 text-2xl">
@@ -1275,7 +1088,73 @@ export default function FilterBar({
                 </div>
               </div>
             )}
-
           </div>
         </div>
       )}
+
+      {sheet === 'more' && (
+        <div
+          className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
+          onClick={() => setSheet(null)}
+        >
+          <div
+            className="w-full rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="border-b-[1.5px] border-line px-4 py-4">
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted">
+                More filters
+              </div>
+
+              <div className="mt-1 font-serif text-xl font-bold text-ink">
+                Other
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSheet('condition');
+              }}
+              className={row}
+            >
+              <span className="text-ink">
+                Condition
+              </span>
+
+              <span className="text-lg text-muted">
+                ›
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSheet('budget');
+              }}
+              className={row}
+            >
+              <span className="text-ink">
+                Budget
+              </span>
+
+              <span className="text-lg text-muted">
+                ›
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSheet(null);
+              }}
+              className="m-4 w-[calc(100%-2rem)] rounded-bazaa border border-line bg-paper px-4 py-3 text-center font-semibold text-ink"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
