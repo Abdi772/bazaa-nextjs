@@ -361,8 +361,17 @@ export default function FilterBar({
       return a.name.localeCompare(b.name);
     });
 
+  /*
+   * Some data may call Apple "iPhone".
+   * Convert it to the internal Apple model list.
+   */
+  const normalizedModelBrand =
+    modelBrand === 'iPhone'
+      ? 'Apple'
+      : modelBrand;
+
   const models =
-    PHONE_MODELS[modelBrand] || ['Other model'];
+    PHONE_MODELS[normalizedModelBrand] || ['Other model'];
 
   const filteredModels = models.filter((model) =>
     model.toLowerCase().includes(query)
@@ -986,11 +995,11 @@ export default function FilterBar({
             <button
               type="button"
               onClick={() => {
-                setSheet('brand');
+                setSheet(null);
                 setSearch('');
               }}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl hover:bg-white/10"
-              aria-label="Back to brands"
+              aria-label="Back"
             >
               ‹
             </button>
@@ -1001,7 +1010,9 @@ export default function FilterBar({
               </div>
 
               <div className="truncate font-serif text-lg font-bold">
-                {modelBrand || 'Model'}
+                {modelBrand === 'iPhone'
+                  ? 'iPhone'
+                  : modelBrand || 'Model'}
               </div>
             </div>
 
@@ -1033,7 +1044,7 @@ export default function FilterBar({
                 className={row}
               >
                 <span className="font-semibold text-amberDeep">
-                  All {modelBrand} models
+                  All {modelBrand || 'models'}
                 </span>
               </button>
             )}
@@ -1041,7 +1052,10 @@ export default function FilterBar({
             {filteredModels.length > 0 && (
               <>
                 <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
-                  {modelBrand} models
+                  {modelBrand === 'iPhone'
+                    ? 'iPhone'
+                    : modelBrand}{' '}
+                  models
                 </div>
 
                 {filteredModels.map((model) => (
@@ -1157,4 +1171,4 @@ export default function FilterBar({
       )}
     </div>
   );
-}
+     }
