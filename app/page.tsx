@@ -49,6 +49,7 @@ export default async function HomePage({
   const maxPrice = searchParams.maxPrice || '';
 
   const categoryConfig = category ? CATEGORY_CONFIG[category] : undefined;
+
   const subNames = categoryConfig
     ? Object.keys(categoryConfig.subcategories)
     : [];
@@ -162,6 +163,7 @@ export default async function HomePage({
             {/* Hero */}
             <section className="mb-8 overflow-hidden rounded-card bg-ink px-6 py-8 text-paper shadow-soft sm:px-8 sm:py-10">
               <div className="max-w-2xl">
+
                 <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber">
                   Bazaa Marketplace
                 </div>
@@ -185,7 +187,7 @@ export default async function HomePage({
                     name="q"
                     type="text"
                     placeholder="What are you looking for?"
-                    className="min-w-0 flex-1 rounded-bazaa border border-white/10 bg-white px-4 py-3 text-sm text-ink outline-none placeholder:text-mutedLight focus:border-amber focus:ring-2 focus:ring-amber/20"
+                    className="min-w-0 flex-1 rounded-bazaa border border-white/10 bg-[var(--bazaa-surface)] px-4 py-3 text-sm text-[var(--bazaa-text)] outline-none placeholder:text-[var(--bazaa-muted-light)] focus:border-amber focus:ring-2 focus:ring-amber/20"
                   />
 
                   <button
@@ -195,6 +197,7 @@ export default async function HomePage({
                     Search
                   </button>
                 </form>
+
               </div>
             </section>
 
@@ -215,9 +218,9 @@ export default async function HomePage({
                 <Link
                   key={name}
                   href={buildUrl(name)}
-                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                  className="group overflow-hidden rounded-card border border-[var(--bazaa-border)] bg-[var(--bazaa-surface)] shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
                 >
-                  <div className="relative aspect-square overflow-hidden bg-paper">
+                  <div className="relative aspect-square overflow-hidden bg-[var(--bazaa-surface-soft)]">
                     <Image
                       src={`/categories/${name.toLowerCase()}.jpg`}
                       alt={name}
@@ -228,11 +231,11 @@ export default async function HomePage({
                   </div>
 
                   <div className="p-3">
-                    <div className="text-sm font-semibold text-ink">
+                    <div className="text-sm font-semibold text-[var(--bazaa-text)]">
                       {name}
                     </div>
 
-                    <div className="mt-0.5 text-xs text-muted">
+                    <div className="mt-0.5 text-xs text-[var(--bazaa-muted)]">
                       {counts[name] || 0} listings
                     </div>
                   </div>
@@ -270,7 +273,7 @@ export default async function HomePage({
           {!showHome && (
             <Link
               href={backHref}
-              className="rounded-full border border-line bg-white px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-amber hover:bg-amberSoft"
+              className="rounded-full border border-[var(--bazaa-border)] bg-[var(--bazaa-surface)] px-3 py-1.5 text-sm font-semibold text-[var(--bazaa-text)] transition-colors hover:border-amber hover:bg-[var(--bazaa-primary-soft)]"
             >
               ← {backLabel}
             </Link>
@@ -281,7 +284,7 @@ export default async function HomePage({
             SUB-CATEGORIES
         ========================= */}
         {showSubList && categoryConfig && (
-          <div className="mb-6 overflow-hidden rounded-card border border-line bg-white shadow-card">
+          <div className="mb-6 overflow-hidden rounded-card border border-[var(--bazaa-border)] bg-[var(--bazaa-surface)] shadow-card">
             {subNames.map((subName) => {
               const img = subcategoryImage(subName);
 
@@ -289,9 +292,9 @@ export default async function HomePage({
                 <Link
                   key={subName}
                   href={buildUrl(category, subName)}
-                  className="group flex items-center gap-3 border-b border-line px-4 py-3.5 transition-colors last:border-b-0 hover:bg-amberSoft"
+                  className="group flex items-center gap-3 border-b border-[var(--bazaa-border)] px-4 py-3.5 transition-colors last:border-b-0 hover:bg-[var(--bazaa-primary-soft)]"
                 >
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-bazaa bg-paper">
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-bazaa bg-[var(--bazaa-surface-soft)]">
                     {img && (
                       <Image
                         src={img}
@@ -304,11 +307,11 @@ export default async function HomePage({
                   </div>
 
                   <span className="min-w-0 flex-1">
-                    <span className="block text-base font-semibold text-ink">
+                    <span className="block text-base font-semibold text-[var(--bazaa-text)]">
                       {subName}
                     </span>
 
-                    <span className="mt-0.5 block text-xs text-muted">
+                    <span className="mt-0.5 block text-xs text-[var(--bazaa-muted)]">
                       {subCounts[subName] || 0}{' '}
                       {(subCounts[subName] || 0) === 1
                         ? 'ad'
@@ -316,7 +319,7 @@ export default async function HomePage({
                     </span>
                   </span>
 
-                  <span className="text-lg text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-amberDeep">
+                  <span className="text-lg text-[var(--bazaa-muted)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--bazaa-primary)]">
                     →
                   </span>
                 </Link>
@@ -325,13 +328,15 @@ export default async function HomePage({
 
             <Link
               href={`${buildUrl(category)}&all=1`}
-              className="flex items-center justify-between bg-paper px-4 py-4 transition-colors hover:bg-amberSoft"
+              className="flex items-center justify-between bg-[var(--bazaa-surface-soft)] px-4 py-4 transition-colors hover:bg-[var(--bazaa-primary-soft)]"
             >
-              <span className="text-sm font-semibold text-amberDeep">
+              <span className="text-sm font-semibold text-[var(--bazaa-primary)]">
                 See all in {category}
               </span>
 
-              <span className="text-muted">→</span>
+              <span className="text-[var(--bazaa-muted)]">
+                →
+              </span>
             </Link>
           </div>
         )}
@@ -348,7 +353,7 @@ export default async function HomePage({
                 <Link
                   key={b}
                   href={buildUrl(category, subcategory, b)}
-                  className="group flex min-h-[100px] flex-col items-center justify-center gap-2 rounded-card border border-line bg-white p-3 text-center shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber hover:shadow-soft"
+                  className="group flex min-h-[100px] flex-col items-center justify-center gap-2 rounded-card border border-[var(--bazaa-border)] bg-[var(--bazaa-surface)] p-3 text-center shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber hover:shadow-soft"
                 >
                   <div className="flex h-9 items-center justify-center">
                     {logo ? (
@@ -359,13 +364,13 @@ export default async function HomePage({
                         className="max-h-9 max-w-[64px] object-contain"
                       />
                     ) : (
-                      <span className="text-xl text-muted">
+                      <span className="text-xl text-[var(--bazaa-muted)]">
                         •••
                       </span>
                     )}
                   </div>
 
-                  <span className="text-xs font-semibold text-ink">
+                  <span className="text-xs font-semibold text-[var(--bazaa-text)]">
                     {b}
                   </span>
                 </Link>
@@ -396,14 +401,14 @@ export default async function HomePage({
         ========================= */}
         {showListings &&
           (listings.length === 0 ? (
-            <div className="rounded-card border border-dashed border-line bg-white px-6 py-16 text-center">
+            <div className="rounded-card border border-dashed border-[var(--bazaa-border)] bg-[var(--bazaa-surface)] px-6 py-16 text-center">
               <div className="mb-3 text-3xl">⌕</div>
 
-              <h3 className="mb-1 font-semibold text-ink">
+              <h3 className="mb-1 font-semibold text-[var(--bazaa-text)]">
                 No listings match
               </h3>
 
-              <p className="text-sm text-muted">
+              <p className="text-sm text-[var(--bazaa-muted)]">
                 Try a different search or category.
               </p>
             </div>
@@ -413,9 +418,9 @@ export default async function HomePage({
                 <Link
                   key={listing.id}
                   href={`/products/${listingSlug(listing)}`}
-                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                  className="group overflow-hidden rounded-card border border-[var(--bazaa-border)] bg-[var(--bazaa-surface)] shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
                 >
-                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bg-paper">
+                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-[var(--bazaa-border)] bg-[var(--bazaa-surface-soft)]">
                     {listing.image_url ? (
                       <Image
                         src={listing.image_url}
@@ -434,18 +439,18 @@ export default async function HomePage({
                   </div>
 
                   <div className="p-3.5">
-                    <div className="font-serif text-lg font-bold text-amberDeep">
+                    <div className="font-serif text-lg font-bold text-[var(--bazaa-primary)]">
                       ETB{' '}
                       {Number(
                         listing.price
                       ).toLocaleString()}
                     </div>
 
-                    <div className="mt-1 line-clamp-1 text-sm font-semibold text-ink">
+                    <div className="mt-1 line-clamp-1 text-sm font-semibold text-[var(--bazaa-text)]">
                       {listing.title}
                     </div>
 
-                    <div className="mt-1 flex justify-between text-xs text-muted">
+                    <div className="mt-1 flex justify-between text-xs text-[var(--bazaa-muted)]">
                       <span className="line-clamp-1">
                         {listing.location}
                       </span>
@@ -458,4 +463,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-   }
+      }
