@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-paper text-ink antialiased">
+      <body className="bazaa-page min-h-screen antialiased">
 
         {/* Bazaa Header */}
         <header className="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper">
