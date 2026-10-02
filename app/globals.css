@@ -11,6 +11,7 @@
   --bazaa-muted: #6E6A63;
 }
 
+/* Page */
 html {
   background: var(--bazaa-paper);
 }
@@ -29,15 +30,18 @@ body {
     sans-serif;
 }
 
+/* Better box sizing */
 * {
   box-sizing: border-box;
 }
 
+/* Text selection */
 ::selection {
-  background: #E8A33D;
-  color: #1B1A2E;
+  background: var(--bazaa-amber);
+  color: var(--bazaa-ink);
 }
 
+/* Remove mobile tap flash */
 button,
 a,
 input,
@@ -46,48 +50,79 @@ textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Smooth interactions */
 button,
 a {
   transition: all 160ms ease;
 }
 
+/* Keyboard accessibility */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #E8A33D;
+  outline: 2px solid var(--bazaa-amber);
   outline-offset: 2px;
 }
 
+/* =========================
+   BAZAA COMPONENT STYLES
+   ========================= */
+
 @layer components {
+
+  /* Cards */
   .bazaa-card {
     @apply rounded-card border border-line bg-white shadow-card;
   }
 
+  /* Main button */
   .bazaa-primary {
-    @apply inline-flex items-center justify-center rounded-bazaa
-      bg-amber px-4 py-2.5 font-semibold text-ink
-      transition-colors hover:bg-amberDeep;
+    @apply inline-flex items-center justify-center
+      rounded-bazaa
+      bg-amber
+      px-4 py-2.5
+      font-semibold
+      text-ink
+      transition-colors
+      hover:bg-amberDeep;
   }
 
+  /* Secondary button */
   .bazaa-secondary {
-    @apply inline-flex items-center justify-center rounded-bazaa
-      border border-line bg-white px-4 py-2.5
-      font-semibold text-ink transition-colors hover:bg-paper;
+    @apply inline-flex items-center justify-center
+      rounded-bazaa
+      border border-line
+      bg-white
+      px-4 py-2.5
+      font-semibold
+      text-ink
+      transition-colors
+      hover:bg-paper;
   }
 
+  /* Inputs */
   .bazaa-input {
-    @apply w-full rounded-bazaa border border-line bg-white
-      px-4 py-3 text-ink placeholder:text-mutedLight
-      focus:border-amber focus:outline-none
-      focus:ring-2 focus:ring-amber/20;
+    @apply w-full
+      rounded-bazaa
+      border border-line
+      bg-white
+      px-4 py-3
+      text-ink
+      placeholder:text-mutedLight
+      focus:border-amber
+      focus:outline-none
+      focus:ring-2
+      focus:ring-amber/20;
   }
 
+  /* Muted text */
   .bazaa-muted {
     @apply text-sm text-muted;
   }
 
+  /* Main headings */
   .bazaa-title {
     @apply font-serif font-bold tracking-tight text-ink;
   }
