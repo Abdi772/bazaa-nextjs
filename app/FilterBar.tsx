@@ -822,5 +822,66 @@ export default function FilterBar({
                 }}
                 className={row}
               >
-                <span className="font-semibold text-amberDeep">
+                 
+                  <span className="font-semibold text-amberDeep">
+  All {modelBrand} models
+</span>
+</button>
+)}
+
+{filteredModels.length > 0 && (
+  <>
+    <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
+      {modelBrand} models
+    </div>
+
+    {filteredModels.map((model) => (
+      <button
+        key={model}
+        type="button"
+        onClick={() => chooseModel(model)}
+        className={row}
+      >
+        <span
+          className={
+            model === currentModel
+              ? 'font-bold text-amberDeep'
+              : 'text-ink'
+          }
+        >
+          {model}
+        </span>
+
+        {model === currentModel && (
+          <span className="font-bold text-amberDeep">
+            ✓
+          </span>
+        )}
+      </button>
+    ))}
+  </>
+)}
+
+{filteredModels.length === 0 && (
+  <div className="px-6 py-16 text-center">
+    <div className="mb-2 text-2xl">
+      ⌕
+    </div>
+
+    <div className="font-semibold text-ink">
+      No model found
+    </div>
+
+    <div className="mt-1 text-sm text-muted">
+      Try another model name.
+    </div>
+  </div>
+)}
+</div>
+</div>
+)}
+
+</div>
+);
+          }
           
