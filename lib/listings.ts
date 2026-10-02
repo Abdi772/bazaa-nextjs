@@ -138,3 +138,22 @@ export function idFromSlug(slug: string): number | null {
   const match = slug.match(/(\d+)$/);
   return match ? parseInt(match[1], 10) : null;
   }
+
+export async function getBrandCounts(
+  category: string,
+  subcategory: string
+): Promise<Record<string, number>> {
+  const db = serverClient();
+  const { data, error } = await db
+    .from('listings')
+    .select('brand')
+    .eq('category', category)
+    .eq('subcategory', subcategory)
+    .or('status.is.null,status.neq.sold');
+  if (error || !data) return {};
+  const counts: Record<string, number> = {};
+  for (const row of data as { brand: string | null }[]) {
+    if (row.brand) counts[row.brand] = (counts[row.brand] || 0) + 1;
+  }
+  return counts;
+}
