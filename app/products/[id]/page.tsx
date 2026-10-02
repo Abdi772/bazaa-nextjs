@@ -9,6 +9,7 @@ import OwnerActions from './OwnerActions';
 import ReportButton from '../../ReportButton';
 import FavoriteButton from '../../FavoriteButton';
 import ChatButton from '../../ChatButton';
+import ListingActions from '../../ListingActions';
 
 type Props = { params: { id: string } };
 
@@ -58,9 +59,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Link href="/" className="text-sm text-muted underline">
-        ← Back
-      </Link>
+      <ListingActions listingId={listing.id} title={listing.title} />
 
       {images.length > 0 && <Gallery images={images} title={listing.title} />}
 
