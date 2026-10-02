@@ -17,10 +17,16 @@ export default function AuthButton() {
   const [notice, setNotice] = useState('');
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
     });
+
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
     return () => sub.subscription.unsubscribe();
   }, []);
 
@@ -29,6 +35,7 @@ export default function AuthButton() {
       setIsAdmin(false);
       return;
     }
+
     supabase
       .from('admins')
       .select('user_id')
@@ -58,56 +65,73 @@ export default function AuthButton() {
     setNotice('');
 
     if (mode === 'login') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
       if (error) setError(error.message);
       else close();
     } else {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin },
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
       });
+
       if (error) {
         setError(error.message);
       } else if (data.user && !data.session) {
-        setNotice('Account created! Check ' + email + ' for a confirmation link, then come back and log in.');
+        setNotice(
+          'Account created! Check ' +
+            email +
+            ' for a confirmation link, then come back and log in.'
+        );
         setMode('login');
         setPassword('');
       } else {
         close();
       }
     }
+
     setBusy(false);
   }
 
   if (user) {
     return (
       <div className="flex items-center gap-2 text-xs sm:text-sm">
-        {/* Post listing and Saved are in the bottom bar on phones */}
         <Link
           href="/post"
-          className="hidden md:inline-block bg-amber text-ink font-semibold rounded-md px-2.5 py-1.5"
+          className="hidden rounded-bazaa bg-amber px-3 py-2 font-semibold text-ink transition-colors hover:bg-amberDeep md:inline-flex"
         >
           + Post listing
         </Link>
+
         <Link
           href="/favorites"
-          className="hidden md:inline-block border border-white/30 rounded-md px-2.5 py-1.5"
+          className="hidden rounded-bazaa border border-white/20 bg-white/5 px-3 py-2 font-medium text-paper transition-colors hover:bg-white/10 md:inline-flex"
         >
           ♥ Saved
         </Link>
+
         {isAdmin && (
           <Link
             href="/admin"
-            className="border border-white/30 rounded-md px-2.5 py-1.5"
+            className="rounded-bazaa border border-amber/50 px-3 py-2 font-medium text-paper transition-colors hover:border-amber hover:bg-white/5"
           >
             Admin
           </Link>
         )}
-        <span className="hidden md:inline opacity-80 truncate max-w-[180px]">{user.email}</span>
+
+        <span className="hidden max-w-[180px] truncate text-paper/70 md:inline">
+          {user.email}
+        </span>
+
         <button
           onClick={() => supabase.auth.signOut()}
-          className="border border-white/30 rounded-md px-2.5 py-1.5"
+          className="rounded-bazaa border border-white/20 px-3 py-2 font-medium text-paper transition-colors hover:bg-white/10"
         >
           Log out
         </button>
@@ -119,42 +143,59 @@ export default function AuthButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="bg-amber text-ink font-semibold rounded-md px-3 py-1.5 text-sm"
+        className="rounded-bazaa bg-amber px-3.5 py-2 font-semibold text-ink transition-colors hover:bg-amberDeep"
       >
         Log in / Sign up
       </button>
 
       {open && (
         <div
-          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm"
           onClick={close}
         >
           <div
-            className="bg-white text-gray-900 rounded-xl w-full max-w-sm p-5"
+            className="w-full max-w-sm rounded-card border border-line bg-white p-5 text-ink shadow-soft"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex gap-2 mb-4">
+            <div className="mb-5">
+              <h2 className="bazaa-title text-xl">Welcome to Bazaa</h2>
+              <p className="mt-1 text-sm text-muted">
+                Sign in or create your account to continue.
+              </p>
+            </div>
+
+            <div className="mb-5 flex rounded-bazaa bg-paper p-1">
               <button
                 onClick={() => switchMode('login')}
-                className={'flex-1 py-2 rounded-md text-sm font-semibold ' + (mode === 'login' ? 'bg-ink text-white' : 'bg-gray-100')}
+                className={`flex-1 rounded-[10px] py-2 text-sm font-semibold transition-colors ${
+                  mode === 'login'
+                    ? 'bg-ink text-paper shadow-sm'
+                    : 'text-muted hover:text-ink'
+                }`}
               >
                 Log in
               </button>
+
               <button
                 onClick={() => switchMode('signup')}
-                className={'flex-1 py-2 rounded-md text-sm font-semibold ' + (mode === 'signup' ? 'bg-ink text-white' : 'bg-gray-100')}
+                className={`flex-1 rounded-[10px] py-2 text-sm font-semibold transition-colors ${
+                  mode === 'signup'
+                    ? 'bg-ink text-paper shadow-sm'
+                    : 'text-muted hover:text-ink'
+                }`}
               >
                 Sign up
               </button>
             </div>
 
             {error && (
-              <div className="mb-3 text-sm bg-red-50 border border-red-200 text-red-700 rounded-md p-2">
+              <div className="mb-4 rounded-bazaa border border-red-200 bg-red-50 p-3 text-sm text-red-700">
                 {error}
               </div>
             )}
+
             {notice && (
-              <div className="mb-3 text-sm bg-green-50 border border-green-200 text-green-800 rounded-md p-2">
+              <div className="mb-4 rounded-bazaa border border-green-200 bg-greenSoft p-3 text-sm text-green">
                 {notice}
               </div>
             )}
@@ -166,8 +207,9 @@ export default function AuthButton() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className="bazaa-input"
               />
+
               <input
                 type="password"
                 required
@@ -175,19 +217,31 @@ export default function AuthButton() {
                 placeholder="At least 6 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className="bazaa-input"
               />
+
               <button
                 type="submit"
                 disabled={busy}
-                className="w-full bg-amber text-ink font-semibold rounded-md py-2 text-sm disabled:opacity-60"
+                className="bazaa-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {busy ? 'Please wait...' : mode === 'login' ? 'Log in' : 'Sign up'}
+                {busy
+                  ? 'Please wait...'
+                  : mode === 'login'
+                    ? 'Log in'
+                    : 'Sign up'}
               </button>
             </form>
+
+            <button
+              onClick={close}
+              className="mt-3 w-full py-2 text-sm font-medium text-muted transition-colors hover:text-ink"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
     </>
   );
-       }
+}
