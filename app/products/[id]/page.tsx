@@ -8,6 +8,7 @@ import Gallery from './Gallery';
 import OwnerActions from './OwnerActions';
 import ReportButton from '../../ReportButton';
 import FavoriteButton from '../../FavoriteButton';
+import ChatButton from '../../ChatButton';
 
 type Props = { params: { id: string } };
 
@@ -101,6 +102,8 @@ export default async function ProductPage({ params }: Props) {
         </Link>
       )}
 
+      <ChatButton listingId={listing.id} sellerId={sellerId} />
+
       {listing.phone && (
         <div className="flex gap-2 mb-2">
           <a href={`tel:${listing.phone.replace(/\s+/g, '')}`} className="flex-1 text-center bg-green text-white rounded py-3 text-sm font-semibold">
@@ -162,4 +165,4 @@ export default async function ProductPage({ params }: Props) {
       )}
     </div>
   );
-       }
+}
