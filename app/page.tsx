@@ -29,6 +29,8 @@ export default async function HomePage({
     region?: string;
     minPrice?: string;
     maxPrice?: string;
+    condition?: string;
+    sort?: string;
   };
 }) {
   const query = searchParams.q || '';
@@ -39,6 +41,8 @@ export default async function HomePage({
   const region = searchParams.region || '';
   const minPrice = searchParams.minPrice || '';
   const maxPrice = searchParams.maxPrice || '';
+  const condition = searchParams.condition || '';
+  const sort = searchParams.sort || '';
 
   const categoryConfig = category ? CATEGORY_CONFIG[category] : undefined;
   const subNames = categoryConfig ? Object.keys(categoryConfig.subcategories) : [];
@@ -63,6 +67,8 @@ export default async function HomePage({
           subcategory,
           brand,
           region,
+          condition,
+          sort,
           minPrice: minPrice ? Number(minPrice) : undefined,
           maxPrice: maxPrice ? Number(maxPrice) : undefined,
           limit: 24,
@@ -234,16 +240,20 @@ export default async function HomePage({
           </div>
         )}
 
-        {/* Listings */}
+        {/* Filters */}
         {showListings && (
           <FilterBar
             region={region}
             minPrice={minPrice}
             maxPrice={maxPrice}
             brand={brand}
+            condition={condition}
+            sort={sort}
             availableBrands={brandNames}
           />
         )}
+
+        {/* Listings */}
         {showListings &&
           (listings.length === 0 ? (
             <div className="text-center py-16 text-muted">
@@ -287,4 +297,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-             }
+        }
