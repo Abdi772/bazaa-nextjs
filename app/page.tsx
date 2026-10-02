@@ -4,6 +4,7 @@ import { getListings, getCategoryCounts, getSubcategoryCounts, listingSlug } fro
 import { CATEGORY_CONFIG, subcategoryImage } from '@/lib/categories';
 import { getBrandLogo } from '@/lib/brandLogos';
 import CategorySidebar from './CategorySidebar';
+import FilterBar from './FilterBar';
 
 export const revalidate = 60; // re-fetch fresh data at most once a minute
 
@@ -233,6 +234,17 @@ export default async function HomePage({
           </div>
         )}
 
+        {/* Filters */}
+        {showListings && (
+          <FilterBar
+            region={region}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            brand={brand}
+            availableBrands={brandNames}
+          />
+        )}
+
         {/* Listings */}
         {showListings &&
           (listings.length === 0 ? (
@@ -277,4 +289,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-}
+            }
