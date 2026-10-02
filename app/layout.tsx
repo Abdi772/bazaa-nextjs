@@ -5,6 +5,7 @@ import './globals.css';
 import AuthButton from './AuthButton';
 import BottomNav from './BottomNav';
 import BackButton from './BackButton';
+import ThemeButton from './ThemeButton';
 
 export const metadata: Metadata = {
   title: 'Bazaa — Buy & Sell Marketplace',
@@ -36,7 +37,10 @@ export default function RootLayout({
               </Link>
             </div>
 
-            <AuthButton />
+            <div className="flex items-center gap-2">
+              <ThemeButton />
+              <AuthButton />
+            </div>
 
           </div>
         </header>
