@@ -8,22 +8,37 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        /* =================================================
+           BAZAA CORE THEME
+           ================================================= */
+
         ink: '#1B1A2E',
-        paper: '#FBF9F5',
+
+        /* Page background */
+        paper: '#F3EFE7',
+
+        /* Card / surface */
         white: '#FFFFFF',
+        surface: '#FFFFFF',
+        surfaceSoft: '#FAF7F0',
 
-        amber: '#E8A33D',
-        amberDeep: '#C77F1F',
-        amberSoft: '#FFF5E3',
+        /* Primary brand / buttons */
+        amber: '#D8891F',
+        amberDeep: '#B96F16',
+        amberSoft: '#FFF0D5',
 
-        line: '#E4E0D6',
+        /* Borders */
+        line: '#DDD6C9',
 
+        /* Text */
         muted: '#6E6A63',
         mutedLight: '#8A857D',
 
+        /* Success */
         green: '#2F7A4F',
         greenSoft: '#EAF5EE',
 
+        /* Danger */
         danger: '#B94A48',
         dangerSoft: '#FBEDEC',
       },
