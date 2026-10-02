@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -39,12 +39,18 @@ export type ListingFilters = {
   condition?: string;
   minPrice?: number;
   maxPrice?: number;
+  sort?: string; // '' = newest first, 'price_asc', 'price_desc'
   limit?: number;
 };
 
 export async function getListings(filters: ListingFilters = {}): Promise<Listing[]> {
   const db = serverClient();
-  let q = db.from('listings').select('*').order('created_at', { ascending: false });
+
+  const byPrice = filters.sort === 'price_asc' || filters.sort === 'price_desc';
+  let q = db
+    .from('listings')
+    .select('*')
+    .order(byPrice ? 'price' : 'created_at', { ascending: filters.sort === 'price_asc' });
 
   if (filters.category) q = q.eq('category', filters.category);
   if (filters.subcategory) q = q.eq('subcategory', filters.subcategory);
@@ -131,4 +137,4 @@ export function listingSlug(listing: Pick<Listing, 'id' | 'title'>): string {
 export function idFromSlug(slug: string): number | null {
   const match = slug.match(/(\d+)$/);
   return match ? parseInt(match[1], 10) : null;
-} 
+  }
