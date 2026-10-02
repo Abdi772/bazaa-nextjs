@@ -2,24 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================
+   BAZAA GLOBAL THEME
+   Change these values to control the visual identity.
+   ========================================================= */
+
 :root {
+  /* Main surfaces */
+  --bazaa-background: #F3EFE7;
+  --bazaa-surface: #FFFFFF;
+  --bazaa-surface-soft: #FAF7F0;
+
+  /* Brand */
   --bazaa-ink: #1B1A2E;
-  --bazaa-paper: #FBF9F5;
-  --bazaa-amber: #E8A33D;
-  --bazaa-amber-deep: #C77F1F;
-  --bazaa-line: #E4E0D6;
+  --bazaa-primary: #D8891F;
+  --bazaa-primary-hover: #B96F16;
+  --bazaa-primary-soft: #FFF0D5;
+
+  /* Text */
+  --bazaa-text: #1B1A2E;
   --bazaa-muted: #6E6A63;
+  --bazaa-muted-light: #8A857D;
+
+  /* Borders */
+  --bazaa-border: #DDD6C9;
+
+  /* Status */
+  --bazaa-success: #2F7A4F;
+  --bazaa-success-soft: #EAF5EE;
+
+  --bazaa-danger: #B94A48;
+  --bazaa-danger-soft: #FBEDEC;
+
+  /* Focus */
+  --bazaa-focus: #D8891F;
 }
 
-/* Page */
+/* =========================================================
+   PAGE
+   ========================================================= */
+
 html {
-  background: var(--bazaa-paper);
+  background: var(--bazaa-background);
 }
 
 body {
   margin: 0;
-  background: var(--bazaa-paper);
-  color: var(--bazaa-ink);
+  background: var(--bazaa-background);
+  color: var(--bazaa-text);
+
   font-family:
     Inter,
     ui-sans-serif,
@@ -30,18 +61,19 @@ body {
     sans-serif;
 }
 
-/* Better box sizing */
+/* =========================================================
+   GLOBAL BASICS
+   ========================================================= */
+
 * {
   box-sizing: border-box;
 }
 
-/* Text selection */
 ::selection {
-  background: var(--bazaa-amber);
-  color: var(--bazaa-ink);
+  background: var(--bazaa-primary);
+  color: #FFFFFF;
 }
 
-/* Remove mobile tap flash */
 button,
 a,
 input,
@@ -50,80 +82,247 @@ textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Smooth interactions */
 button,
 a {
-  transition: all 160ms ease;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 
-/* Keyboard accessibility */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--bazaa-amber);
+  outline: 2px solid var(--bazaa-focus);
   outline-offset: 2px;
 }
 
-/* =========================
+/* =========================================================
    BAZAA COMPONENT STYLES
-   ========================= */
+   ========================================================= */
 
 @layer components {
 
-  /* Cards */
+  /* -------------------------------------------------------
+     CARD
+     White card clearly separated from beige page.
+     ------------------------------------------------------- */
+
   .bazaa-card {
-    @apply rounded-card border border-line bg-white shadow-card;
+    @apply rounded-card;
+
+    background: var(--bazaa-surface);
+    border: 1px solid var(--bazaa-border);
+    box-shadow: 0 2px 10px rgba(27, 26, 46, 0.05);
   }
 
-  /* Main button */
+  /* -------------------------------------------------------
+     PRIMARY BUTTON
+     Strongly different from the page background.
+     ------------------------------------------------------- */
+
   .bazaa-primary {
-    @apply inline-flex items-center justify-center
-      rounded-bazaa
-      bg-amber
-      px-4 py-2.5
-      font-semibold
-      text-ink
-      transition-colors
-      hover:bg-amberDeep;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: var(--bazaa-primary);
+    color: #FFFFFF;
+
+    padding: 10px 16px;
+
+    font-weight: 600;
+
+    box-shadow:
+      0 2px 6px rgba(185, 111, 22, 0.18);
   }
 
-  /* Secondary button */
+  .bazaa-primary:hover {
+    background: var(--bazaa-primary-hover);
+    box-shadow:
+      0 4px 10px rgba(185, 111, 22, 0.24);
+  }
+
+  .bazaa-primary:active {
+    transform: translateY(1px);
+  }
+
+  /* -------------------------------------------------------
+     SECONDARY BUTTON
+     ------------------------------------------------------- */
+
   .bazaa-secondary {
-    @apply inline-flex items-center justify-center
-      rounded-bazaa
-      border border-line
-      bg-white
-      px-4 py-2.5
-      font-semibold
-      text-ink
-      transition-colors
-      hover:bg-paper;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    border: 1px solid var(--bazaa-border);
+    background: var(--bazaa-surface);
+    color: var(--bazaa-text);
+
+    padding: 10px 16px;
+
+    font-weight: 600;
   }
 
-  /* Inputs */
+  .bazaa-secondary:hover {
+    background: var(--bazaa-surface-soft);
+    border-color: #CFC6B7;
+  }
+
+  /* -------------------------------------------------------
+     INPUT
+     ------------------------------------------------------- */
+
   .bazaa-input {
-    @apply w-full
-      rounded-bazaa
-      border border-line
-      bg-white
-      px-4 py-3
-      text-ink
-      placeholder:text-mutedLight
-      focus:border-amber
-      focus:outline-none
-      focus:ring-2
-      focus:ring-amber/20;
+    width: 100%;
+
+    border-radius: 14px;
+    border: 1px solid var(--bazaa-border);
+
+    background: var(--bazaa-surface);
+    color: var(--bazaa-text);
+
+    padding: 12px 16px;
   }
 
-  /* Muted text */
+  .bazaa-input::placeholder {
+    color: var(--bazaa-muted-light);
+  }
+
+  .bazaa-input:focus {
+    border-color: var(--bazaa-primary);
+    outline: none;
+
+    box-shadow:
+      0 0 0 3px rgba(216, 137, 31, 0.15);
+  }
+
+  /* -------------------------------------------------------
+     MUTED TEXT
+     ------------------------------------------------------- */
+
   .bazaa-muted {
-    @apply text-sm text-muted;
+    color: var(--bazaa-muted);
+    font-size: 0.875rem;
   }
 
-  /* Main headings */
+  /* -------------------------------------------------------
+     MAIN TITLE
+     ------------------------------------------------------- */
+
   .bazaa-title {
-    @apply font-serif font-bold tracking-tight text-ink;
+    @apply font-serif font-bold tracking-tight;
+
+    color: var(--bazaa-text);
   }
+
+  /* -------------------------------------------------------
+     SOFT BRAND AREA
+     ------------------------------------------------------- */
+
+  .bazaa-soft {
+    background: var(--bazaa-primary-soft);
+  }
+
+  /* -------------------------------------------------------
+     DANGER BUTTON
+     ------------------------------------------------------- */
+
+  .bazaa-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    border: 1px solid rgba(185, 74, 72, 0.25);
+    background: var(--bazaa-danger-soft);
+    color: var(--bazaa-danger);
+
+    padding: 10px 16px;
+
+    font-weight: 600;
+  }
+
+  .bazaa-danger:hover {
+    background: #F8E3E2;
+  }
+}
+
+/* =========================================================
+   GLOBAL THEME UTILITY CLASSES
+   These let us control the same visual system everywhere.
+   ========================================================= */
+
+.bazaa-page {
+  background: var(--bazaa-background);
+  color: var(--bazaa-text);
+}
+
+.bazaa-surface {
+  background: var(--bazaa-surface);
+}
+
+.bazaa-primary-bg {
+  background: var(--bazaa-primary);
+  color: #FFFFFF;
+}
+
+.bazaa-primary-bg:hover {
+  background: var(--bazaa-primary-hover);
+}
+
+.bazaa-soft-bg {
+  background: var(--bazaa-primary-soft);
+}
+
+.bazaa-border {
+  border-color: var(--bazaa-border);
+}
+
+.bazaa-text {
+  color: var(--bazaa-text);
+}
+
+.bazaa-muted-text {
+  color: var(--bazaa-muted);
+}
+
+/* =========================================================
+   THEME CONTROL FOUNDATION
+   Later we can connect a Theme button to these variables.
+   ========================================================= */
+
+[data-bazaa-theme="light"] {
+  --bazaa-background: #F3EFE7;
+  --bazaa-surface: #FFFFFF;
+  --bazaa-surface-soft: #FAF7F0;
+  --bazaa-primary: #D8891F;
+  --bazaa-primary-hover: #B96F16;
+  --bazaa-primary-soft: #FFF0D5;
+  --bazaa-text: #1B1A2E;
+  --bazaa-muted: #6E6A63;
+  --bazaa-border: #DDD6C9;
+}
+
+/* Future alternative theme */
+[data-bazaa-theme="dark"] {
+  --bazaa-background: #14131D;
+  --bazaa-surface: #201F2B;
+  --bazaa-surface-soft: #292735;
+  --bazaa-primary: #E5A33B;
+  --bazaa-primary-hover: #C77F1F;
+  --bazaa-primary-soft: #382C1D;
+  --bazaa-text: #F8F5EE;
+  --bazaa-muted: #B8B2A8;
+  --bazaa-border: #3A3745;
 }
