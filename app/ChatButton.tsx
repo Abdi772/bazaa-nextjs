@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -74,4 +74,4 @@ export default function ChatButton({
       {error && <p className="text-red-600 text-xs mt-1">{error}</p>}
     </div>
   );
-}
+        }
