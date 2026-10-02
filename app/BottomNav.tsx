@@ -9,8 +9,8 @@ const ICON = {
   strokeWidth: 2,
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
-  width: 24,
-  height: 24,
+  width: 22,
+  height: 22,
   viewBox: '0 0 24 24',
 };
 
@@ -70,25 +70,39 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-line flex md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 backdrop-blur md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      {ITEMS.map((item) => {
-        const active =
-          item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-xs font-semibold ${
-              active ? 'text-amberDeep' : 'text-muted'
-            }`}
-          >
-            {item.icon}
-            {item.label}
-          </Link>
-        );
-      })}
+      <div className="mx-auto flex max-w-5xl">
+        {ITEMS.map((item) => {
+          const active =
+            item.href === '/'
+              ? pathname === '/'
+              : pathname.startsWith(item.href);
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[11px] transition-colors ${
+                active
+                  ? 'font-semibold text-amberDeep'
+                  : 'font-medium text-muted hover:text-ink'
+              }`}
+            >
+              <span
+                className={`flex h-8 w-10 items-center justify-center rounded-full transition-colors ${
+                  active ? 'bg-amberSoft' : 'bg-transparent'
+                }`}
+              >
+                {item.icon}
+              </span>
+
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }
