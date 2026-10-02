@@ -1,10 +1,9 @@
  import Link from 'next/link';
 import Image from 'next/image';
 import { getListings, getCategoryCounts, getSubcategoryCounts, listingSlug } from '@/lib/listings';
-import { CATEGORY_CONFIG, subcategoryImage } from '@/lib/categories';
+import { CATEGORY_CONFIG } from '@/lib/categories';
 import { getBrandLogo } from '@/lib/brandLogos';
 import CategorySidebar from './CategorySidebar';
-import FilterBar from './FilterBar';
 
 export const revalidate = 60; // re-fetch fresh data at most once a minute
 
@@ -15,6 +14,12 @@ function buildUrl(category?: string, subcategory?: string, brand?: string) {
   if (brand) params.set('brand', brand);
   const qs = params.toString();
   return qs ? `/?${qs}` : '/';
+}
+
+// "Computers & Tablets" -> "/subcategories/computers-tablets.jpg"
+function subImage(name: string) {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return `/subcategories/${slug}.jpg`;
 }
 
 export default async function HomePage({
@@ -128,13 +133,13 @@ export default async function HomePage({
                   href={buildUrl(name)}
                   className="bg-white border border-line rounded-lg overflow-hidden text-center hover:shadow-md transition-shadow"
                 >
-                  <div className="relative aspect-square bg-white">
+                  <div className="relative aspect-square bg-[#E8EEF5]">
                     <Image
                       src={`/categories/${name.toLowerCase()}.jpg`}
                       alt={name}
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
-                      className="object-cover"
+                      className="object-cover mix-blend-multiply"
                     />
                   </div>
                   <div className="p-2">
@@ -169,35 +174,30 @@ export default async function HomePage({
         {/* Step 2: sub-category list (with pictures) */}
         {showSubList && categoryConfig && (
           <div className="bg-white border border-line rounded-lg divide-y divide-line mb-6">
-            {subNames.map((subName) => {
-              const img = subcategoryImage(subName);
-              return (
-                <Link
-                  key={subName}
-                  href={buildUrl(category, subName)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-amber/10"
-                >
-                  <div className="relative h-14 w-14 shrink-0 rounded-lg overflow-hidden bg-[#EDE7D9] flex items-center justify-center">
-                    {img ? (
-                      <Image
-                        src={img}
-                        alt={subName}
-                        fill
-                        sizes="56px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <span className="text-2xl">{categoryConfig.icon}</span>
-                    )}
-                  </div>
-                  <span className="flex-1 min-w-0">
-                    <span className="block text-base font-semibold">{subName}</span>
-                    <span className="block text-xs text-muted">{subCounts[subName] || 0} ads</span>
+            {subNames.map((subName) => (
+              <Link
+                key={subName}
+                href={buildUrl(category, subName)}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-amber/10"
+              >
+                <div className="relative h-14 w-14 shrink-0 rounded-lg overflow-hidden bg-[#E8EEF5]">
+                  <Image
+                    src={subImage(subName)}
+                    alt=""
+                    fill
+                    sizes="56px"
+                    className="object-cover"
+                  />
+                </div>
+                <span className="flex-1 min-w-0">
+                  <span className="block text-base font-semibold">{subName}</span>
+                  <span className="block text-xs text-muted">
+                    {subCounts[subName] || 0} {(subCounts[subName] || 0) === 1 ? 'ad' : 'ads'}
                   </span>
-                  <span className="text-muted">›</span>
-                </Link>
-              );
-            })}
+                </span>
+                <span className="text-muted">›</span>
+              </Link>
+            ))}
             <Link
               href={`${buildUrl(category)}&all=1`}
               className="flex items-center justify-between px-4 py-4 hover:bg-amber/10"
@@ -235,15 +235,6 @@ export default async function HomePage({
         )}
 
         {/* Listings */}
-        {showListings && (
-          <FilterBar
-            region={region}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            brand={brand}
-            availableBrands={brandNames}
-          />
-        )}
         {showListings &&
           (listings.length === 0 ? (
             <div className="text-center py-16 text-muted">
@@ -258,7 +249,7 @@ export default async function HomePage({
                   href={`/products/${listingSlug(listing)}`}
                   className="bg-white border border-line rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                 >
-                  <div className="aspect-[4/3] bg-[#EDE7D9] flex items-center justify-center relative">
+                  <div className="aspect-[4/3] bg-[#E8EEF5] flex items-center justify-center relative border-b border-line">
                     {listing.image_url ? (
                       <Image
                         src={listing.image_url}
@@ -287,4 +278,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-}
+               }
