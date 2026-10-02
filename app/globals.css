@@ -24,8 +24,9 @@
   --bazaa-muted: #6E6A63;
   --bazaa-muted-light: #8A857D;
 
-  /* Borders */
-  --bazaa-border: #DDD6C9;
+  /* Borders / separators */
+  --bazaa-border: #D2C9BB;
+  --bazaa-divider: #C9C0B2;
 
   /* Status */
   --bazaa-success: #2F7A4F;
@@ -37,6 +38,7 @@
   /* Focus */
   --bazaa-focus: #D8891F;
 }
+
 
 /* =========================================================
    PAGE
@@ -60,6 +62,7 @@ body {
     "Segoe UI",
     sans-serif;
 }
+
 
 /* =========================================================
    GLOBAL BASICS
@@ -101,6 +104,41 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
+
+/* =========================================================
+   GLOBAL SEPARATORS
+   ========================================================= */
+
+/*
+   Tailwind's border-line class now follows the active
+   Bazaa theme instead of staying fixed.
+*/
+
+.border-line {
+  border-color: var(--bazaa-border) !important;
+  border-width: 1.5px;
+}
+
+/*
+   Slightly stronger standard divider.
+   Use this anywhere we want a clean section separator.
+*/
+
+.bazaa-divider {
+  border-color: var(--bazaa-divider);
+  border-width: 1.5px;
+}
+
+/*
+   Horizontal rules automatically use the theme.
+*/
+
+hr {
+  border: 0;
+  border-top: 1.5px solid var(--bazaa-divider);
+}
+
+
 /* =========================================================
    BAZAA COMPONENT STYLES
    ========================================================= */
@@ -109,20 +147,23 @@ textarea:focus-visible {
 
   /* -------------------------------------------------------
      CARD
-     White card clearly separated from beige page.
+     Clear separation from page background.
      ------------------------------------------------------- */
 
   .bazaa-card {
     @apply rounded-card;
 
     background: var(--bazaa-surface);
-    border: 1px solid var(--bazaa-border);
-    box-shadow: 0 2px 10px rgba(27, 26, 46, 0.05);
+
+    border: 1.5px solid var(--bazaa-border);
+
+    box-shadow:
+      0 2px 10px rgba(27, 26, 46, 0.05);
   }
+
 
   /* -------------------------------------------------------
      PRIMARY BUTTON
-     Strongly different from the page background.
      ------------------------------------------------------- */
 
   .bazaa-primary {
@@ -139,12 +180,15 @@ textarea:focus-visible {
 
     font-weight: 600;
 
+    border: 1.5px solid transparent;
+
     box-shadow:
       0 2px 6px rgba(185, 111, 22, 0.18);
   }
 
   .bazaa-primary:hover {
     background: var(--bazaa-primary-hover);
+
     box-shadow:
       0 4px 10px rgba(185, 111, 22, 0.24);
   }
@@ -152,6 +196,7 @@ textarea:focus-visible {
   .bazaa-primary:active {
     transform: translateY(1px);
   }
+
 
   /* -------------------------------------------------------
      SECONDARY BUTTON
@@ -164,7 +209,8 @@ textarea:focus-visible {
 
     border-radius: 14px;
 
-    border: 1px solid var(--bazaa-border);
+    border: 1.5px solid var(--bazaa-border);
+
     background: var(--bazaa-surface);
     color: var(--bazaa-text);
 
@@ -175,8 +221,9 @@ textarea:focus-visible {
 
   .bazaa-secondary:hover {
     background: var(--bazaa-surface-soft);
-    border-color: #CFC6B7;
+    border-color: var(--bazaa-divider);
   }
+
 
   /* -------------------------------------------------------
      INPUT
@@ -186,7 +233,8 @@ textarea:focus-visible {
     width: 100%;
 
     border-radius: 14px;
-    border: 1px solid var(--bazaa-border);
+
+    border: 1.5px solid var(--bazaa-border);
 
     background: var(--bazaa-surface);
     color: var(--bazaa-text);
@@ -200,11 +248,13 @@ textarea:focus-visible {
 
   .bazaa-input:focus {
     border-color: var(--bazaa-primary);
+
     outline: none;
 
     box-shadow:
       0 0 0 3px rgba(216, 137, 31, 0.15);
   }
+
 
   /* -------------------------------------------------------
      MUTED TEXT
@@ -214,6 +264,7 @@ textarea:focus-visible {
     color: var(--bazaa-muted);
     font-size: 0.875rem;
   }
+
 
   /* -------------------------------------------------------
      MAIN TITLE
@@ -225,6 +276,7 @@ textarea:focus-visible {
     color: var(--bazaa-text);
   }
 
+
   /* -------------------------------------------------------
      SOFT BRAND AREA
      ------------------------------------------------------- */
@@ -232,6 +284,7 @@ textarea:focus-visible {
   .bazaa-soft {
     background: var(--bazaa-primary-soft);
   }
+
 
   /* -------------------------------------------------------
      DANGER BUTTON
@@ -244,7 +297,8 @@ textarea:focus-visible {
 
     border-radius: 14px;
 
-    border: 1px solid rgba(185, 74, 72, 0.25);
+    border: 1.5px solid rgba(185, 74, 72, 0.30);
+
     background: var(--bazaa-danger-soft);
     color: var(--bazaa-danger);
 
@@ -258,9 +312,9 @@ textarea:focus-visible {
   }
 }
 
+
 /* =========================================================
    GLOBAL THEME UTILITY CLASSES
-   These let us control the same visual system everywhere.
    ========================================================= */
 
 .bazaa-page {
@@ -297,32 +351,47 @@ textarea:focus-visible {
   color: var(--bazaa-muted);
 }
 
+
 /* =========================================================
    THEME CONTROL FOUNDATION
-   Later we can connect a Theme button to these variables.
    ========================================================= */
 
 [data-bazaa-theme="light"] {
   --bazaa-background: #F3EFE7;
+
   --bazaa-surface: #FFFFFF;
   --bazaa-surface-soft: #FAF7F0;
+
   --bazaa-primary: #D8891F;
   --bazaa-primary-hover: #B96F16;
   --bazaa-primary-soft: #FFF0D5;
+
   --bazaa-text: #1B1A2E;
   --bazaa-muted: #6E6A63;
-  --bazaa-border: #DDD6C9;
+
+  --bazaa-border: #D2C9BB;
+  --bazaa-divider: #C9C0B2;
 }
 
-/* Future alternative theme */
+
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
 [data-bazaa-theme="dark"] {
   --bazaa-background: #14131D;
+
   --bazaa-surface: #201F2B;
   --bazaa-surface-soft: #292735;
+
   --bazaa-primary: #E5A33B;
   --bazaa-primary-hover: #C77F1F;
   --bazaa-primary-soft: #382C1D;
+
   --bazaa-text: #F8F5EE;
   --bazaa-muted: #B8B2A8;
-  --bazaa-border: #3A3745;
+
+  /* More visible separators in dark mode */
+  --bazaa-border: #4A4758;
+  --bazaa-divider: #555163;
 }
