@@ -1,6 +1,12 @@
  import Link from 'next/link';
 import Image from 'next/image';
-import { getListings, getCategoryCounts, getSubcategoryCounts, listingSlug } from '@/lib/listings';
+import {
+  getListings,
+  getCategoryCounts,
+  getSubcategoryCounts,
+  getBrandCounts,
+  listingSlug,
+} from '@/lib/listings';
 import { CATEGORY_CONFIG, subcategoryImage } from '@/lib/categories';
 import { getBrandLogo } from '@/lib/brandLogos';
 import CategorySidebar from './CategorySidebar';
@@ -55,7 +61,7 @@ export default async function HomePage({
   // Listings are shown on home and from step 3 onwards
   const showListings = !showSubList;
 
-  const [listings, counts, subCounts] = await Promise.all([
+  const [listings, counts, subCounts, brandCounts] = await Promise.all([
     showListings
       ? getListings({
           query,
@@ -69,8 +75,18 @@ export default async function HomePage({
         })
       : Promise.resolve([]),
     showHome ? getCategoryCounts() : Promise.resolve({} as Record<string, number>),
-    showSubList ? getSubcategoryCounts(category) : Promise.resolve({} as Record<string, number>),
+    category ? getSubcategoryCounts(category) : Promise.resolve({} as Record<string, number>),
+    showListings && category && subcategory
+      ? getBrandCounts(category, subcategory)
+      : Promise.resolve({} as Record<string, number>),
   ]);
+
+  // Options for the Type and Brand lists in the filter bar
+  const typeOptions =
+    categoryConfig && subNames.length > 1
+      ? subNames.map((n) => ({ name: n, count: subCounts[n] || 0 }))
+      : [];
+  const brandOptions = brandNames.map((n) => ({ name: n, count: brandCounts[n] || 0 }));
 
   // Back link goes up one level
   let backHref = '/';
@@ -241,7 +257,9 @@ export default async function HomePage({
             minPrice={minPrice}
             maxPrice={maxPrice}
             brand={brand}
-            availableBrands={brandNames}
+            subcategory={subcategory}
+            brandOptions={brandOptions}
+            typeOptions={typeOptions}
           />
         )}
 
@@ -289,4 +307,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-            }
+                     }
