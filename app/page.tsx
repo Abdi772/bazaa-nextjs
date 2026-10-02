@@ -1,10 +1,10 @@
  import Link from 'next/link';
 import Image from 'next/image';
 import { getListings, getCategoryCounts, getSubcategoryCounts, listingSlug } from '@/lib/listings';
-import { CATEGORY_CONFIG, subcategoryImage } from '@/lib/categories';
+import { CATEGORY_CONFIG } from '@/lib/categories';
 import { getBrandLogo } from '@/lib/brandLogos';
 import CategorySidebar from './CategorySidebar';
-import FilterBar from './FilterBar';
+import SubImage from './SubImage';
 
 export const revalidate = 60; // re-fetch fresh data at most once a minute
 
@@ -20,29 +20,13 @@ function buildUrl(category?: string, subcategory?: string, brand?: string) {
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: {
-    q?: string;
-    category?: string;
-    subcategory?: string;
-    brand?: string;
-    all?: string;
-    region?: string;
-    minPrice?: string;
-    maxPrice?: string;
-    condition?: string;
-    sort?: string;
-  };
+  searchParams: { q?: string; category?: string; subcategory?: string; brand?: string; all?: string };
 }) {
   const query = searchParams.q || '';
   const category = searchParams.category || '';
   const subcategory = searchParams.subcategory || '';
   const brand = searchParams.brand || '';
   const showAll = searchParams.all === '1';
-  const region = searchParams.region || '';
-  const minPrice = searchParams.minPrice || '';
-  const maxPrice = searchParams.maxPrice || '';
-  const condition = searchParams.condition || '';
-  const sort = searchParams.sort || '';
 
   const categoryConfig = category ? CATEGORY_CONFIG[category] : undefined;
   const subNames = categoryConfig ? Object.keys(categoryConfig.subcategories) : [];
@@ -61,18 +45,7 @@ export default async function HomePage({
 
   const [listings, counts, subCounts] = await Promise.all([
     showListings
-      ? getListings({
-          query,
-          category,
-          subcategory,
-          brand,
-          region,
-          condition,
-          sort,
-          minPrice: minPrice ? Number(minPrice) : undefined,
-          maxPrice: maxPrice ? Number(maxPrice) : undefined,
-          limit: 24,
-        })
+      ? getListings({ query, category, subcategory, brand, limit: 24 })
       : Promise.resolve([]),
     showHome ? getCategoryCounts() : Promise.resolve({} as Record<string, number>),
     showSubList ? getSubcategoryCounts(category) : Promise.resolve({} as Record<string, number>),
@@ -102,28 +75,23 @@ export default async function HomePage({
       <div className="flex-1 min-w-0">
         {showHome && (
           <>
-            {/* Banner scrolls away normally */}
-            <div className="bg-gradient-to-br from-ink via-[#2A2850] to-amberDeep rounded-xl p-8 text-paper mb-3">
+            <div className="bg-gradient-to-br from-ink via-[#2A2850] to-amberDeep rounded-xl p-8 text-paper mb-6">
               <h1 className="text-2xl font-serif font-bold mb-1">
                 Buy and sell anything, right in your area
               </h1>
-              <p className="text-sm text-paper/85">
+              <p className="text-sm text-paper/85 mb-4">
                 Find what you need nearby, or list something in minutes.
               </p>
-            </div>
-
-            {/* Search box stays at the top while you scroll */}
-            <div className="sticky top-16 z-[5] bg-paper py-2 mb-4">
-              <form action="/" className="flex gap-2">
+              <form action="/" className="flex flex-wrap gap-2">
                 <input
                   name="q"
                   type="text"
                   placeholder="What are you looking for?"
-                  className="flex-1 min-w-0 rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink"
+                  className="flex-1 min-w-[140px] rounded px-3 py-2.5 text-sm text-ink"
                 />
                 <button
                   type="submit"
-                  className="bg-amber hover:bg-amberDeep text-ink font-bold px-5 py-2.5 rounded-lg text-sm"
+                  className="bg-amber hover:bg-amberDeep text-ink font-bold px-5 py-2.5 rounded text-sm"
                 >
                   Search
                 </button>
@@ -139,13 +107,13 @@ export default async function HomePage({
                   href={buildUrl(name)}
                   className="bg-white border border-line rounded-lg overflow-hidden text-center hover:shadow-md transition-shadow"
                 >
-                  <div className="relative aspect-square bg-white">
+                  <div className="relative aspect-square bg-[#E8EEF5]">
                     <Image
                       src={`/categories/${name.toLowerCase()}.jpg`}
                       alt={name}
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
-                      className="object-cover"
+                      className="object-cover mix-blend-multiply"
                     />
                   </div>
                   <div className="p-2">
@@ -177,38 +145,29 @@ export default async function HomePage({
           )}
         </div>
 
-        {/* Step 2: sub-category list (with pictures) */}
+        {/* Step 2: sub-category list */}
         {showSubList && categoryConfig && (
           <div className="bg-white border border-line rounded-lg divide-y divide-line mb-6">
-            {subNames.map((subName) => {
-              const img = subcategoryImage(subName);
-              return (
-                <Link
-                  key={subName}
-                  href={buildUrl(category, subName)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-amber/10"
-                >
-                  <div className="relative h-14 w-14 shrink-0 rounded-lg overflow-hidden bg-[#EDE7D9] flex items-center justify-center">
-                    {img ? (
-                      <Image
-                        src={img}
-                        alt={subName}
-                        fill
-                        sizes="56px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <span className="text-2xl">{categoryConfig.icon}</span>
-                    )}
-                  </div>
-                  <span className="flex-1 min-w-0">
-                    <span className="block text-base font-semibold">{subName}</span>
-                    <span className="block text-xs text-muted">{subCounts[subName] || 0} ads</span>
+            {subNames.map((subName) => (
+              <Link
+                key={subName}
+                href={buildUrl(category, subName)}
+                className="flex items-center justify-between px-4 py-4 hover:bg-amber/10"
+              >
+                <span className="flex items-center gap-4">
+                  <span className="w-14 h-14 rounded-lg bg-[#E8EEF5] flex items-center justify-center shrink-0 overflow-hidden">
+                    <SubImage name={subName} />
                   </span>
-                  <span className="text-muted">›</span>
-                </Link>
-              );
-            })}
+                  <span>
+                    <span className="block text-base font-semibold">{subName}</span>
+                    <span className="block text-xs text-muted">
+                      {subCounts[subName] || 0} {(subCounts[subName] || 0) === 1 ? 'ad' : 'ads'}
+                    </span>
+                  </span>
+                </span>
+                <span className="text-muted">›</span>
+              </Link>
+            ))}
             <Link
               href={`${buildUrl(category)}&all=1`}
               className="flex items-center justify-between px-4 py-4 hover:bg-amber/10"
@@ -245,19 +204,6 @@ export default async function HomePage({
           </div>
         )}
 
-        {/* Filters */}
-        {showListings && (
-          <FilterBar
-            region={region}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            brand={brand}
-            condition={condition}
-            sort={sort}
-            availableBrands={brandNames}
-          />
-        )}
-
         {/* Listings */}
         {showListings &&
           (listings.length === 0 ? (
@@ -273,7 +219,7 @@ export default async function HomePage({
                   href={`/products/${listingSlug(listing)}`}
                   className="bg-white border border-line rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                 >
-                  <div className="aspect-[4/3] bg-[#EDE7D9] flex items-center justify-center relative">
+                  <div className="aspect-[4/3] bg-[#E8EEF5] flex items-center justify-center relative border-b border-line">
                     {listing.image_url ? (
                       <Image
                         src={listing.image_url}
@@ -302,4 +248,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-                       }
+                    }
