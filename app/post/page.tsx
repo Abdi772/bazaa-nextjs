@@ -6,6 +6,7 @@ import type { User } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabaseClient';
 import { CATEGORY_CONFIG, ETHIOPIA_REGIONS, CONDITIONS } from '../../lib/categories';
 import { listingSlug } from '../../lib/listings';
+import { compressImage } from '../../lib/compressImage';
 
 const MAX_PHOTOS = 5;
 
@@ -70,13 +71,17 @@ export default function PostPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
+    if (files.length === 0) {
+      setError('Please add at least one photo.');
+      return;
+    }
     setBusy(true);
     setError('');
 
     const imageUrls: string[] = [];
     for (let i = 0; i < files.length; i++) {
       setStatus(`Uploading photo ${i + 1} of ${files.length}...`);
-      const file = files[i];
+      const file = await compressImage(files[i]);
       const ext = file.name.split('.').pop() || 'jpg';
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
@@ -149,7 +154,7 @@ export default function PostPage() {
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label className={labelClass}>Photos (up to {MAX_PHOTOS})</label>
+          <label className={labelClass}>Photos (required, up to {MAX_PHOTOS})</label>
           <input type="file" accept="image/*" multiple onChange={onFilesChange} className="w-full text-sm" />
           {files.length > 0 && <p className="text-xs text-gray-500 mt-1">{files.length} photo(s) selected</p>}
         </div>
@@ -247,4 +252,4 @@ export default function PostPage() {
       </form>
     </div>
   );
-}
+       }
