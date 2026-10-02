@@ -4,6 +4,7 @@ import { getListings, getCategoryCounts, getSubcategoryCounts, listingSlug } fro
 import { CATEGORY_CONFIG, subcategoryImage } from '@/lib/categories';
 import { getBrandLogo } from '@/lib/brandLogos';
 import CategorySidebar from './CategorySidebar';
+import FilterBar from './FilterBar';
 
 export const revalidate = 60; // re-fetch fresh data at most once a minute
 
@@ -19,13 +20,25 @@ function buildUrl(category?: string, subcategory?: string, brand?: string) {
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: { q?: string; category?: string; subcategory?: string; brand?: string; all?: string };
+  searchParams: {
+    q?: string;
+    category?: string;
+    subcategory?: string;
+    brand?: string;
+    all?: string;
+    region?: string;
+    minPrice?: string;
+    maxPrice?: string;
+  };
 }) {
   const query = searchParams.q || '';
   const category = searchParams.category || '';
   const subcategory = searchParams.subcategory || '';
   const brand = searchParams.brand || '';
   const showAll = searchParams.all === '1';
+  const region = searchParams.region || '';
+  const minPrice = searchParams.minPrice || '';
+  const maxPrice = searchParams.maxPrice || '';
 
   const categoryConfig = category ? CATEGORY_CONFIG[category] : undefined;
   const subNames = categoryConfig ? Object.keys(categoryConfig.subcategories) : [];
@@ -44,7 +57,16 @@ export default async function HomePage({
 
   const [listings, counts, subCounts] = await Promise.all([
     showListings
-      ? getListings({ query, category, subcategory, brand, limit: 24 })
+      ? getListings({
+          query,
+          category,
+          subcategory,
+          brand,
+          region,
+          minPrice: minPrice ? Number(minPrice) : undefined,
+          maxPrice: maxPrice ? Number(maxPrice) : undefined,
+          limit: 24,
+        })
       : Promise.resolve([]),
     showHome ? getCategoryCounts() : Promise.resolve({} as Record<string, number>),
     showSubList ? getSubcategoryCounts(category) : Promise.resolve({} as Record<string, number>),
@@ -213,6 +235,15 @@ export default async function HomePage({
         )}
 
         {/* Listings */}
+        {showListings && (
+          <FilterBar
+            region={region}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            brand={brand}
+            availableBrands={brandNames}
+          />
+        )}
         {showListings &&
           (listings.length === 0 ? (
             <div className="text-center py-16 text-muted">
@@ -256,4 +287,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-}
+             }
