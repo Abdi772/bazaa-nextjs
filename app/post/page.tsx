@@ -1,492 +1,599 @@
- 'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import type { User } from '@supabase/supabase-js';
-
-import { supabase } from '../../lib/supabaseClient';
+ import Link from 'next/link';
+import Image from 'next/image';
 import {
-  CATEGORY_CONFIG,
-  ETHIOPIA_REGIONS,
-  CONDITIONS,
-} from '../../lib/categories';
-import { listingSlug } from '../../lib/listings';
-import { compressImage } from '../../lib/compressImage';
+  getListings,
+  getCategoryCounts,
+  getSubcategoryCounts,
+  getBrandCounts,
+  listingSlug,
+} from '@/lib/listings';
+import { CATEGORY_CONFIG, subcategoryImage } from '@/lib/categories';
+import { getBrandLogo } from '@/lib/brandLogos';
+import CategorySidebar from './CategorySidebar';
+import FilterBar from './FilterBar';
 
-const MAX_PHOTOS = 5;
+export const revalidate = 60;
 
-const inputClass =
-  'w-full rounded-bazaa border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-mutedLight transition-colors focus:border-amber focus:outline-none focus:ring-2 focus:ring-amber/20';
+function buildUrl(
+  category?: string,
+  subcategory?: string,
+  brand?: string,
+) {
+  const params = new URLSearchParams();
 
-const labelClass = 'mb-1.5 block text-sm font-semibold text-ink';
+  if (category) params.set('category', category);
+  if (subcategory) params.set('subcategory', subcategory);
+  if (brand) params.set('brand', brand);
 
-export default function PostPage() {
-  const router = useRouter();
+  const qs = params.toString();
+  return qs ? `/?${qs}` : '/';
+}
 
-  const [user, setUser] = useState<User | null>(null);
-  const [ready, setReady] = useState(false);
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: {
+    q?: string;
+    category?: string;
+    subcategory?: string;
+    brand?: string;
+    model?: string;
+    condition?: string;
+    budget?: string;
+    all?: string;
+    region?: string;
+    minPrice?: string;
+    maxPrice?: string;
+  };
+}) {
+  const query = searchParams.q || '';
+  const category = searchParams.category || '';
+  const subcategory = searchParams.subcategory || '';
+  const brand = searchParams.brand || '';
 
-  const [files, setFiles] = useState<File[]>([]);
-  const [title, setTitle] = useState('');
-  const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('Electronics');
-  const [subcategory, setSubcategory] = useState('');
-  const [brand, setBrand] = useState('');
-  const [condition, setCondition] = useState(CONDITIONS[0]);
-  const [region, setRegion] = useState(ETHIOPIA_REGIONS[0]);
-  const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  const model = searchParams.model || '';
+  const condition = searchParams.condition || '';
+  const budget = searchParams.budget || '';
 
-  const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('');
-  const [error, setError] = useState('');
+  const showAll = searchParams.all === '1';
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
+  const region = searchParams.region || '';
+  const minPrice = searchParams.minPrice || '';
+  const maxPrice = searchParams.maxPrice || '';
 
-      if (data.user?.email) {
-        setEmail(data.user.email);
-      }
+  const categoryConfig = category
+    ? CATEGORY_CONFIG[category]
+    : undefined;
 
-      setReady(true);
-    });
-  }, []);
-
-  const subcategories = Object.keys(
-    CATEGORY_CONFIG[category]?.subcategories ?? {}
-  );
-
-  const brands = subcategory
-    ? CATEGORY_CONFIG[category]?.subcategories[subcategory] ?? []
+  const subNames = categoryConfig
+    ? Object.keys(categoryConfig.subcategories)
     : [];
 
-  function onCategoryChange(value: string) {
-    setCategory(value);
-    setSubcategory('');
-    setBrand('');
-  }
+  const brandNames =
+    categoryConfig && subcategory
+      ? categoryConfig.subcategories[subcategory] || []
+      : [];
 
-  function onSubcategoryChange(value: string) {
-    setSubcategory(value);
-    setBrand('');
-  }
+  // ----------------------------------------
+  // PAGE STATES
+  // ----------------------------------------
 
-  function onFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const picked = Array.from(e.target.files ?? []);
+  const showHome =
+    !query &&
+    !category &&
+    !subcategory &&
+    !brand;
 
-    if (picked.length > MAX_PHOTOS) {
-      setError(
-        `You can add up to ${MAX_PHOTOS} photos. The first ${MAX_PHOTOS} will be used.`
+  const showSubList =
+    !query &&
+    !!category &&
+    !subcategory &&
+    !brand &&
+    !showAll &&
+    subNames.length > 0;
+
+  const showBrandTiles =
+    !query &&
+    !!subcategory &&
+    !brand &&
+    brandNames.length > 0;
+
+  const showListings = !showSubList;
+
+  // ----------------------------------------
+  // GET LISTINGS
+  // ----------------------------------------
+
+  const [rawListings, counts, subCounts, brandCounts] =
+    await Promise.all([
+      showListings
+        ? getListings({
+            query,
+            category,
+            subcategory,
+            brand,
+            region,
+            minPrice: minPrice
+              ? Number(minPrice)
+              : undefined,
+            maxPrice: maxPrice
+              ? Number(maxPrice)
+              : undefined,
+            limit: 24,
+          })
+        : Promise.resolve([]),
+
+      showHome
+        ? getCategoryCounts()
+        : Promise.resolve(
+            {} as Record<string, number>,
+          ),
+
+      category
+        ? getSubcategoryCounts(category)
+        : Promise.resolve(
+            {} as Record<string, number>,
+          ),
+
+      showListings && category && subcategory
+        ? getBrandCounts(
+            category,
+            subcategory,
+          )
+        : Promise.resolve(
+            {} as Record<string, number>,
+          ),
+    ]);
+
+  // ----------------------------------------
+  // MODEL / CONDITION / BUDGET FILTERING
+  //
+  // We filter these here for now.
+  // Later we will move this filtering directly
+  // into the Supabase query for better performance.
+  // ----------------------------------------
+
+  let listings = rawListings;
+
+  if (model) {
+    listings = listings.filter((listing) => {
+      const listingModel = String(
+        (
+          listing as {
+            model?: string | null;
+          }
+        ).model || '',
+      )
+        .trim()
+        .toLowerCase();
+
+      return (
+        listingModel === model.trim().toLowerCase()
       );
-    } else {
-      setError('');
-    }
-
-    setFiles(picked.slice(0, MAX_PHOTOS));
+    });
   }
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  if (condition) {
+    listings = listings.filter((listing) => {
+      const listingCondition = String(
+        (
+          listing as {
+            condition?: string | null;
+          }
+        ).condition || '',
+      )
+        .trim()
+        .toLowerCase();
 
-    if (!user) return;
+      return (
+        listingCondition ===
+        condition.trim().toLowerCase()
+      );
+    });
+  }
 
-    if (files.length === 0) {
-      setError('Please add at least one photo.');
-      return;
-    }
+  // ----------------------------------------
+  // BUDGET FILTER
+  // ----------------------------------------
 
-    setBusy(true);
-    setError('');
+  if (budget) {
+    listings = listings.filter((listing) => {
+      const price = Number(listing.price);
 
-    const imageUrls: string[] = [];
-
-    for (let i = 0; i < files.length; i++) {
-      setStatus(`Uploading photo ${i + 1} of ${files.length}...`);
-
-      const file = await compressImage(files[i]);
-      const ext = file.name.split('.').pop() || 'jpg';
-      const fileName = `${Date.now()}-${Math.random()
-        .toString(36)
-        .slice(2)}.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('listing-images')
-        .upload(fileName, file);
-
-      if (uploadError) {
-        setError(`Could not upload photo ${i + 1}: ${uploadError.message}`);
-        setBusy(false);
-        setStatus('');
-        return;
+      if (!Number.isFinite(price)) {
+        return false;
       }
 
-      const { data: urlData } = supabase.storage
-        .from('listing-images')
-        .getPublicUrl(fileName);
+      switch (budget) {
+        case 'Under ETB 10,000':
+          return price < 10000;
 
-      imageUrls.push(urlData.publicUrl);
-    }
+        case 'ETB 10,000 – 25,000':
+          return price >= 10000 && price <= 25000;
 
-    setStatus('Publishing...');
+        case 'ETB 25,000 – 50,000':
+          return price >= 25000 && price <= 50000;
 
-    const { data, error: insertError } = await supabase
-      .from('listings')
-      .insert({
-        title: title.trim(),
-        price: Number(price),
-        category,
-        subcategory: subcategory || null,
-        brand: brand || null,
-        condition,
-        region,
-        location: location.trim(),
-        description: description.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        image_url: imageUrls[0] ?? null,
-        image_urls: imageUrls,
-        user_id: user.id,
-      })
-      .select('id, title')
-      .single();
+        case 'ETB 50,000 – 100,000':
+          return price >= 50000 && price <= 100000;
 
-    if (insertError || !data) {
-      setError(
-        insertError?.message ??
-          'Something went wrong saving your listing.'
-      );
-      setBusy(false);
-      setStatus('');
-      return;
-    }
+        case 'Over ETB 100,000':
+          return price > 100000;
 
-    router.push(`/products/${listingSlug(data)}`);
+        default:
+          return true;
+      }
+    });
   }
 
-  if (!ready) {
-    return (
-      <div className="mx-auto max-w-xl py-16 text-center">
-        <p className="text-sm text-muted">Loading...</p>
-      </div>
+  // ----------------------------------------
+  // FILTER OPTIONS
+  // ----------------------------------------
+
+  const typeOptions =
+    categoryConfig && subNames.length > 1
+      ? subNames.map((name) => ({
+          name,
+          count: subCounts[name] || 0,
+        }))
+      : [];
+
+  const brandOptions = brandNames.map((name) => ({
+    name,
+    count: brandCounts[name] || 0,
+  }));
+
+  // ----------------------------------------
+  // BACK LINK
+  // ----------------------------------------
+
+  let backHref = '/';
+  let backLabel = 'Back to all categories';
+
+  if (brand) {
+    backHref = buildUrl(
+      category,
+      subcategory,
     );
-  }
-
-  if (!user) {
-    return (
-      <div className="mx-auto max-w-lg py-12">
-        <div className="bazaa-card p-6 text-center sm:p-8">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amberSoft text-amberDeep">
-            <span className="text-xl">+</span>
-          </div>
-
-          <h1 className="bazaa-title text-2xl">
-            Log in to post a listing
-          </h1>
-
-          <p className="mt-2 text-sm leading-6 text-muted">
-            Use the Log in / Sign up button at the top of the page,
-            then come back here.
-          </p>
-
-          <a
-            href="/"
-            className="mt-6 inline-flex items-center justify-center rounded-bazaa bg-amber px-5 py-2.5 font-semibold text-ink transition-colors hover:bg-amberDeep"
-          >
-            Back to home
-          </a>
-        </div>
-      </div>
-    );
+    backLabel = `Back to ${subcategory}`;
+  } else if (subcategory) {
+    backHref = buildUrl(category);
+    backLabel = `Back to ${category}`;
+  } else if (showAll) {
+    backHref = buildUrl(category);
+    backLabel = `Back to ${category}`;
   }
 
   return (
-    <div className="mx-auto max-w-2xl py-2 sm:py-4">
-      <div className="mb-6">
-        <p className="text-sm font-semibold uppercase tracking-wide text-amberDeep">
-          Sell on Bazaa
-        </p>
-
-        <h1 className="bazaa-title mt-1 text-3xl sm:text-4xl">
-          Post a listing
-        </h1>
-
-        <p className="mt-2 text-sm leading-6 text-muted">
-          Add the details below to create your marketplace listing.
-        </p>
+    <div className="flex flex-col gap-6 md:flex-row">
+      {/* Desktop sidebar */}
+      <div className="hidden md:block">
+        <CategorySidebar
+          currentCategory={category}
+          currentSubcategory={subcategory}
+          currentBrand={brand}
+        />
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-5">
-        <section className="bazaa-card p-5 sm:p-6">
-          <div className="mb-5">
-            <h2 className="font-serif text-xl font-bold text-ink">
-              Photos
+      <div className="min-w-0 flex-1">
+
+        {/* =========================
+            HOME
+        ========================= */}
+
+        {showHome && (
+          <>
+            <section className="mb-8 overflow-hidden rounded-card bg-ink px-6 py-8 text-paper shadow-soft sm:px-8 sm:py-10">
+              <div className="max-w-2xl">
+                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber">
+                  Bazaa Marketplace
+                </div>
+
+                <h1 className="mb-3 font-serif text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+                  Buy and sell anything,
+                  <br />
+                  right in your area.
+                </h1>
+
+                <p className="mb-6 max-w-xl text-sm leading-6 text-paper/75 sm:text-base">
+                  Find what you need nearby, or list
+                  something in minutes.
+                </p>
+
+                <form
+                  action="/"
+                  className="flex flex-col gap-2 sm:flex-row"
+                >
+                  <input
+                    name="q"
+                    type="text"
+                    placeholder="What are you looking for?"
+                    className="min-w-0 flex-1 rounded-bazaa border border-white/10 bg-white px-4 py-3 text-sm text-ink outline-none placeholder:text-mutedLight focus:border-amber focus:ring-2 focus:ring-amber/20"
+                  />
+
+                  <button
+                    type="submit"
+                    className="bazaa-primary min-h-[46px] px-6"
+                  >
+                    Search
+                  </button>
+                </form>
+              </div>
+            </section>
+
+            {/* Categories heading */}
+
+            <div className="mb-4">
+              <h2 className="bazaa-title text-2xl">
+                Popular categories
+              </h2>
+
+              <p className="bazaa-muted mt-1">
+                Browse by what you&apos;re looking for
+              </p>
+            </div>
+
+            {/* Category cards */}
+
+            <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+              {Object.entries(CATEGORY_CONFIG).map(
+                ([name]) => (
+                  <Link
+                    key={name}
+                    href={buildUrl(name)}
+                    className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                  >
+                    <div className="relative aspect-square overflow-hidden bg-paper">
+                      <Image
+                        src={`/categories/${name.toLowerCase()}.jpg`}
+                        alt={name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+
+                    <div className="p-3">
+                      <div className="text-sm font-semibold text-ink">
+                        {name}
+                      </div>
+
+                      <div className="mt-0.5 text-xs text-muted">
+                        {counts[name] || 0} listings
+                      </div>
+                    </div>
+                  </Link>
+                ),
+              )}
+            </div>
+          </>
+        )}
+
+        {/* =========================
+            PAGE HEADING
+        ========================= */}
+
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="bazaa-title text-2xl">
+              {model ||
+                brand ||
+                subcategory ||
+                category ||
+                (query
+                  ? `Results for "${query}"`
+                  : 'All listings')}
             </h2>
-            <p className="mt-1 text-sm text-muted">
-              Add up to {MAX_PHOTOS} clear photos. The first photo will be
-              used as the main listing image.
-            </p>
+
+            {showListings && (
+              <p className="bazaa-muted mt-1">
+                {listings.length}{' '}
+                {listings.length === 1
+                  ? 'listing'
+                  : 'listings'}{' '}
+                found
+              </p>
+            )}
           </div>
 
-          <label
-            htmlFor="listing-photos"
-            className="flex cursor-pointer flex-col items-center justify-center rounded-bazaa border border-dashed border-line bg-paper px-5 py-8 text-center transition-colors hover:border-amber hover:bg-amberSoft"
-          >
-            <span className="mb-2 text-2xl text-amberDeep">+</span>
-            <span className="font-semibold text-ink">
-              Choose photos
-            </span>
-            <span className="mt-1 text-xs text-muted">
-              JPG, PNG or other image formats
-            </span>
-
-            <input
-              id="listing-photos"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={onFilesChange}
-              className="sr-only"
-            />
-          </label>
-
-          {files.length > 0 && (
-            <div className="mt-3 rounded-bazaa bg-amberSoft px-4 py-3 text-sm text-ink">
-              <span className="font-semibold">
-                {files.length} photo{files.length === 1 ? '' : 's'}
-              </span>{' '}
-              selected
-            </div>
+          {!showHome && (
+            <Link
+              href={backHref}
+              className="rounded-full border border-line bg-white px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-amber hover:bg-amberSoft"
+            >
+              ← {backLabel}
+            </Link>
           )}
-        </section>
+        </div>
 
-        <section className="bazaa-card p-5 sm:p-6">
-          <div className="mb-5">
-            <h2 className="font-serif text-xl font-bold text-ink">
-              Basic details
-            </h2>
-            <p className="mt-1 text-sm text-muted">
-              Tell buyers what you're selling.
-            </p>
-          </div>
+        {/* =========================
+            SUB-CATEGORIES
+        ========================= */}
 
-          <div className="space-y-4">
-            <div>
-              <label className={labelClass}>Title</label>
-              <input
-                className={inputClass}
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. iPhone 13 Pro, 128GB"
-              />
-            </div>
+        {showSubList &&
+          categoryConfig && (
+        
+          <div className="mb-6 overflow-hidden rounded-card border border-line bg-white shadow-card">
 
-            <div>
-              <label className={labelClass}>Price (ETB)</label>
-              <input
-                className={inputClass}
-                type="number"
-                inputMode="numeric"
-                min="0"
-                required
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="e.g. 45000"
-              />
-            </div>
+                       {subNames.map((subName) => {
+              const img = subcategoryImage(subName);
 
-            <div>
-              <label className={labelClass}>Category</label>
-              <select
-                className={inputClass}
-                value={category}
-                onChange={(e) => onCategoryChange(e.target.value)}
-              >
-                {Object.keys(CATEGORY_CONFIG).map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {subcategories.length > 0 && (
-              <div>
-                <label className={labelClass}>Subcategory</label>
-                <select
-                  className={inputClass}
-                  required
-                  value={subcategory}
-                  onChange={(e) => onSubcategoryChange(e.target.value)}
+              return (
+                <Link
+                  key={subName}
+                  href={buildUrl(category, subName)}
+                  className="group flex items-center gap-3 border-b border-line px-4 py-3.5 transition-colors last:border-b-0 hover:bg-amberSoft"
                 >
-                  <option value="">Select...</option>
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-bazaa bg-paper">
+                    {img && (
+                      <Image
+                        src={img}
+                        alt={subName}
+                        fill
+                        sizes="56px"
+                        className="object-cover transition-transform duration-200 group-hover:scale-105"
+                      />
+                    )}
+                  </div>
 
-                  {subcategories.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-semibold text-ink">
+                      {subName}
+                    </span>
 
-            {brands.length > 0 && (
-              <div>
-                <label className={labelClass}>Brand</label>
-                <select
-                  className={inputClass}
-                  required
-                  value={brand}
-                  onChange={(e) => setBrand(e.target.value)}
-                >
-                  <option value="">Select...</option>
+                    <span className="mt-0.5 block text-xs text-muted">
+                      {subCounts[subName] || 0}{' '}
+                      {(subCounts[subName] || 0) === 1
+                        ? 'ad'
+                        : 'ads'}
+                    </span>
+                  </span>
 
-                  {brands.map((b) => (
-                    <option key={b} value={b}>
-                      {b}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+                  <span className="text-lg text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-amberDeep">
+                    →
+                  </span>
+                </Link>
+              );
+            })}
 
-            <div>
-              <label className={labelClass}>Condition</label>
-              <select
-                className={inputClass}
-                value={condition}
-                onChange={(e) => setCondition(e.target.value)}
-              >
-                {CONDITIONS.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </section>
+            <Link
+              href={`${buildUrl(category)}&all=1`}
+              className="flex items-center justify-between bg-paper px-4 py-4 transition-colors hover:bg-amberSoft"
+            >
+              <span className="text-sm font-semibold text-amberDeep">
+                See all in {category}
+              </span>
 
-        <section className="bazaa-card p-5 sm:p-6">
-          <div className="mb-5">
-            <h2 className="font-serif text-xl font-bold text-ink">
-              Location
-            </h2>
-            <p className="mt-1 text-sm text-muted">
-              Help nearby buyers find your listing.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className={labelClass}>Region</label>
-              <select
-                className={inputClass}
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-              >
-                {ETHIOPIA_REGIONS.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className={labelClass}>
-                Location (city/area)
-              </label>
-              <input
-                className={inputClass}
-                required
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Jigjiga, Bole"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="bazaa-card p-5 sm:p-6">
-          <div className="mb-5">
-            <h2 className="font-serif text-xl font-bold text-ink">
-              Description
-            </h2>
-            <p className="mt-1 text-sm text-muted">
-              Give buyers the important details about the item.
-            </p>
-          </div>
-
-          <textarea
-            className={`${inputClass} resize-y`}
-            rows={5}
-            required
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Condition, details, why you're selling..."
-          />
-        </section>
-
-        <section className="bazaa-card p-5 sm:p-6">
-          <div className="mb-5">
-            <h2 className="font-serif text-xl font-bold text-ink">
-              Contact details
-            </h2>
-            <p className="mt-1 text-sm text-muted">
-              Buyers will use these details to contact you.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className={labelClass}>Phone number</label>
-              <input
-                className={inputClass}
-                type="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="e.g. 0911 234 567"
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>Contact email</label>
-              <input
-                className={inputClass}
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-          </div>
-        </section>
-
-        {error && (
-          <div className="rounded-bazaa border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-            {error}
+              <span className="text-muted">→</span>
+            </Link>
           </div>
         )}
 
-        {busy && status && (
-          <div className="rounded-bazaa border border-line bg-white p-4 text-sm text-muted">
-            {status}
+        {/* =========================
+            BRAND TILES
+        ========================= */}
+
+        {showBrandTiles && (
+          <div className="mb-6 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+            {brandNames.map((b) => {
+              const logo = getBrandLogo(b);
+
+              return (
+                <Link
+                  key={b}
+                  href={buildUrl(category, subcategory, b)}
+                  className="group flex min-h-[100px] flex-col items-center justify-center gap-2 rounded-card border border-line bg-white p-3 text-center shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber hover:shadow-soft"
+                >
+                  <div className="flex h-9 items-center justify-center">
+                    {logo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={logo}
+                        alt=""
+                        className="max-h-9 max-w-[64px] object-contain"
+                      />
+                    ) : (
+                      <span className="text-xl text-muted">
+                        •••
+                      </span>
+                    )}
+                  </div>
+
+                  <span className="text-xs font-semibold text-ink">
+                    {b}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={busy}
-          className="bazaa-primary w-full py-3.5 text-base disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {busy ? status || 'Working...' : 'Publish listing'}
-        </button>
-      </form>
+        {/* =========================
+            FILTERS
+        ========================= */}
+
+        {showListings && (
+          <div className="mb-5">
+            <FilterBar
+              region={region}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              brand={brand}
+              subcategory={subcategory}
+              brandOptions={brandOptions}
+              typeOptions={typeOptions}
+            />
+          </div>
+        )}
+
+        {/* =========================
+            LISTINGS
+        ========================= */}
+
+        {showListings &&
+          (listings.length === 0 ? (
+            <div className="rounded-card border border-dashed border-line bg-white px-6 py-16 text-center">
+              <div className="mb-3 text-3xl">
+                ⌕
+              </div>
+
+              <h3 className="mb-1 font-semibold text-ink">
+                No listings match
+              </h3>
+
+              <p className="text-sm text-muted">
+                Try a different search or category.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {listings.map((listing) => (
+                <Link
+                  key={listing.id}
+                  href={`/products/${listingSlug(listing)}`}
+                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                >
+                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bg-paper">
+                    {listing.image_url ? (
+                      <Image
+                        src={listing.image_url}
+                        alt={listing.title}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <span className="text-4xl">
+                        {CATEGORY_CONFIG[
+                          listing.category
+                        ]?.icon || '📦'}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-3.5">
+                    <div className="font-serif text-lg font-bold text-amberDeep">
+                      ETB{' '}
+                      {Number(
+                        listing.price
+                      ).toLocaleString()}
+                    </div>
+
+                    <div className="mt-1 line-clamp-1 text-sm font-semibold text-ink">
+                      {listing.title}
+                    </div>
+
+                    <div className="mt-1 flex justify-between text-xs text-muted">
+                      <span className="line-clamp-1">
+                        {listing.location}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ))}
+      </div>
     </div>
   );
-               }
+}
