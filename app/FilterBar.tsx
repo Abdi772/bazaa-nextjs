@@ -1,9 +1,8 @@
- 'use client';
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Must match the region names used in your Post listing form.
 const REGIONS = [
   'Addis Ababa',
   'Oromia',
@@ -32,8 +31,14 @@ type Props = {
   typeOptions: Option[];
 };
 
-type Sheet = null | 'brand' | 'type' | 'model';
+type Sheet = null | 'type' | 'brand' | 'model';
 
+/*
+ * Phone models.
+ *
+ * This is the first model database.
+ * We will expand this later for vehicles and other categories.
+ */
 const PHONE_MODELS: Record<string, string[]> = {
   Apple: [
     'iPhone 8',
@@ -101,8 +106,6 @@ const PHONE_MODELS: Record<string, string[]> = {
     'Galaxy S25',
     'Galaxy S25+',
     'Galaxy S25 Ultra',
-    'Galaxy Note 20',
-    'Galaxy Note 20 Ultra',
     'Galaxy Z Flip',
     'Galaxy Z Flip 3',
     'Galaxy Z Flip 4',
@@ -240,13 +243,11 @@ const PHONE_MODELS: Record<string, string[]> = {
     'Find X7',
   ],
 
-  Other: [
-    'Other model',
-  ],
+  Other: ['Other model'],
 };
 
-function adsLabel(n: number) {
-  return `${n} ${n === 1 ? 'ad' : 'ads'}`;
+function adsLabel(count: number) {
+  return `${count} ${count === 1 ? 'ad' : 'ads'}`;
 }
 
 export default function FilterBar({
@@ -261,7 +262,6 @@ export default function FilterBar({
   const router = useRouter();
 
   const [priceOpen, setPriceOpen] = useState(false);
-
   const [min, setMin] = useState(minPrice);
   const [max, setMax] = useState(maxPrice);
 
@@ -270,132 +270,125 @@ export default function FilterBar({
   const [search, setSearch] = useState('');
 
   /*
-   * The currently selected brand while the user is
-   * browsing models inside the Brand sheet.
+   * The brand currently being viewed in the model screen.
    */
   const [modelBrand, setModelBrand] = useState(brand);
 
   /*
-   * Selected model.
-   *
-   * This is intentionally kept in the URL so that
-   * the next step can connect it to the database.
+   * Read the selected model from the URL.
    */
-  const currentModel =
-    typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('model') || ''
-      : '';
+  function getCurrentModel() {
+    if (typeof window === 'undefined') {
+      return '';
+    }
 
-  // Keep every other setting in the address
-  // and change only the requested filter.
+    return (
+      new URLSearchParams(window.location.search).get('model') || ''
+    );
+  }
+
+  const currentModel = getCurrentModel();
+
+  /*
+   * Update URL while preserving the other filters.
+   */
   function update(changes: Record<string, string>) {
     const params = new URLSearchParams(window.location.search);
 
-    for (const [key, value] of Object.entries(changes)) {
+    Object.entries(changes).forEach(([key, value]) => {
       if (value) {
         params.set(key, value);
       } else {
         params.delete(key);
       }
-    }
+    });
 
-    const qs = params.toString();
+    const query = params.toString();
 
-    router.push(qs ? `/?${qs}` : '/');
+    router.push(query ? `/?${query}` : '/');
   }
 
-  const anyActive = !!(
+  const priceActive = Boolean(minPrice || maxPrice);
+
+  const anyActive = Boolean(
     region ||
-    minPrice ||
-    maxPrice ||
-    subcategory ||
-    brand ||
-    currentModel
+      minPrice ||
+      maxPrice ||
+      subcategory ||
+      brand ||
+      currentModel
   );
 
-  const priceActive = !!(minPrice || maxPrice);
-
-  /*
-   * Filter pill design.
-   */
   const pill =
     'shrink-0 rounded-full border-[1.5px] bg-white px-4 py-2 text-sm font-semibold transition-colors';
 
-  const on =
+  const activePill =
     'border-amber bg-amberSoft text-amberDeep';
 
-  const off =
+  const inactivePill =
     'border-line text-ink hover:border-amber hover:bg-amberSoft';
 
-  /*
-   * Stronger separator rows.
-   */
   const row =
     'flex w-full items-center justify-between border-b-[1.5px] border-line px-4 py-4 text-left transition-colors hover:bg-amberSoft';
 
   /*
-   * Brand search.
+   * Search brands.
    */
-  const q = search.trim().toLowerCase();
+  const query = search.trim().toLowerCase();
 
-  const filteredBrands = brandOptions.filter((o) =>
-    o.name.toLowerCase().includes(q)
+  const filteredBrands = brandOptions.filter((option) =>
+    option.name.toLowerCase().includes(query)
   );
 
-  const popularBrands = q
+  const popularBrands = query
     ? []
     : filteredBrands
-        .filter((o) => o.name !== 'Other')
+        .filter((option) => option.name !== 'Other')
         .slice(0, 8);
 
-  const remainingBrands = filteredBrands
-    .filter((o) => !popularBrands.includes(o))
-    .sort((a, b) =>
-      a.name === 'Other'
-        ? 1
-        : b.name === 'Other'
-          ? -1
-          : a.name.localeCompare(b.name)
-    );
+  const otherBrands = filteredBrands
+    .filter((option) => !popularBrands.includes(option))
+    .sort((a, b) => {
+      if (a.name === 'Other') return 1;
+      if (b.name === 'Other') return -1;
+
+      return a.name.localeCompare(b.name);
+    });
 
   /*
    * Models for the selected brand.
-   *
-   * If we do not yet have a predefined model list,
-   * we still show a safe "Other model" option.
    */
-  const modelNames = PHONE_MODELS[modelBrand] || ['Other model'];
+  const models = PHONE_MODELS[modelBrand] || ['Other model'];
 
-  const filteredModels = modelNames.filter((model) =>
-    model.toLowerCase().includes(q)
+  const filteredModels = models.filter((model) =>
+    model.toLowerCase().includes(query)
   );
 
   function openBrandSheet() {
     setSearch('');
-    setModelBrand(brand);
     setSheet('brand');
   }
 
-  function pickBrand(name: string) {
+  function chooseBrand(name: string) {
     /*
-     * Selecting a brand resets the old model.
+     * Brand selected.
+     * Clear any old model.
      */
     update({
       brand: name,
       model: '',
     });
 
-    /*
-     * Keep the user inside the hierarchy.
-     * They selected Apple/Samsung/etc., so now show
-     * that brand's models.
-     */
     setModelBrand(name);
     setSearch('');
+
+    /*
+     * Immediately continue to that brand's models.
+     */
     setSheet('model');
   }
 
-  function pickModel(name: string) {
+  function chooseModel(name: string) {
     update({
       model: name,
     });
@@ -404,28 +397,28 @@ export default function FilterBar({
     setSheet(null);
   }
 
-  function brandRow(o: Option) {
+  function brandRow(option: Option) {
     return (
       <button
-        key={o.name}
+        key={option.name}
         type="button"
-        onClick={() => pickBrand(o.name)}
+        onClick={() => chooseBrand(option.name)}
         className={row}
       >
         <span
           className={
-            o.name === brand
+            option.name === brand
               ? 'font-bold text-amberDeep'
               : 'text-ink'
           }
         >
-          {o.name}{' '}
+          {option.name}{' '}
           <span className="text-sm font-normal text-muted">
-            • {adsLabel(o.count)}
+            • {adsLabel(option.count)}
           </span>
         </span>
 
-        <span className="text-muted">
+        <span className="text-lg text-muted">
           ›
         </span>
       </button>
@@ -434,27 +427,28 @@ export default function FilterBar({
 
   return (
     <div className="mb-5">
-
-      {/* =========================
+      {/* =====================================================
           FILTER PILLS
-      ========================= */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      ===================================================== */}
 
+      <div className="flex gap-2 overflow-x-auto pb-1">
         {/* Region */}
         <select
           value={region}
-          onChange={(e) =>
-            update({ region: e.target.value })
+          onChange={(event) =>
+            update({
+              region: event.target.value,
+            })
           }
           className={`${pill} ${
-            region ? on : off
+            region ? activePill : inactivePill
           }`}
         >
           <option value="">Region</option>
 
-          {REGIONS.map((r) => (
-            <option key={r} value={r}>
-              {r}
+          {REGIONS.map((item) => (
+            <option key={item} value={item}>
+              {item}
             </option>
           ))}
         </select>
@@ -463,10 +457,10 @@ export default function FilterBar({
         <button
           type="button"
           onClick={() =>
-            setPriceOpen((o) => !o)
+            setPriceOpen((open) => !open)
           }
           className={`${pill} ${
-            priceActive ? on : off
+            priceActive ? activePill : inactivePill
           }`}
         >
           Price, ETB
@@ -476,21 +470,15 @@ export default function FilterBar({
         </button>
 
         {/*
-         * TYPE / PHONES
+         * Type is only shown BEFORE a subcategory has been chosen.
          *
-         * Once a subcategory is selected, we hide this
-         * button because the user already selected Phones.
-         *
-         * This removes the duplicate "Phones" filter
-         * shown in your screenshot.
+         * Once the user chooses Phones, this button disappears.
          */}
         {!subcategory && typeOptions.length > 0 && (
           <button
             type="button"
             onClick={() => setSheet('type')}
-            className={`${pill} ${
-              subcategory ? on : off
-            }`}
+            className={`${pill} ${inactivePill}`}
           >
             Type
             <span className="ml-1 text-xs">
@@ -499,13 +487,16 @@ export default function FilterBar({
           </button>
         )}
 
-        {/* Brand */}
-        {brandOptions.length > 0 && subcategory && (
+        {/*
+         * Brand appears after the user has selected
+         * a subcategory such as Phones.
+         */}
+        {subcategory && brandOptions.length > 0 && (
           <button
             type="button"
             onClick={openBrandSheet}
             className={`${pill} ${
-              brand ? on : off
+              brand ? activePill : inactivePill
             }`}
           >
             {brand || 'Brand'}
@@ -515,8 +506,10 @@ export default function FilterBar({
           </button>
         )}
 
-        {/* Model */}
-        {brand && subcategory && (
+        {/*
+         * Model appears after a brand has been selected.
+         */}
+        {subcategory && brand && (
           <button
             type="button"
             onClick={() => {
@@ -525,7 +518,7 @@ export default function FilterBar({
               setSheet('model');
             }}
             className={`${pill} ${
-              currentModel ? on : off
+              currentModel ? activePill : inactivePill
             }`}
           >
             {currentModel || 'Model'}
@@ -562,10 +555,10 @@ export default function FilterBar({
         )}
       </div>
 
-
-      {/* =========================
+      {/* =====================================================
           PRICE PANEL
-      ========================= */}
+      ===================================================== */}
+
       {priceOpen && (
         <div className="mt-3 rounded-card border-[1.5px] border-line bg-white p-4 shadow-card">
           <div className="mb-3 text-sm font-semibold text-ink">
@@ -578,8 +571,8 @@ export default function FilterBar({
               inputMode="numeric"
               placeholder="Min"
               value={min}
-              onChange={(e) =>
-                setMin(e.target.value)
+              onChange={(event) =>
+                setMin(event.target.value)
               }
               className="bazaa-input"
             />
@@ -593,8 +586,8 @@ export default function FilterBar({
               inputMode="numeric"
               placeholder="Max"
               value={max}
-              onChange={(e) =>
-                setMax(e.target.value)
+              onChange={(event) =>
+                setMax(event.target.value)
               }
               className="bazaa-input"
             />
@@ -617,10 +610,10 @@ export default function FilterBar({
         </div>
       )}
 
+      {/* =====================================================
+          TYPE SHEET
+      ===================================================== */}
 
-      {/* =========================
-          TYPE BOTTOM SHEET
-      ========================= */}
       {sheet === 'type' && (
         <div
           className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
@@ -628,12 +621,10 @@ export default function FilterBar({
         >
           <div
             className="max-h-[70vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
-            onClick={(e) =>
-              e.stopPropagation()
+            onClick={(event) =>
+              event.stopPropagation()
             }
           >
-
-            {/* Sheet header */}
             <div className="sticky top-0 border-b-[1.5px] border-line bg-white px-4 py-4">
               <div className="text-xs font-semibold uppercase tracking-wider text-muted">
                 Filter by
@@ -644,35 +635,36 @@ export default function FilterBar({
               </div>
             </div>
 
-            {typeOptions.map((o) => (
+            {typeOptions.map((option) => (
               <button
-                key={o.name}
+                key={option.name}
                 type="button"
                 onClick={() => {
                   update({
-                    subcategory: o.name,
+                    subcategory: option.name,
                     brand: '',
                     model: '',
                   });
 
+                  setModelBrand('');
                   setSheet(null);
                 }}
                 className={row}
               >
                 <span
                   className={
-                    o.name === subcategory
+                    option.name === subcategory
                       ? 'font-bold text-amberDeep'
                       : 'text-ink'
                   }
                 >
-                  {o.name}{' '}
+                  {option.name}{' '}
                   <span className="text-sm font-normal text-muted">
-                    • {adsLabel(o.count)}
+                    • {adsLabel(option.count)}
                   </span>
                 </span>
 
-                {o.name === subcategory && (
+                {option.name === subcategory && (
                   <span className="font-bold text-amberDeep">
                     ✓
                   </span>
@@ -683,16 +675,13 @@ export default function FilterBar({
         </div>
       )}
 
-
-      {/* =========================
+      {/* =====================================================
           BRAND SHEET
-      ========================= */}
+      ===================================================== */}
+
       {sheet === 'brand' && (
         <div className="fixed inset-0 z-[60] flex flex-col bg-paper">
-
-          {/* Header */}
           <div className="flex items-center gap-3 border-b-[1.5px] border-white/20 bg-ink p-3 text-paper">
-
             <button
               type="button"
               onClick={() => {
@@ -709,8 +698,8 @@ export default function FilterBar({
               <input
                 type="text"
                 value={search}
-                onChange={(e) =>
-                  setSearch(e.target.value)
+                onChange={(event) =>
+                  setSearch(event.target.value)
                 }
                 placeholder="Find a brand"
                 className="w-full rounded-bazaa border-[1.5px] border-white/20 bg-white px-4 py-2.5 text-sm text-ink outline-none placeholder:text-mutedLight focus:border-amber focus:ring-2 focus:ring-amber/20"
@@ -718,12 +707,8 @@ export default function FilterBar({
             </div>
           </div>
 
-
-          {/* Brand list */}
           <div className="flex-1 overflow-y-auto">
-
-            {/* All brands */}
-            {brand && !q && (
+            {brand && !query && (
               <button
                 type="button"
                 onClick={() => {
@@ -743,7 +728,6 @@ export default function FilterBar({
               </button>
             )}
 
-            {/* Popular */}
             {popularBrands.length > 0 && (
               <>
                 <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
@@ -754,18 +738,16 @@ export default function FilterBar({
               </>
             )}
 
-            {/* Other / search results */}
-            {remainingBrands.length > 0 && (
+            {otherBrands.length > 0 && (
               <>
                 <div className="border-b-[1.5px] border-line bg-paper px-4 py-2 text-xs font-bold uppercase tracking-wider text-muted">
-                  {q ? 'Results' : 'Other'}
+                  {query ? 'Results' : 'Other'}
                 </div>
 
-                {remainingBrands.map(brandRow)}
+                {otherBrands.map(brandRow)}
               </>
             )}
 
-            {/* No results */}
             {filteredBrands.length === 0 && (
               <div className="px-6 py-16 text-center">
                 <div className="mb-2 text-2xl">
@@ -785,16 +767,13 @@ export default function FilterBar({
         </div>
       )}
 
-
-      {/* =========================
+      {/* =====================================================
           MODEL SHEET
-      ========================= */}
+      ===================================================== */}
+
       {sheet === 'model' && (
         <div className="fixed inset-0 z-[60] flex flex-col bg-paper">
-
-          {/* Header */}
           <div className="flex items-center gap-3 border-b-[1.5px] border-white/20 bg-ink p-3 text-paper">
-
             <button
               type="button"
               onClick={() => {
@@ -821,8 +800,8 @@ export default function FilterBar({
               <input
                 type="text"
                 value={search}
-                onChange={(e) =>
-                  setSearch(e.target.value)
+                onChange={(event) =>
+                  setSearch(event.target.value)
                 }
                 placeholder="Find model"
                 className="w-full rounded-bazaa border-[1.5px] border-white/20 bg-white px-3 py-2 text-sm text-ink outline-none placeholder:text-mutedLight focus:border-amber focus:ring-2 focus:ring-amber/20"
@@ -830,10 +809,7 @@ export default function FilterBar({
             </div>
           </div>
 
-
-          {/* Model list */}
           <div className="flex-1 overflow-y-auto">
-
             {currentModel && (
               <button
                 type="button"
@@ -847,5 +823,4 @@ export default function FilterBar({
                 className={row}
               >
                 <span className="font-semibold text-amberDeep">
-                  All {modelBrand} models
-                <
+          
