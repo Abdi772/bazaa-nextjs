@@ -18,19 +18,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-paper text-ink antialiased">
+      <body className="min-h-screen bg-paper text-ink antialiased">
 
-        {/* Header */}
+        {/* Bazaa Header */}
         <header className="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper">
           <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
 
-            <div className="flex min-w-0 items-center">
+            <div className="flex min-w-0 items-center gap-2">
               <BackButton />
 
               <Link
                 href="/"
-                className="font-serif text-2xl font-bold tracking-tight transition-opacity hover:opacity-90"
                 aria-label="Bazaa home"
+                className="font-serif text-2xl font-bold tracking-tight"
               >
                 Baz<span className="text-amber">aa</span>
               </Link>
@@ -41,12 +41,12 @@ export default function RootLayout({
           </div>
         </header>
 
-        {/* Main content */}
-        <main className="mx-auto max-w-5xl px-5 py-6 pb-24 md:pb-8">
+        {/* Page */}
+        <main className="mx-auto min-h-[calc(100vh-72px)] max-w-5xl px-5 py-6 pb-24 md:pb-8">
           {children}
         </main>
 
-        {/* Mobile navigation */}
+        {/* Mobile Bottom Navigation */}
         <BottomNav />
 
       </body>
