@@ -2,71 +2,72 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLanguage } from './LanguageProvider';
 
 const ICON = {
   fill: 'none',
   stroke: 'currentColor',
-  strokeWidth: 2,
+  strokeWidth: 1.8,
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
-  width: 22,
-  height: 22,
-  viewBox: '0 0 24 24',
 };
-
-const ITEMS = [
-  {
-    href: '/',
-    label: 'Home',
-    icon: (
-      <svg {...ICON}>
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
-      </svg>
-    ),
-  },
-  {
-    href: '/favorites',
-    label: 'Saved',
-    icon: (
-      <svg {...ICON}>
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-      </svg>
-    ),
-  },
-  {
-    href: '/post',
-    label: 'Sell',
-    icon: (
-      <svg {...ICON}>
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M12 8v8M8 12h8" />
-      </svg>
-    ),
-  },
-  {
-    href: '/messages',
-    label: 'Messages',
-    icon: (
-      <svg {...ICON}>
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </svg>
-    ),
-  },
-  {
-    href: '/profile',
-    label: 'Profile',
-    icon: (
-      <svg {...ICON}>
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-    ),
-  },
-];
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const items = [
+    {
+      href: '/',
+      label: t('home'),
+      icon: (
+        <svg {...ICON} viewBox="0 0 24 24" className="h-5 w-5">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5 9.5V21h14V9.5" />
+          <path d="M9 21v-6h6v6" />
+        </svg>
+      ),
+    },
+    {
+      href: '/browse',
+      label: t('browse'),
+      icon: (
+        <svg {...ICON} viewBox="0 0 24 24" className="h-5 w-5">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-4-4" />
+        </svg>
+      ),
+    },
+    {
+      href: '/post',
+      label: t('sell'),
+      icon: (
+        <svg {...ICON} viewBox="0 0 24 24" className="h-5 w-5">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M12 8v8M8 12h8" />
+        </svg>
+      ),
+    },
+    {
+      href: '/messages',
+      label: t('messages'),
+      icon: (
+        <svg {...ICON} viewBox="0 0 24 24" className="h-5 w-5">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+      ),
+    },
+    {
+      href: '/profile',
+      label: t('profile'),
+      icon: (
+        <svg {...ICON} viewBox="0 0 24 24" className="h-5 w-5">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      ),
+    },
+  ];
 
   return (
     <nav
@@ -74,7 +75,7 @@ export default function BottomNav() {
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="mx-auto flex max-w-5xl">
-        {ITEMS.map((item) => {
+        {items.map((item) => {
           const active =
             item.href === '/'
               ? pathname === '/'
