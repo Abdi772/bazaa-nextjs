@@ -151,13 +151,13 @@ export default function SettingsPage() {
     setCurrentPhone(value);
   }
 
-  function saveLanguage() {
-    localStorage.setItem('bazaa-language', language);
+   function saveLanguage() {
+  localStorage.setItem('bazaa-language', language);
 
-    setLanguageMessage(
-      `Language changed to ${language}.`
-    );
-  }
+  window.dispatchEvent(new Event('bazaa-language-change'));
+
+  setLanguageMessage(`Language changed to ${language}.`);
+   }
 
   return (
     <div className="mx-auto max-w-xl">
