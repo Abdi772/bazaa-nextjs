@@ -14,12 +14,26 @@ import FilterBar from './FilterBar';
 
 export const revalidate = 60;
 
-function buildUrl(category?: string, subcategory?: string, brand?: string) {
+function buildUrl(
+  category?: string,
+  subcategory?: string,
+  brand?: string,
+  model?: string,
+  condition?: string,
+  region?: string,
+  minPrice?: string,
+  maxPrice?: string
+) {
   const params = new URLSearchParams();
 
   if (category) params.set('category', category);
   if (subcategory) params.set('subcategory', subcategory);
   if (brand) params.set('brand', brand);
+  if (model) params.set('model', model);
+  if (condition) params.set('condition', condition);
+  if (region) params.set('region', region);
+  if (minPrice) params.set('minPrice', minPrice);
+  if (maxPrice) params.set('maxPrice', maxPrice);
 
   const qs = params.toString();
   return qs ? `/?${qs}` : '/';
@@ -33,22 +47,30 @@ export default async function HomePage({
     category?: string;
     subcategory?: string;
     brand?: string;
+    model?: string;
+    condition?: string;
     all?: string;
     region?: string;
     minPrice?: string;
     maxPrice?: string;
+    budget?: string;
   };
 }) {
   const query = searchParams.q || '';
   const category = searchParams.category || '';
   const subcategory = searchParams.subcategory || '';
   const brand = searchParams.brand || '';
+  const model = searchParams.model || '';
+  const condition = searchParams.condition || '';
   const showAll = searchParams.all === '1';
   const region = searchParams.region || '';
   const minPrice = searchParams.minPrice || '';
   const maxPrice = searchParams.maxPrice || '';
+  const budget = searchParams.budget || '';
 
-  const categoryConfig = category ? CATEGORY_CONFIG[category] : undefined;
+  const categoryConfig = category
+    ? CATEGORY_CONFIG[category]
+    : undefined;
 
   const subNames = categoryConfig
     ? Object.keys(categoryConfig.subcategories)
@@ -61,7 +83,12 @@ export default async function HomePage({
 
   // Step 1: home
   const showHome =
-    !query && !category && !subcategory && !brand;
+    !query &&
+    !category &&
+    !subcategory &&
+    !brand &&
+    !model &&
+    !condition;
 
   // Step 2: category selected
   const showSubList =
@@ -69,6 +96,8 @@ export default async function HomePage({
     !!category &&
     !subcategory &&
     !brand &&
+    !model &&
+    !condition &&
     !showAll &&
     subNames.length > 0;
 
@@ -77,6 +106,8 @@ export default async function HomePage({
     !query &&
     !!subcategory &&
     !brand &&
+    !model &&
+    !condition &&
     brandNames.length > 0;
 
   const showListings = !showSubList;
@@ -89,7 +120,9 @@ export default async function HomePage({
             category,
             subcategory,
             brand,
+            model,
             region,
+            condition,
             minPrice: minPrice
               ? Number(minPrice)
               : undefined,
@@ -131,7 +164,10 @@ export default async function HomePage({
   let backLabel = 'Back to all categories';
 
   if (brand) {
-    backHref = buildUrl(category, subcategory);
+    backHref = buildUrl(
+      category,
+      subcategory
+    );
     backLabel = `Back to ${subcategory}`;
   } else if (subcategory) {
     backHref = buildUrl(category);
@@ -251,7 +287,8 @@ export default async function HomePage({
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="bazaa-title text-2xl">
-              {brand ||
+              {model ||
+                brand ||
                 subcategory ||
                 category ||
                 (query
@@ -352,7 +389,11 @@ export default async function HomePage({
               return (
                 <Link
                   key={b}
-                  href={buildUrl(category, subcategory, b)}
+                  href={buildUrl(
+                    category,
+                    subcategory,
+                    b
+                  )}
                   className="group flex min-h-[100px] flex-col items-center justify-center gap-2 rounded-card border border-[var(--bazaa-border)] bg-[var(--bazaa-surface)] p-3 text-center shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber hover:shadow-soft"
                 >
                   <div className="flex h-9 items-center justify-center">
@@ -378,8 +419,7 @@ export default async function HomePage({
             })}
           </div>
         )}
-
-        {/* =========================
+               {/* =========================
             FILTERS
         ========================= */}
         {showListings && (
@@ -389,6 +429,8 @@ export default async function HomePage({
               minPrice={minPrice}
               maxPrice={maxPrice}
               brand={brand}
+              model={model}
+              condition={condition}
               subcategory={subcategory}
               brandOptions={brandOptions}
               typeOptions={typeOptions}
@@ -463,4 +505,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-      }
+}
