@@ -168,7 +168,9 @@ export default async function HomePage({
           {} as Record<string, number>,
         ),
 
-    showListings && category && subcategory
+    showListings &&
+    category &&
+    subcategory
       ? getBrandCounts(
           category,
           subcategory,
@@ -258,19 +260,19 @@ export default async function HomePage({
   }
 
   const typeOptions =
-    categoryConfig && subNames.length > 1
+    categoryConfig &&
+    subNames.length > 1
       ? subNames.map((name) => ({
           name,
           count: subCounts[name] || 0,
         }))
       : [];
 
-  const brandOptions = brandNames.map(
-    (name) => ({
+  const brandOptions =
+    brandNames.map((name) => ({
       name,
       count: brandCounts[name] || 0,
-    }),
-  );
+    }));
 
   let backHref = '/';
 
@@ -296,61 +298,108 @@ export default async function HomePage({
       </div>
 
       <div className="min-w-0 flex-1">
+
         {showHome && (
           <>
-            <section className="mb-8 overflow-hidden rounded-card bg-ink px-6 py-8 text-paper shadow-soft sm:px-8 sm:py-10">
-              <div className="max-w-2xl">
-                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber">
+            {/* HERO */}
+            <section className="relative mb-10 overflow-hidden rounded-[22px] bg-ink px-6 py-10 text-paper shadow-soft sm:px-10 sm:py-14">
+              {/* decorative shapes */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-amber/20 blur-3xl"
+              />
+
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-amberDeep/20 blur-3xl"
+              />
+
+              <div className="relative z-10 max-w-3xl">
+                <div className="mb-3 inline-flex rounded-full border border-amber/30 bg-amber/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-amber">
                   Bazaa Marketplace
                 </div>
 
-                <h1 className="mb-3 font-serif text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+                <h1 className="max-w-2xl font-serif text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
                   <LanguageText k="buyAndSell" />
                 </h1>
 
-                <p className="mb-6 max-w-xl text-sm leading-6 text-paper/75 sm:text-base">
+                <p className="mt-4 max-w-xl text-sm leading-6 text-paper/70 sm:text-base">
                   <LanguageText k="findWhatYouNeed" />
                 </p>
 
+                {/* SEARCH */}
                 <form
                   action="/"
                   method="get"
-                  className="flex flex-col gap-2 sm:flex-row"
+                  className="mt-7 max-w-2xl"
                 >
-                  <SearchInput
-                    defaultValue={query}
-                  />
+                  <div className="flex flex-col gap-2 rounded-[18px] bg-white p-2 shadow-soft sm:flex-row">
+                    <div className="min-w-0 flex-1">
+                      <SearchInput
+                        defaultValue={query}
+                      />
+                    </div>
 
-                  <button
-                    type="submit"
-                    className="bazaa-primary min-h-[46px] px-6"
-                  >
-                    <LanguageText k="search" />
-                  </button>
+                    <button
+                      type="submit"
+                      className="bazaa-primary min-h-[48px] px-7"
+                    >
+                      <span className="mr-2">
+                        🔍
+                      </span>
+
+                      <LanguageText k="search" />
+                    </button>
+                  </div>
                 </form>
+
+                <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-paper/60">
+                  <span>
+                    ✓ Easy buying
+                  </span>
+
+                  <span>
+                    ✓ Local sellers
+                  </span>
+
+                  <span>
+                    ✓ New listings
+                  </span>
+                </div>
               </div>
             </section>
 
-            <div className="mb-4">
-              <h2 className="bazaa-title text-2xl">
-                <LanguageText k="popularCategories" />
-              </h2>
+            {/* CATEGORY HEADING */}
+            <div className="mb-4 flex items-end justify-between gap-3">
+              <div>
+                <h2 className="bazaa-title text-2xl sm:text-3xl">
+                  <LanguageText k="popularCategories" />
+                </h2>
 
-              <p className="bazaa-muted mt-1">
-                <LanguageText k="browseBy" />
-              </p>
+                <p className="bazaa-muted mt-1">
+                  <LanguageText k="browseBy" />
+                </p>
+              </div>
+
+              <Link
+                href="/?all=1"
+                className="shrink-0 text-sm font-semibold text-amberDeep hover:underline"
+              >
+                <LanguageText k="seeAllIn" />
+              </Link>
             </div>
 
+            {/* CATEGORY CARDS */}
             <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
               {Object.entries(
                 CATEGORY_CONFIG,
-              ).map(([name]) => (
+              ).map(([name, config]) => (
                 <Link
                   key={name}
                   href={buildUrl(name)}
-                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-1 hover:border-amber hover:shadow-soft"
                 >
-                  <div className="relative aspect-square overflow-hidden bg-paper">
+                  <div className="relative aspect-[1.15/1] overflow-hidden bg-paper">
                     <Image
                       src={`/categories/${name.toLowerCase()}.jpg`}
                       alt={name}
@@ -358,6 +407,12 @@ export default async function HomePage({
                       sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+
+                    <div className="absolute bottom-2 left-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-base shadow-sm backdrop-blur-sm">
+                      {config.icon}
+                    </div>
                   </div>
 
                   <div className="p-3">
@@ -369,7 +424,7 @@ export default async function HomePage({
                       />
                     </div>
 
-                    <div className="mt-0.5 text-xs text-muted">
+                    <div className="mt-1 text-xs text-muted">
                       {counts[name] || 0}{' '}
                       <LanguageText k="listings" />
                     </div>
@@ -377,9 +432,30 @@ export default async function HomePage({
                 </Link>
               ))}
             </div>
+
+            {/* FEATURED HEADING */}
+            <div className="mb-4 flex items-end justify-between gap-3">
+              <div>
+                <h2 className="bazaa-title text-2xl sm:text-3xl">
+                  Featured Listings
+                </h2>
+
+                <p className="bazaa-muted mt-1">
+                  Discover products available from local sellers
+                </p>
+              </div>
+
+              <Link
+                href="/?all=1"
+                className="shrink-0 text-sm font-semibold text-amberDeep hover:underline"
+              >
+                See all
+              </Link>
+            </div>
           </>
         )}
 
+        {/* PAGE TITLE */}
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="bazaa-title text-2xl">
@@ -436,7 +512,17 @@ export default async function HomePage({
           )}
         </div>
                {showSubList && categoryConfig && (
-          <div className="mb-6 overflow-hidden rounded-card border border-line bg-white shadow-card">
+          <div className="mb-7 overflow-hidden rounded-card border border-line bg-white shadow-card">
+            <div className="border-b border-line bg-surfaceSoft px-4 py-3">
+              <div className="text-sm font-semibold text-ink">
+                Browse {category}
+              </div>
+
+              <div className="mt-0.5 text-xs text-muted">
+                Choose a category to continue
+              </div>
+            </div>
+
             {subNames.map((subName) => {
               const img = subcategoryImage(subName);
 
@@ -468,8 +554,7 @@ export default async function HomePage({
 
                     <span className="mt-0.5 block text-xs text-muted">
                       {subCounts[subName] || 0}{' '}
-                      {(subCounts[subName] || 0) ===
-                      1 ? (
+                      {(subCounts[subName] || 0) === 1 ? (
                         <LanguageText k="ad" />
                       ) : (
                         <LanguageText k="ads" />
@@ -477,7 +562,7 @@ export default async function HomePage({
                     </span>
                   </span>
 
-                  <span className="text-lg text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-amberDeep">
+                  <span className="text-lg text-muted transition-transform group-hover:translate-x-1 group-hover:text-amberDeep">
                     →
                   </span>
                 </Link>
@@ -507,46 +592,58 @@ export default async function HomePage({
         )}
 
         {showBrandTiles && (
-          <div className="mb-6 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
-            {brandNames.map((b) => {
-              const logo = getBrandLogo(b);
+          <div className="mb-7">
+            <div className="mb-3">
+              <h3 className="text-base font-bold text-ink">
+                Choose a brand
+              </h3>
 
-              return (
-                <Link
-                  key={b}
-                  href={buildUrl(
-                    category,
-                    subcategory,
-                    b,
-                  )}
-                  className="group flex min-h-[100px] flex-col items-center justify-center gap-2 rounded-card border border-line bg-white p-3 text-center shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber hover:shadow-soft"
-                >
-                  <div className="flex h-9 items-center justify-center">
-                    {logo ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={logo}
-                        alt=""
-                        className="max-h-9 max-w-[64px] object-contain"
-                      />
-                    ) : (
-                      <span className="text-xl text-muted">
-                        •••
-                      </span>
+              <p className="mt-0.5 text-xs text-muted">
+                Browse available brands
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+              {brandNames.map((b) => {
+                const logo = getBrandLogo(b);
+
+                return (
+                  <Link
+                    key={b}
+                    href={buildUrl(
+                      category,
+                      subcategory,
+                      b,
                     )}
-                  </div>
+                    className="group flex min-h-[104px] flex-col items-center justify-center gap-2 rounded-card border border-line bg-white p-3 text-center shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber hover:bg-amberSoft hover:shadow-soft"
+                  >
+                    <div className="flex h-10 items-center justify-center">
+                      {logo ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={logo}
+                          alt=""
+                          className="max-h-10 max-w-[68px] object-contain"
+                        />
+                      ) : (
+                        <span className="text-xl text-muted">
+                          •••
+                        </span>
+                      )}
+                    </div>
 
-                  <span className="text-xs font-semibold text-ink">
-                    {b}
-                  </span>
-                </Link>
-              );
-            })}
+                    <span className="text-xs font-semibold text-ink">
+                      {b}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
 
         {showListings && (
-          <div className="mb-5">
+          <div className="mb-6">
             <FilterBar
               region={region}
               minPrice={minPrice}
@@ -561,18 +658,25 @@ export default async function HomePage({
 
         {showListings &&
           (listings.length === 0 ? (
-            <div className="rounded-card border border-dashed border-line bg-white px-6 py-16 text-center">
-              <div className="mb-3 text-3xl">
-                ⌕
+            <div className="rounded-card border border-dashed border-line bg-white px-6 py-16 text-center shadow-card">
+              <div className="mb-4 text-4xl">
+                🔎
               </div>
 
-              <h3 className="mb-1 font-semibold text-ink">
+              <h3 className="mb-1 text-base font-bold text-ink">
                 <LanguageText k="noListingsMatch" />
               </h3>
 
               <p className="text-sm text-muted">
                 <LanguageText k="tryDifferent" />
               </p>
+
+              <Link
+                href="/"
+                className="bazaa-primary mt-5"
+              >
+                Browse all listings
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
@@ -582,71 +686,85 @@ export default async function HomePage({
                   href={`/products/${listingSlug(
                     listing,
                   )}`}
-                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-1 hover:border-amber hover:shadow-soft"
                 >
-                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bg-paper">
+                  {/* PRODUCT IMAGE */}
+                  <div className="relative aspect-[4/3] overflow-hidden border-b border-line bg-paper">
                     {listing.image_url ? (
                       <Image
                         src={listing.image_url}
                         alt={listing.title}
                         fill
-                        sizes="(max-width: 640px) 50vw, 25vw"
+                        sizes="(max-width: 640px) 50vw, 33vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <span className="text-4xl">
-                        {CATEGORY_CONFIG[
-                          listing.category
-                        ]?.icon || '📦'}
-                      </span>
+                      <div className="flex h-full w-full items-center justify-center">
+                        <span className="text-5xl">
+                          {CATEGORY_CONFIG[
+                            listing.category
+                          ]?.icon || '📦'}
+                        </span>
+                      </div>
                     )}
+
+                    {/* CONDITION BADGE */}
+                    {listing.condition && (
+                      <div className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[10px] font-bold text-ink shadow-sm backdrop-blur-sm">
+                        {listing.condition}
+                      </div>
+                    )}
+
+                    {/* LOCATION */}
+                    {listing.location && (
+                      <div className="absolute bottom-2 left-2 max-w-[75%] truncate rounded-full bg-ink/85 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-sm">
+                        📍 {listing.location}
+                      </div>
+                    )}
+
+                    {/* FAVORITE VISUAL */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-sm text-ink shadow-sm backdrop-blur-sm"
+                    >
+                      ♡
+                    </div>
                   </div>
 
+                  {/* PRODUCT INFO */}
                   <div className="p-3.5">
-                    <div className="font-serif text-lg font-bold text-amberDeep">
+                    <div className="font-serif text-lg font-bold leading-tight text-amberDeep">
                       ETB{' '}
                       {Number(
                         listing.price,
                       ).toLocaleString()}
                     </div>
 
-                    <div className="mt-1 line-clamp-1 text-sm font-semibold text-ink">
+                    <div className="mt-1.5 line-clamp-2 min-h-[40px] text-sm font-semibold leading-5 text-ink">
                       {listing.title}
                     </div>
 
-                    <div className="mt-1 flex min-w-0 flex-wrap gap-x-1.5 gap-y-1 text-xs text-muted">
-                      {listing.brand && (
-                        <span>
-                          {listing.brand}
-                        </span>
-                      )}
+                    {(listing.brand ||
+                      listing.model) && (
+                      <div className="mt-1.5 flex min-w-0 flex-wrap gap-x-1.5 gap-y-1 text-xs text-muted">
+                        {listing.brand && (
+                          <span>
+                            {listing.brand}
+                          </span>
+                        )}
 
-                      {listing.model && (
-                        <>
-                          {listing.brand && (
+                        {listing.model &&
+                          listing.brand && (
                             <span>•</span>
                           )}
 
+                        {listing.model && (
                           <span>
                             {listing.model}
                           </span>
-                        </>
-                      )}
-                    </div>
-
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      {listing.condition && (
-                        <span className="rounded-full bg-amberSoft px-2 py-1 text-[11px] font-semibold text-amberDeep">
-                          {listing.condition}
-                        </span>
-                      )}
-
-                      {listing.location && (
-                        <span className="line-clamp-1 text-xs text-muted">
-                          {listing.location}
-                        </span>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </Link>
               ))}
@@ -655,4 +773,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-                      }
+                    }
