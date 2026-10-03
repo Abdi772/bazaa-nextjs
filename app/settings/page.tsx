@@ -33,9 +33,15 @@ export default function SettingsPage() {
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailMessage, setEmailMessage] = useState('');
 
+  const [phone, setPhone] = useState('');
+  const [currentPhone, setCurrentPhone] = useState('');
+  const [phoneLoading, setPhoneLoading] = useState(false);
+  const [phoneMessage, setPhoneMessage] = useState('');
+
   function openSetting(setting: SettingKey) {
     setActive(setting);
     setEmailMessage('');
+    setPhoneMessage('');
 
     if (setting === 'email') {
       supabase.auth.getUser().then(({ data }) => {
@@ -43,12 +49,21 @@ export default function SettingsPage() {
         setNewEmail('');
       });
     }
+
+    if (setting === 'phone') {
+      supabase.auth.getUser().then(({ data }) => {
+        setCurrentPhone(data.user?.phone ?? '');
+        setPhone('');
+      });
+    }
   }
 
   function closeSetting() {
     setActive(null);
     setEmailMessage('');
+    setPhoneMessage('');
     setNewEmail('');
+    setPhone('');
   }
 
   async function changeEmail() {
@@ -81,6 +96,40 @@ export default function SettingsPage() {
     setEmailMessage(
       'Check your email for a confirmation link to complete the change.'
     );
+  }
+
+  async function addPhone() {
+    const value = phone.trim();
+
+    if (!value) {
+      setPhoneMessage('Please enter your phone number.');
+      return;
+    }
+
+    if (value === currentPhone) {
+      setPhoneMessage('Please enter a different phone number.');
+      return;
+    }
+
+    setPhoneLoading(true);
+    setPhoneMessage('');
+
+    const { error } = await supabase.auth.updateUser({
+      phone: value,
+    });
+
+    setPhoneLoading(false);
+
+    if (error) {
+      setPhoneMessage(error.message);
+      return;
+    }
+
+    setPhoneMessage(
+      'Your phone number was submitted. If phone verification is enabled, check for the verification code.'
+    );
+
+    setCurrentPhone(value);
   }
 
   const settingInfo: Record<
@@ -293,8 +342,88 @@ export default function SettingsPage() {
             className="w-full max-w-xl rounded-card border-[2px] border-line bg-white p-5 shadow-soft"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Change email */}
-            {active === 'email' ? (
+            {/* Add phone number */}
+            {active === 'phone' ? (
+              <>
+                <div className="mb-5 flex items-center justify-between">
+                  <h2 className="font-serif text-xl font-bold text-ink">
+                    Add phone number
+                  </h2>
+
+                  <button
+                    type="button"
+                    onClick={closeSetting}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-muted hover:bg-paper"
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {currentPhone && (
+                  <div className="mb-4">
+                    <label className="mb-2 block text-sm font-bold text-ink">
+                      Current phone number
+                    </label>
+
+                    <div className="rounded-xl border-[2px] border-line bg-paper px-4 py-3 text-sm font-semibold text-muted">
+                      {currentPhone}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label
+                    htmlFor="phone-number"
+                    className="mb-2 block text-sm font-bold text-ink"
+                  >
+                    Phone number
+                  </label>
+
+                  <input
+                    id="phone-number"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+251 9XX XXX XXX"
+                    autoComplete="tel"
+                    inputMode="tel"
+                    className="bazaa-input font-semibold"
+                  />
+                </div>
+
+                <p className="mt-2 text-xs font-semibold leading-5 text-muted">
+                  Use your full international phone number, for example
+                  +251 9XX XXX XXX.
+                </p>
+
+                {phoneMessage && (
+                  <div className="mt-4 rounded-xl border-[2px] border-line bg-amberSoft px-4 py-3 text-sm font-semibold leading-6 text-ink">
+                    {phoneMessage}
+                  </div>
+                )}
+
+                <div className="mt-5 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={closeSetting}
+                    className="bazaa-secondary flex-1 border-[2px] font-bold"
+                    disabled={phoneLoading}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={addPhone}
+                    disabled={phoneLoading}
+                    className="bazaa-primary flex-1 border-[2px] border-amberDeep font-bold disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {phoneLoading ? 'Saving...' : 'Save number'}
+                  </button>
+                </div>
+              </>
+            ) : active === 'email' ? (
               <>
                 <div className="mb-5 flex items-center justify-between">
                   <h2 className="font-serif text-xl font-bold text-ink">
@@ -401,4 +530,4 @@ export default function SettingsPage() {
       )}
     </div>
   );
-}
+             }
