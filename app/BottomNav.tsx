@@ -29,7 +29,7 @@ export default function BottomNav() {
       ),
     },
     {
-      href: '/browse',
+      href: '/',
       label: t('browse'),
       icon: (
         <svg {...ICON} viewBox="0 0 24 24" className="h-5 w-5">
