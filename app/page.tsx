@@ -20,6 +20,7 @@ import CategorySidebar from './CategorySidebar';
 import FilterBar from './FilterBar';
 import LanguageText from './LanguageText';
 import SearchInput from './SearchInput';
+import FavoriteButton from './FavoriteButton';
 
 export const revalidate = 60;
 
@@ -722,16 +723,17 @@ export default async function HomePage({
                       </div>
                     )}
 
-                    {/* FAVORITE VISUAL */}
-                    <div
-                      aria-hidden="true"
-                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-sm text-ink shadow-sm backdrop-blur-sm"
-                    >
-                      ♡
-                    </div>
-                  </div>
-
-                  {/* PRODUCT INFO */}
+                     {/* FAVORITE */}
+<div
+  className="absolute right-2 top-2 z-10"
+  onClick={(event) => {
+    event.stopPropagation();
+  }}
+>
+  <FavoriteButton listingId={listing.id} />
+</div>
+                 
+                   {/* PRODUCT INFO */}
                   <div className="p-3.5">
                     <div className="font-serif text-lg font-bold leading-tight text-amberDeep">
                       ETB{' '}
