@@ -6,6 +6,7 @@ import AuthButton from './AuthButton';
 import BottomNav from './BottomNav';
 import BackButton from './BackButton';
 import ThemeButton from './ThemeButton';
+import { LanguageProvider } from './LanguageProvider';
 
 export const metadata: Metadata = {
   title: 'Bazaa — Buy & Sell Marketplace',
@@ -20,32 +21,34 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bazaa-page min-h-screen antialiased">
-        <header className="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper">
-          <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-            <div className="flex min-w-0 items-center gap-2">
-              <BackButton />
+        <LanguageProvider>
+          <header className="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper">
+            <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
+              <div className="flex min-w-0 items-center gap-2">
+                <BackButton />
 
-              <Link
-                href="/"
-                aria-label="Bazaa home"
-                className="font-serif text-2xl font-bold tracking-tight"
-              >
-                Baz<span className="text-amber">aa</span>
-              </Link>
+                <Link
+                  href="/"
+                  aria-label="Bazaa home"
+                  className="font-serif text-2xl font-bold tracking-tight"
+                >
+                  Baz<span className="text-amber">aa</span>
+                </Link>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <ThemeButton />
+                <AuthButton />
+              </div>
             </div>
+          </header>
 
-            <div className="flex items-center gap-2">
-              <ThemeButton />
-              <AuthButton />
-            </div>
-          </div>
-        </header>
+          <main className="mx-auto min-h-[calc(100vh-72px)] max-w-5xl px-5 py-6 pb-24 md:pb-8">
+            {children}
+          </main>
 
-        <main className="mx-auto min-h-[calc(100vh-72px)] max-w-5xl px-5 py-6 pb-24 md:pb-8">
-          {children}
-        </main>
-
-        <BottomNav />
+          <BottomNav />
+        </LanguageProvider>
       </body>
     </html>
   );
