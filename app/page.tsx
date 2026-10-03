@@ -7,11 +7,15 @@ import {
   getBrandCounts,
   listingSlug,
 } from '@/lib/listings';
-import { CATEGORY_CONFIG, subcategoryImage } from '@/lib/categories';
+import {
+  CATEGORY_CONFIG,
+  subcategoryImage,
+} from '@/lib/categories';
 import { getBrandLogo } from '@/lib/brandLogos';
 import CategorySidebar from './CategorySidebar';
 import FilterBar from './FilterBar';
 import LanguageText from './LanguageText';
+import SearchInput from './SearchInput';
 
 export const revalidate = 60;
 
@@ -49,7 +53,8 @@ export default async function HomePage({
 }) {
   const query = searchParams.q || '';
   const category = searchParams.category || '';
-  const subcategory = searchParams.subcategory || '';
+  const subcategory =
+    searchParams.subcategory || '';
   const brand = searchParams.brand || '';
 
   const model = searchParams.model || '';
@@ -105,46 +110,52 @@ export default async function HomePage({
   // GET LISTINGS
   // ----------------------------------------
 
-  const [rawListings, counts, subCounts, brandCounts] =
-    await Promise.all([
-      showListings
-        ? getListings({
-            query,
-            category,
-            subcategory,
-            brand,
-            region,
-            minPrice: minPrice
-              ? Number(minPrice)
-              : undefined,
-            maxPrice: maxPrice
-              ? Number(maxPrice)
-              : undefined,
-            limit: 24,
-          })
-        : Promise.resolve([]),
+  const [
+    rawListings,
+    counts,
+    subCounts,
+    brandCounts,
+  ] = await Promise.all([
+    showListings
+      ? getListings({
+          query,
+          category,
+          subcategory,
+          brand,
+          region,
+          minPrice: minPrice
+            ? Number(minPrice)
+            : undefined,
+          maxPrice: maxPrice
+            ? Number(maxPrice)
+            : undefined,
+          limit: 24,
+        })
+      : Promise.resolve([]),
 
-      showHome
-        ? getCategoryCounts()
-        : Promise.resolve(
-            {} as Record<string, number>,
-          ),
+    showHome
+      ? getCategoryCounts()
+      : Promise.resolve(
+          {} as Record<string, number>,
+        ),
 
-      category
-        ? getSubcategoryCounts(category)
-        : Promise.resolve(
-            {} as Record<string, number>,
-          ),
+    category
+      ? getSubcategoryCounts(category)
+      : Promise.resolve(
+          {} as Record<string, number>,
+        ),
 
-      showListings && category && subcategory
-        ? getBrandCounts(
-            category,
-            subcategory,
-          )
-        : Promise.resolve(
-            {} as Record<string, number>,
-          ),
-    ]);
+    showListings &&
+    category &&
+    subcategory
+      ? getBrandCounts(
+          category,
+          subcategory,
+        )
+      : Promise.resolve(
+          {} as Record<string, number>,
+        ),
+  ]);
 
   // ----------------------------------------
   // MODEL / CONDITION / BUDGET FILTERING
@@ -165,7 +176,8 @@ export default async function HomePage({
         .toLowerCase();
 
       return (
-        listingModel === model.trim().toLowerCase()
+        listingModel ===
+        model.trim().toLowerCase()
       );
     });
   }
@@ -206,13 +218,22 @@ export default async function HomePage({
           return price < 10000;
 
         case 'ETB 10,000 – 25,000':
-          return price >= 10000 && price <= 25000;
+          return (
+            price >= 10000 &&
+            price <= 25000
+          );
 
         case 'ETB 25,000 – 50,000':
-          return price >= 25000 && price <= 50000;
+          return (
+            price >= 25000 &&
+            price <= 50000
+          );
 
         case 'ETB 50,000 – 100,000':
-          return price >= 50000 && price <= 100000;
+          return (
+            price >= 50000 &&
+            price <= 100000
+          );
 
         case 'Over ETB 100,000':
           return price > 100000;
@@ -228,24 +249,28 @@ export default async function HomePage({
   // ----------------------------------------
 
   const typeOptions =
-    categoryConfig && subNames.length > 1
+    categoryConfig &&
+    subNames.length > 1
       ? subNames.map((name) => ({
           name,
           count: subCounts[name] || 0,
         }))
       : [];
 
-  const brandOptions = brandNames.map((name) => ({
-    name,
-    count: brandCounts[name] || 0,
-  }));
+  const brandOptions = brandNames.map(
+    (name) => ({
+      name,
+      count: brandCounts[name] || 0,
+    }),
+  );
 
   // ----------------------------------------
   // BACK LINK
   // ----------------------------------------
 
   let backHref = '/';
-  let backLabel = 'Back to all categories';
+  let backLabel =
+    'Back to all categories';
 
   if (brand) {
     backHref = buildUrl(
@@ -263,8 +288,8 @@ export default async function HomePage({
 
   return (
     <div className="flex flex-col gap-6 md:flex-row">
-
       {/* Desktop sidebar */}
+
       <div className="hidden md:block">
         <CategorySidebar
           currentCategory={category}
@@ -300,12 +325,8 @@ export default async function HomePage({
                   action="/"
                   className="flex flex-col gap-2 sm:flex-row"
                 >
-                  <input
-                    name="q"
-                    type="text"
-                     placeholder="What are you looking for?"
-aria-label="What are you looking for?"
-                    className="min-w-0 flex-1 rounded-bazaa border border-white/10 bg-white px-4 py-3 text-sm text-ink outline-none placeholder:text-mutedLight focus:border-amber focus:ring-2 focus:ring-amber/20"
+                  <SearchInput
+                    defaultValue={query}
                   />
 
                   <button
@@ -333,36 +354,36 @@ aria-label="What are you looking for?"
             {/* Category cards */}
 
             <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
-              {Object.entries(CATEGORY_CONFIG).map(
-                ([name]) => (
-                  <Link
-                    key={name}
-                    href={buildUrl(name)}
-                    className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
-                  >
-                    <div className="relative aspect-square overflow-hidden bg-paper">
-                      <Image
-                        src={`/categories/${name.toLowerCase()}.jpg`}
-                        alt={name}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
+              {Object.entries(
+                CATEGORY_CONFIG,
+              ).map(([name]) => (
+                <Link
+                  key={name}
+                  href={buildUrl(name)}
+                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                >
+                  <div className="relative aspect-square overflow-hidden bg-paper">
+                    <Image
+                      src={`/categories/${name.toLowerCase()}.jpg`}
+                      alt={name}
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+
+                  <div className="p-3">
+                    <div className="text-sm font-semibold text-ink">
+                      {name}
                     </div>
 
-                    <div className="p-3">
-                      <div className="text-sm font-semibold text-ink">
-                        {name}
-                      </div>
-
-                      <div className="mt-0.5 text-xs text-muted">
-                        {counts[name] || 0}{' '}
-                        <LanguageText k="listings" />
-                      </div>
+                    <div className="mt-0.5 text-xs text-muted">
+                      {counts[name] || 0}{' '}
+                      <LanguageText k="listings" />
                     </div>
-                  </Link>
-                ),
-              )}
+                  </div>
+                </Link>
+              ))}
             </div>
           </>
         )}
@@ -409,12 +430,20 @@ aria-label="What are you looking for?"
               className="rounded-full border border-line bg-white px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-amber hover:bg-amberSoft"
             >
               ←{' '}
-              {brand || subcategory || showAll ? (
+              {brand ? (
                 <>
                   <LanguageText k="backTo" />{' '}
-                  {brand
-                    ? subcategory
-                    : category}
+                  {subcategory}
+                </>
+              ) : subcategory ? (
+                <>
+                  <LanguageText k="backTo" />{' '}
+                  {category}
+                </>
+              ) : showAll ? (
+                <>
+                  <LanguageText k="backTo" />{' '}
+                  {category}
                 </>
               ) : (
                 <LanguageText k="backToAllCategories" />
@@ -432,7 +461,8 @@ aria-label="What are you looking for?"
             <div className="mb-6 overflow-hidden rounded-card border border-line bg-white shadow-card">
 
               {subNames.map((subName) => {
-                const img = subcategoryImage(subName);
+                const img =
+                  subcategoryImage(subName);
 
                 return (
                   <Link
@@ -464,7 +494,9 @@ aria-label="What are you looking for?"
                         {subCounts[subName] || 0}{' '}
                         <LanguageText
                           k={
-                            (subCounts[subName] || 0) === 1
+                            (subCounts[
+                              subName
+                            ] || 0) === 1
                               ? 'ad'
                               : 'ads'
                           }
@@ -480,7 +512,9 @@ aria-label="What are you looking for?"
               })}
 
               <Link
-                href={`${buildUrl(category)}&all=1`}
+                href={`${buildUrl(
+                  category,
+                )}&all=1`}
                 className="flex items-center justify-between bg-paper px-4 py-4 transition-colors hover:bg-amberSoft"
               >
                 <span className="text-sm font-semibold text-amberDeep">
@@ -494,8 +528,7 @@ aria-label="What are you looking for?"
               </Link>
             </div>
           )}
-
-        {/* =========================
+               {/* =========================
             BRAND TILES
         ========================= */}
 
@@ -555,7 +588,8 @@ aria-label="What are you looking for?"
             />
           </div>
         )}
-               {/* =========================
+
+        {/* =========================
             LISTINGS
         ========================= */}
 
