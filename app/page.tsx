@@ -11,6 +11,7 @@ import { CATEGORY_CONFIG, subcategoryImage } from '@/lib/categories';
 import { getBrandLogo } from '@/lib/brandLogos';
 import CategorySidebar from './CategorySidebar';
 import FilterBar from './FilterBar';
+import LanguageText from './LanguageText';
 
 export const revalidate = 60;
 
@@ -147,10 +148,6 @@ export default async function HomePage({
 
   // ----------------------------------------
   // MODEL / CONDITION / BUDGET FILTERING
-  //
-  // We filter these here for now.
-  // Later we will move this filtering directly
-  // into the Supabase query for better performance.
   // ----------------------------------------
 
   let listings = rawListings;
@@ -266,6 +263,7 @@ export default async function HomePage({
 
   return (
     <div className="flex flex-col gap-6 md:flex-row">
+
       {/* Desktop sidebar */}
       <div className="hidden md:block">
         <CategorySidebar
@@ -285,14 +283,13 @@ export default async function HomePage({
           <>
             <section className="mb-8 overflow-hidden rounded-card bg-ink px-6 py-8 text-paper shadow-soft sm:px-8 sm:py-10">
               <div className="max-w-2xl">
+
                 <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber">
                   Bazaa Marketplace
                 </div>
 
                 <h1 className="mb-3 font-serif text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-                  Buy and sell anything,
-                  <br />
-                  right in your area.
+                  <LanguageText k="buyAndSell" />
                 </h1>
 
                 <p className="mb-6 max-w-xl text-sm leading-6 text-paper/75 sm:text-base">
@@ -315,7 +312,7 @@ export default async function HomePage({
                     type="submit"
                     className="bazaa-primary min-h-[46px] px-6"
                   >
-                    Search
+                    <LanguageText k="search" />
                   </button>
                 </form>
               </div>
@@ -325,11 +322,11 @@ export default async function HomePage({
 
             <div className="mb-4">
               <h2 className="bazaa-title text-2xl">
-                Popular categories
+                <LanguageText k="categories" />
               </h2>
 
               <p className="bazaa-muted mt-1">
-                Browse by what you&apos;re looking for
+                <LanguageText k="browse" />
               </p>
             </div>
 
@@ -412,62 +409,66 @@ export default async function HomePage({
 
         {showSubList &&
           categoryConfig && (
-        
-          <div className="mb-6 overflow-hidden rounded-card border border-line bg-white shadow-card">
+            <div className="mb-6 overflow-hidden rounded-card border border-line bg-white shadow-card">
 
-                       {subNames.map((subName) => {
-              const img = subcategoryImage(subName);
+              {subNames.map((subName) => {
+                const img = subcategoryImage(subName);
 
-              return (
-                <Link
-                  key={subName}
-                  href={buildUrl(category, subName)}
-                  className="group flex items-center gap-3 border-b border-line px-4 py-3.5 transition-colors last:border-b-0 hover:bg-amberSoft"
-                >
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-bazaa bg-paper">
-                    {img && (
-                      <Image
-                        src={img}
-                        alt={subName}
-                        fill
-                        sizes="56px"
-                        className="object-cover transition-transform duration-200 group-hover:scale-105"
-                      />
+                return (
+                  <Link
+                    key={subName}
+                    href={buildUrl(
+                      category,
+                      subName,
                     )}
-                  </div>
+                    className="group flex items-center gap-3 border-b border-line px-4 py-3.5 transition-colors last:border-b-0 hover:bg-amberSoft"
+                  >
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-bazaa bg-paper">
+                      {img && (
+                        <Image
+                          src={img}
+                          alt={subName}
+                          fill
+                          sizes="56px"
+                          className="object-cover transition-transform duration-200 group-hover:scale-105"
+                        />
+                      )}
+                    </div>
 
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-base font-semibold text-ink">
-                      {subName}
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-base font-semibold text-ink">
+                        {subName}
+                      </span>
+
+                      <span className="mt-0.5 block text-xs text-muted">
+                        {subCounts[subName] || 0}{' '}
+                        {(subCounts[subName] || 0) === 1
+                          ? 'ad'
+                          : 'ads'}
+                      </span>
                     </span>
 
-                    <span className="mt-0.5 block text-xs text-muted">
-                      {subCounts[subName] || 0}{' '}
-                      {(subCounts[subName] || 0) === 1
-                        ? 'ad'
-                        : 'ads'}
+                    <span className="text-lg text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-amberDeep">
+                      →
                     </span>
-                  </span>
+                  </Link>
+                );
+              })}
 
-                  <span className="text-lg text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-amberDeep">
-                    →
-                  </span>
-                </Link>
-              );
-            })}
+              <Link
+                href={`${buildUrl(category)}&all=1`}
+                className="flex items-center justify-between bg-paper px-4 py-4 transition-colors hover:bg-amberSoft"
+              >
+                <span className="text-sm font-semibold text-amberDeep">
+                  See all in {category}
+                </span>
 
-            <Link
-              href={`${buildUrl(category)}&all=1`}
-              className="flex items-center justify-between bg-paper px-4 py-4 transition-colors hover:bg-amberSoft"
-            >
-              <span className="text-sm font-semibold text-amberDeep">
-                See all in {category}
-              </span>
-
-              <span className="text-muted">→</span>
-            </Link>
-          </div>
-        )}
+                <span className="text-muted">
+                  →
+                </span>
+              </Link>
+            </div>
+          )}
 
         {/* =========================
             BRAND TILES
@@ -481,7 +482,11 @@ export default async function HomePage({
               return (
                 <Link
                   key={b}
-                  href={buildUrl(category, subcategory, b)}
+                  href={buildUrl(
+                    category,
+                    subcategory,
+                    b,
+                  )}
                   className="group flex min-h-[100px] flex-col items-center justify-center gap-2 rounded-card border border-line bg-white p-3 text-center shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber hover:shadow-soft"
                 >
                   <div className="flex h-9 items-center justify-center">
@@ -533,6 +538,7 @@ export default async function HomePage({
         {showListings &&
           (listings.length === 0 ? (
             <div className="rounded-card border border-dashed border-line bg-white px-6 py-16 text-center">
+
               <div className="mb-3 text-3xl">
                 ⌕
               </div>
@@ -550,7 +556,9 @@ export default async function HomePage({
               {listings.map((listing) => (
                 <Link
                   key={listing.id}
-                  href={`/products/${listingSlug(listing)}`}
+                  href={`/products/${listingSlug(
+                    listing,
+                  )}`}
                   className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
                 >
                   <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bg-paper">
@@ -575,7 +583,7 @@ export default async function HomePage({
                     <div className="font-serif text-lg font-bold text-amberDeep">
                       ETB{' '}
                       {Number(
-                        listing.price
+                        listing.price,
                       ).toLocaleString()}
                     </div>
 
@@ -596,4 +604,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-}
+              }
