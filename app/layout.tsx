@@ -1,30 +1,60 @@
- import type { Metadata } from 'next';
+ 'use client';
+
 import Link from 'next/link';
-import './globals.css';
+import { useEffect, useState } from 'react';
 
 import AuthButton from './AuthButton';
 import BottomNav from './BottomNav';
 import BackButton from './BackButton';
 import ThemeButton from './ThemeButton';
 
-export const metadata: Metadata = {
-  title: 'Bazaa — Buy & Sell Marketplace',
-  description: 'Buy and sell anything, right in your area.',
-};
+export type BazaaLanguage = 'English' | 'Amharic' | 'Oromo';
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body className="bazaa-page min-h-screen antialiased">
+  const [language, setLanguage] = useState<BazaaLanguage>('English');
 
-        {/* Bazaa Header */}
+  useEffect(() => {
+    const saved = localStorage.getItem('bazaa-language');
+
+    if (
+      saved === 'English' ||
+      saved === 'Amharic' ||
+      saved === 'Oromo'
+    ) {
+      setLanguage(saved);
+    }
+
+    function handleLanguageChange() {
+      const current = localStorage.getItem('bazaa-language');
+
+      if (
+        current === 'English' ||
+        current === 'Amharic' ||
+        current === 'Oromo'
+      ) {
+        setLanguage(current);
+      }
+    }
+
+    window.addEventListener('bazaa-language-change', handleLanguageChange);
+
+    return () => {
+      window.removeEventListener(
+        'bazaa-language-change',
+        handleLanguageChange
+      );
+    };
+  }, []);
+
+  return (
+    <html lang={language === 'Amharic' ? 'am' : language === 'Oromo' ? 'om' : 'en'}>
+      <body className="bazaa-page min-h-screen antialiased">
         <header className="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper">
           <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-
             <div className="flex min-w-0 items-center gap-2">
               <BackButton />
 
@@ -41,18 +71,14 @@ export default function RootLayout({
               <ThemeButton />
               <AuthButton />
             </div>
-
           </div>
         </header>
 
-        {/* Page */}
         <main className="mx-auto min-h-[calc(100vh-72px)] max-w-5xl px-5 py-6 pb-24 md:pb-8">
           {children}
         </main>
 
-        {/* Mobile Bottom Navigation */}
         <BottomNav />
-
       </body>
     </html>
   );
