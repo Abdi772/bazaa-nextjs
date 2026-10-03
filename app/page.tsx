@@ -299,12 +299,10 @@ export default async function HomePage({
       </div>
 
       <div className="min-w-0 flex-1">
-
         {showHome && (
           <>
             {/* HERO */}
             <section className="relative mb-10 overflow-hidden rounded-[22px] bg-ink px-6 py-10 text-paper shadow-soft sm:px-10 sm:py-14">
-              {/* decorative shapes */}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-amber/20 blur-3xl"
@@ -723,17 +721,21 @@ export default async function HomePage({
                       </div>
                     )}
 
-                     {/* FAVORITE */}
-<div
-  className="absolute right-2 top-2 z-10"
-  onClick={(event) => {
-    event.stopPropagation();
-  }}
->
-  <FavoriteButton listingId={listing.id} />
-</div>
-                 
-                   {/* PRODUCT INFO */}
+                    {/* FAVORITE */}
+                    <div
+                      className="absolute right-2 top-2 z-10"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                    >
+                      <FavoriteButton
+                        listingId={listing.id}
+                      />
+                    </div>
+                  </div>
+
+                  {/* PRODUCT INFO */}
                   <div className="p-3.5">
                     <div className="font-serif text-lg font-bold leading-tight text-amberDeep">
                       ETB{' '}
@@ -775,4 +777,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-                    }
+           }
