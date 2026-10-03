@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -11,18 +11,36 @@ type Conv = {
   last_message: string | null;
   last_message_at: string;
   listings:
-    | { id: number; title: string; price: number; image_url: string | null }
-    | { id: number; title: string; price: number; image_url: string | null }[]
+    | {
+        id: number;
+        title: string;
+        price: number;
+        image_url: string | null;
+      }
+    | {
+        id: number;
+        title: string;
+        price: number;
+        image_url: string | null;
+      }[]
     | null;
 };
 
 function timeLabel(iso: string) {
   const d = new Date(iso);
   const now = new Date();
+
   if (d.toDateString() === now.toDateString()) {
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
-  return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+  return d.toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 export default function MessagesPage() {
@@ -35,11 +53,16 @@ export default function MessagesPage() {
   async function load(uid: string) {
     const { data, error: err } = await supabase
       .from('conversations')
-      .select('id, buyer_id, seller_id, last_message, last_message_at, listings(id, title, price, image_url)')
+      .select(
+        'id, buyer_id, seller_id, last_message, last_message_at, listings(id, title, price, image_url)'
+      )
       .or(`buyer_id.eq.${uid},seller_id.eq.${uid}`)
       .order('last_message_at', { ascending: false });
 
-    if (err) setError(err.message);
+    if (err) {
+      setError(err.message);
+    }
+
     setConvs((data as unknown as Conv[]) || []);
 
     const { data: unreadRows } = await supabase
@@ -49,102 +72,251 @@ export default function MessagesPage() {
       .neq('sender_id', uid);
 
     const counts: Record<number, number> = {};
-    for (const r of (unreadRows as { conversation_id: number }[]) || []) {
-      counts[r.conversation_id] = (counts[r.conversation_id] || 0) + 1;
+
+    for (const r of
+      (unreadRows as { conversation_id: number }[]) || []) {
+      counts[r.conversation_id] =
+        (counts[r.conversation_id] || 0) + 1;
     }
+
     setUnread(counts);
   }
 
   useEffect(() => {
-    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let channel: ReturnType<typeof supabase.channel> | null =
+      null;
 
     async function init() {
       const { data: u } = await supabase.auth.getUser();
+
       if (!u.user) {
         setReady(true);
         return;
       }
+
       const uid = u.user.id;
+
       setUserId(uid);
+
       await load(uid);
+
       setReady(true);
 
       // Refresh the list when a new message arrives
       channel = supabase
         .channel('inbox')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => load(uid))
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+          },
+          () => load(uid)
+        )
         .subscribe();
     }
 
     init();
+
     return () => {
-      if (channel) supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 
-  if (!ready) return <p className="py-10 text-center text-gray-500">Loading...</p>;
+  if (!ready) {
+    return (
+      <div className="mx-auto w-full max-w-xl">
+        <div className="bazaa-card flex min-h-[180px] items-center justify-center p-5">
+          <div className="text-center">
+            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-amberSoft text-xl">
+              💬
+            </div>
+
+            <p className="text-sm font-medium text-muted">
+              Loading messages...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!userId) {
     return (
-      <div className="py-10 text-center">
-        <h1 className="text-xl font-semibold mb-2">Messages</h1>
-        <p className="text-gray-600">
-          Use the Log in / Sign up button at the top of the page to see your chats.
-        </p>
+      <div className="mx-auto w-full max-w-xl">
+        <div className="bazaa-card p-6 text-center sm:p-8">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amberSoft text-2xl">
+            💬
+          </div>
+
+          <h1 className="bazaa-title text-2xl">
+            Messages
+          </h1>
+
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
+            Log in or create an account to see your chats
+            with buyers and sellers.
+          </p>
+
+          <Link
+            href="/"
+            className="bazaa-primary mt-5 min-h-[48px] w-full px-5 sm:w-auto"
+          >
+            Go to marketplace
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Messages</h1>
+    <div className="mx-auto w-full max-w-xl">
+      {/* Header */}
+      <div className="mb-5">
+        <h1 className="bazaa-title text-2xl sm:text-3xl">
+          Messages
+        </h1>
 
-      {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
+        <p className="mt-1 text-sm leading-5 text-muted">
+          Your conversations with buyers and sellers.
+        </p>
+      </div>
 
-      {convs.length === 0 && (
-        <div className="text-center py-10 text-muted">
-          <p className="mb-2">No chats yet.</p>
-          <p className="text-sm">Open a listing and tap “Chat with seller” to start one.</p>
+      {/* Error */}
+      {error && (
+        <div className="mb-4 rounded-card border-[1.5px] border-danger/25 bg-dangerSoft px-4 py-3 text-sm leading-5 text-danger">
+          {error}
         </div>
       )}
 
-      <div className="space-y-2">
-        {convs.map((c) => {
-          const l = Array.isArray(c.listings) ? c.listings[0] : c.listings;
-          const n = unread[c.id] || 0;
-          const selling = c.seller_id === userId;
-          return (
-            <Link
-              key={c.id}
-              href={`/messages/${c.id}`}
-              className="bg-white border border-line rounded-xl p-3 flex gap-3 items-center"
-            >
-              {l?.image_url ? (
-                <img src={l.image_url} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
-              ) : (
-                <div className="w-14 h-14 rounded-lg bg-gray-100 shrink-0" />
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="font-semibold truncate">{l?.title ?? 'Listing removed'}</div>
-                  <div className="text-xs text-muted shrink-0">{timeLabel(c.last_message_at)}</div>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <div className={`text-sm truncate ${n > 0 ? 'font-semibold' : 'text-muted'}`}>
-                    {c.last_message ?? 'No messages yet'}
+      {/* Empty state */}
+      {convs.length === 0 && (
+        <div className="bazaa-card p-6 text-center sm:p-8">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amberSoft text-2xl">
+            💬
+          </div>
+
+          <h2 className="bazaa-title text-xl">
+            No chats yet
+          </h2>
+
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
+            Open a listing and tap “Chat with seller” to
+            start a conversation.
+          </p>
+
+          <Link
+            href="/"
+            className="bazaa-primary mt-5 min-h-[48px] w-full px-5 sm:w-auto"
+          >
+            Browse listings
+          </Link>
+        </div>
+      )}
+
+      {/* Conversations */}
+      {convs.length > 0 && (
+        <div className="space-y-3">
+          {convs.map((c) => {
+            const l = Array.isArray(c.listings)
+              ? c.listings[0]
+              : c.listings;
+
+            const n = unread[c.id] || 0;
+            const selling = c.seller_id === userId;
+
+            return (
+              <Link
+                key={c.id}
+                href={`/messages/${c.id}`}
+                className="group flex min-w-0 gap-3 rounded-card border-[1.5px] border-line bg-white p-3.5 shadow-card transition-all active:scale-[0.99] hover:border-amber/40 hover:shadow-soft sm:gap-4 sm:p-4"
+              >
+                {/* Listing image */}
+                {l?.image_url ? (
+                  <img
+                    src={l.image_url}
+                    alt=""
+                    className="h-16 w-16 shrink-0 rounded-bazaa object-cover sm:h-[72px] sm:w-[72px]"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-bazaa bg-paper text-2xl sm:h-[72px] sm:w-[72px]">
+                    📦
                   </div>
-                  {n > 0 && (
-                    <span className="bg-red-600 text-white text-xs font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center shrink-0">
-                      {n}
+                )}
+
+                {/* Conversation details */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex min-w-0 items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-bold leading-5 text-ink sm:text-base">
+                        {l?.title ?? 'Listing removed'}
+                      </div>
+
+                      {l?.price !== undefined && (
+                        <div className="mt-0.5 font-serif text-sm font-bold text-amberDeep">
+                          ETB {Number(l.price).toLocaleString()}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="shrink-0 pt-0.5 text-[11px] font-medium text-muted">
+                      {timeLabel(c.last_message_at)}
+                    </div>
+                  </div>
+
+                  <div className="mt-2 flex min-w-0 items-center gap-2">
+                    <div
+                      className={`min-w-0 flex-1 truncate text-sm leading-5 ${
+                        n > 0
+                          ? 'font-semibold text-ink'
+                          : 'text-muted'
+                      }`}
+                    >
+                      {c.last_message ?? 'No messages yet'}
+                    </div>
+
+                    {n > 0 && (
+                      <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-danger px-1.5 text-[11px] font-bold leading-none text-white">
+                        {n}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                        selling
+                          ? 'bg-amberSoft text-amberDeep'
+                          : 'bg-paper text-muted'
+                      }`}
+                    >
+                      {selling ? 'Selling' : 'Buying'}
                     </span>
-                  )}
+
+                    <span
+                      aria-hidden="true"
+                      className="text-muted"
+                    >
+                      •
+                    </span>
+
+                    <span className="truncate text-[11px] text-muted">
+                      {n > 0
+                        ? `${n} unread ${
+                            n === 1 ? 'message' : 'messages'
+                          }`
+                        : 'Up to date'}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-[11px] text-muted mt-0.5">{selling ? 'Selling' : 'Buying'}</div>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
-}
+            }
