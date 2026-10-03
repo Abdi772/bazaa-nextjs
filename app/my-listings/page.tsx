@@ -57,11 +57,21 @@ export default function MyListingsPage() {
 
   if (!ready) {
     return (
-      <div className="mx-auto w-full max-w-2xl">
-        <div className="bazaa-card flex min-h-[180px] items-center justify-center p-5 sm:p-6">
-          <p className="text-sm text-muted">
-            Loading your listings...
-          </p>
+      <div className="mx-auto w-full max-w-3xl">
+        <div className="bazaa-card flex min-h-[220px] items-center justify-center p-6">
+          <div className="text-center">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amberSoft text-xl">
+              📦
+            </div>
+
+            <p className="text-sm font-semibold text-ink">
+              Loading your listings...
+            </p>
+
+            <p className="mt-1 text-xs text-muted">
+              Please wait a moment.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -70,154 +80,208 @@ export default function MyListingsPage() {
   if (!loggedIn) {
     return (
       <div className="mx-auto w-full max-w-2xl">
-        <div className="bazaa-card p-5 text-center sm:p-8">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amberSoft text-2xl">
-            🔐
+        <div className="overflow-hidden rounded-card border-[2px] border-line bg-white shadow-soft">
+          <div className="bg-ink px-5 py-7 text-paper sm:px-8">
+            <div className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber">
+              Bazaa
+            </div>
+
+            <h1 className="font-serif text-2xl font-bold">
+              My listings
+            </h1>
+
+            <p className="mt-2 text-sm leading-6 text-paper/70">
+              Manage the items you are selling from one place.
+            </p>
           </div>
 
-          <h1 className="bazaa-title text-2xl">
-            My listings
-          </h1>
+          <div className="p-5 text-center sm:p-8">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amberSoft text-3xl">
+              🔐
+            </div>
 
-          <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
-            Log in to see and manage your listings.
-          </p>
+            <h2 className="font-serif text-xl font-bold text-ink">
+              Log in to continue
+            </h2>
 
-          <Link
-            href="/"
-            className="bazaa-primary mt-5 min-h-[48px] w-full px-5 sm:w-auto"
-          >
-            Go to marketplace
-          </Link>
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
+              Sign in to see, edit, and manage your listings.
+            </p>
+
+            <Link
+              href="/"
+              className="bazaa-primary mt-6 min-h-[50px] w-full sm:w-auto"
+            >
+              Go to marketplace
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
+    <div className="mx-auto w-full max-w-3xl">
       {/* Header */}
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="bazaa-title text-2xl sm:text-3xl">
-            My listings
-          </h1>
+      <section className="mb-5 overflow-hidden rounded-card border-[2px] border-ink bg-ink text-paper shadow-soft">
+        <div className="px-5 py-6 sm:px-7 sm:py-7">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              <div className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber">
+                Seller dashboard
+              </div>
 
-          <p className="mt-1 text-sm leading-5 text-muted">
-            Manage the items you are selling.
-          </p>
+              <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl">
+                My listings
+              </h1>
+
+              <p className="mt-2 max-w-md text-sm leading-6 text-paper/70">
+                Manage the items you are selling on Bazaa.
+              </p>
+            </div>
+
+            <Link
+              href="/post"
+              className="inline-flex min-h-[50px] w-full items-center justify-center rounded-bazaa bg-amber px-5 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-amberDeep sm:w-auto"
+            >
+              <span className="mr-2 text-lg leading-none">+</span>
+              New listing
+            </Link>
+          </div>
         </div>
 
-        <Link
-          href="/post"
-          className="bazaa-primary min-h-[46px] w-full px-4 py-2.5 text-sm sm:w-auto"
-        >
-          + New listing
-        </Link>
-      </div>
+        <div className="border-t border-white/10 bg-white/5 px-5 py-3 sm:px-7">
+          <p className="text-xs font-semibold text-paper/70">
+            {items.length === 1
+              ? '1 active listing'
+              : `${items.length} active listings`}
+          </p>
+        </div>
+      </section>
 
       {/* Error */}
       {error && (
-        <div className="mb-4 rounded-card border border-danger/20 bg-dangerSoft px-4 py-3 text-sm leading-5 text-danger">
+        <div
+          role="alert"
+          className="mb-5 rounded-card border-[2px] border-danger/25 bg-dangerSoft px-4 py-3 text-sm font-semibold leading-5 text-danger"
+        >
           {error}
         </div>
       )}
 
       {/* Empty state */}
       {items.length === 0 && (
-        <div className="bazaa-card p-6 text-center sm:p-8">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amberSoft text-2xl">
-            📦
+        <section className="overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card">
+          <div className="bg-paper px-5 py-8 text-center sm:px-8 sm:py-10">
+            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border-[2px] border-amber bg-amberSoft text-4xl">
+              📦
+            </div>
+
+            <h2 className="font-serif text-2xl font-bold text-ink">
+              No listings yet
+            </h2>
+
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
+              Your listings will appear here after you publish your first item.
+            </p>
+
+            <Link
+              href="/post"
+              className="bazaa-primary mt-6 min-h-[52px] w-full px-6 sm:w-auto"
+            >
+              Create your first listing
+            </Link>
           </div>
-
-          <h2 className="bazaa-title text-xl">
-            No listings yet
-          </h2>
-
-          <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
-            Start selling by creating your first listing.
-          </p>
-
-          <Link
-            href="/post"
-            className="bazaa-primary mt-5 min-h-[48px] w-full px-5 sm:w-auto"
-          >
-            Create a listing
-          </Link>
-        </div>
+        </section>
       )}
 
       {/* Listings */}
       {items.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {items.map((i) => (
-            <div
+            <article
               key={i.id}
-              className="bazaa-card overflow-hidden p-3 sm:p-4"
+              className="overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card transition-shadow hover:shadow-soft"
             >
-              <div className="flex min-w-0 gap-3 sm:gap-4">
-                {/* Image */}
-                <Link
-                  href={`/products/${listingSlug(i)}`}
-                  className="shrink-0"
-                >
-                  {i.image_url ? (
-                    <img
-                      src={i.image_url}
-                      alt=""
-                      className="h-[88px] w-[88px] rounded-bazaa object-cover sm:h-24 sm:w-24"
-                    />
-                  ) : (
-                    <div className="flex h-[88px] w-[88px] items-center justify-center rounded-bazaa bg-paper text-2xl sm:h-24 sm:w-24">
-                      📦
-                    </div>
-                  )}
-                </Link>
-
-                {/* Details */}
-                <div className="min-w-0 flex-1">
+              {/* Product area */}
+              <div className="p-3 sm:p-4">
+                <div className="flex min-w-0 gap-3 sm:gap-5">
+                  {/* Image */}
                   <Link
                     href={`/products/${listingSlug(i)}`}
-                    className="block line-clamp-2 text-sm font-bold leading-5 text-ink hover:text-amberDeep sm:text-base"
+                    className="group relative block shrink-0 overflow-hidden rounded-bazaa border-[2px] border-line bg-paper"
                   >
-                    {i.title}
+                    {i.image_url ? (
+                      <img
+                        src={i.image_url}
+                        alt=""
+                        className="h-28 w-28 object-cover transition-transform duration-300 group-hover:scale-105 sm:h-36 sm:w-36"
+                      />
+                    ) : (
+                      <div className="flex h-28 w-28 items-center justify-center bg-paper text-4xl sm:h-36 sm:w-36">
+                        📦
+                      </div>
+                    )}
                   </Link>
 
-                  <div className="mt-1.5 font-serif text-base font-bold leading-5 text-amberDeep sm:text-lg">
-                    ETB {Number(i.price).toLocaleString()}
-                  </div>
-
-                  <div className="mt-1 flex min-w-0 items-center gap-1 text-xs leading-4 text-muted">
-                    <span aria-hidden="true">📍</span>
-
-                    <span className="min-w-0 truncate">
-                      {i.location}
-                    </span>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  {/* Details */}
+                  <div className="min-w-0 flex-1 py-0.5">
                     <Link
-                      href={`/edit/${i.id}`}
-                      className="bazaa-secondary min-h-[42px] flex-1 px-3 py-2 text-xs sm:flex-none"
+                      href={`/products/${listingSlug(i)}`}
+                      className="block line-clamp-2 text-base font-bold leading-6 text-ink hover:text-amberDeep sm:text-lg sm:leading-7"
                     >
-                      Edit
+                      {i.title}
                     </Link>
 
-                    <button
-                      type="button"
-                      onClick={() => remove(i.id)}
-                      className="inline-flex min-h-[42px] flex-1 items-center justify-center rounded-bazaa border border-danger/25 bg-dangerSoft px-3 py-2 text-xs font-semibold text-danger transition-colors hover:bg-danger/10 sm:flex-none"
-                    >
-                      Delete
-                    </button>
+                    <div className="mt-2 font-serif text-xl font-bold leading-6 text-amberDeep sm:text-2xl">
+                      ETB {Number(i.price).toLocaleString()}
+                    </div>
+
+                    <div className="mt-2 flex min-w-0 items-center gap-1.5 text-xs font-medium leading-5 text-muted sm:text-sm">
+                      <span aria-hidden="true">📍</span>
+
+                      <span className="min-w-0 truncate">
+                        {i.location}
+                      </span>
+                    </div>
+
+                    {i.condition && (
+                      <div className="mt-2 hidden sm:inline-flex rounded-full bg-amberSoft px-2.5 py-1 text-[11px] font-bold text-amberDeep">
+                        {i.condition}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
-            </div>
+
+              {/* Actions */}
+              <div className="grid grid-cols-2 gap-2 border-t-[2px] border-line bg-paper p-3 sm:flex sm:justify-end sm:px-4 sm:py-3">
+                <Link
+                  href={`/products/${listingSlug(i)}`}
+                  className="inline-flex min-h-[46px] items-center justify-center rounded-bazaa border-[2px] border-line bg-white px-4 py-2.5 text-sm font-bold text-ink transition-colors hover:bg-amberSoft sm:min-w-[110px]"
+                >
+                  View
+                </Link>
+
+                <Link
+                  href={`/edit/${i.id}`}
+                  className="inline-flex min-h-[46px] items-center justify-center rounded-bazaa border-[2px] border-amber bg-amberSoft px-4 py-2.5 text-sm font-bold text-amberDeep transition-colors hover:bg-amber hover:text-white sm:min-w-[110px]"
+                >
+                  Edit
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => remove(i.id)}
+                  className="col-span-2 inline-flex min-h-[46px] items-center justify-center rounded-bazaa border-[2px] border-danger/30 bg-dangerSoft px-4 py-2.5 text-sm font-bold text-danger transition-colors hover:bg-danger/10 sm:col-span-1 sm:min-w-[110px]"
+                >
+                  Delete
+                </button>
+              </div>
+            </article>
           ))}
         </div>
       )}
     </div>
   );
-                   }
+      }
