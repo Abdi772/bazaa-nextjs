@@ -303,8 +303,8 @@ export default async function HomePage({
                   <input
                     name="q"
                     type="text"
-                    placeholder=""
-                    aria-label=""
+                     placeholder="What are you looking for?"
+aria-label="What are you looking for?"
                     className="min-w-0 flex-1 rounded-bazaa border border-white/10 bg-white px-4 py-3 text-sm text-ink outline-none placeholder:text-mutedLight focus:border-amber focus:ring-2 focus:ring-amber/20"
                   />
 
@@ -555,3 +555,77 @@ export default async function HomePage({
             />
           </div>
         )}
+               {/* =========================
+            LISTINGS
+        ========================= */}
+
+        {showListings &&
+          (listings.length === 0 ? (
+            <div className="rounded-card border border-dashed border-line bg-white px-6 py-16 text-center">
+
+              <div className="mb-3 text-3xl">
+                ⌕
+              </div>
+
+              <h3 className="mb-1 font-semibold text-ink">
+                <LanguageText k="noListingsMatch" />
+              </h3>
+
+              <p className="text-sm text-muted">
+                <LanguageText k="tryDifferent" />
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {listings.map((listing) => (
+                <Link
+                  key={listing.id}
+                  href={`/products/${listingSlug(
+                    listing,
+                  )}`}
+                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                >
+                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bg-paper">
+                    {listing.image_url ? (
+                      <Image
+                        src={listing.image_url}
+                        alt={listing.title}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <span className="text-4xl">
+                        {CATEGORY_CONFIG[
+                          listing.category
+                        ]?.icon || '📦'}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-3.5">
+                    <div className="font-serif text-lg font-bold text-amberDeep">
+                      ETB{' '}
+                      {Number(
+                        listing.price,
+                      ).toLocaleString()}
+                    </div>
+
+                    <div className="mt-1 line-clamp-1 text-sm font-semibold text-ink">
+                      {listing.title}
+                    </div>
+
+                    <div className="mt-1 flex justify-between text-xs text-muted">
+                      <span className="line-clamp-1">
+                        {listing.location}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+}
