@@ -64,9 +64,18 @@ export default function FavoriteButton({
         .eq('listing_id', id);
 
       if (error) {
-        setHint(error.message);
-      } else {
-        setSaved(false);
+  setHint(error.message);
+} else {
+  setSaved(false);
+
+  window.dispatchEvent(
+    new CustomEvent('bazaa-favorite-removed', {
+      detail: {
+        listingId: id,
+      },
+    })
+  );
+      }
       }
     } else {
       const { error } = await supabase
