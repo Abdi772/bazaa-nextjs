@@ -24,6 +24,7 @@ type Props = {
 
 async function loadListing(slug: string) {
   const id = idFromSlug(slug);
+
   if (id == null) return null;
 
   return getListingById(id);
@@ -48,7 +49,9 @@ export async function generateMetadata({
     openGraph: {
       title: listing.title,
       description: listing.description?.slice(0, 160),
-      images: listing.image_url ? [listing.image_url] : [],
+      images: listing.image_url
+        ? [listing.image_url]
+        : [],
     },
   };
 }
@@ -56,9 +59,13 @@ export async function generateMetadata({
 function intlPhone(raw: string) {
   let d = raw.replace(/\D/g, '');
 
-  if (d.startsWith('00')) d = d.slice(2);
-  else if (d.startsWith('0')) d = '251' + d.slice(1);
-  else if (d.length === 9) d = '251' + d;
+  if (d.startsWith('00')) {
+    d = d.slice(2);
+  } else if (d.startsWith('0')) {
+    d = '251' + d.slice(1);
+  } else if (d.length === 9) {
+    d = '251' + d;
+  }
 
   return d;
 }
@@ -67,16 +74,20 @@ function timeAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const days = Math.floor(diff / 86400000);
 
-  if (days === 0) return 'today';
+  if (days === 0) return 'Today';
   if (days === 1) return '1 day ago';
 
   return `${days} days ago`;
 }
 
-export default async function ProductPage({ params }: Props) {
+export default async function ProductPage({
+  params,
+}: Props) {
   const listing = await loadListing(params.id);
 
-  if (!listing) notFound();
+  if (!listing) {
+    notFound();
+  }
 
   const images = listing.image_urls?.length
     ? listing.image_urls
@@ -90,80 +101,159 @@ export default async function ProductPage({ params }: Props) {
   );
 
   const sellerId =
-    (listing as unknown as { user_id?: string | null }).user_id ?? null;
+    (
+      listing as unknown as {
+        user_id?: string | null;
+      }
+    ).user_id ?? null;
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto w-full max-w-3xl">
+      {/* Top navigation / actions */}
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <Link
+          href="/"
+          className="inline-flex min-h-[42px] items-center rounded-full border-[2px] border-line bg-white px-4 text-sm font-bold text-ink shadow-sm transition-colors hover:bg-amberSoft"
+        >
+          ← Back
+        </Link>
 
-      {/* Top actions */}
-      <div className="mb-4">
         <ListingActions
           listingId={listing.id}
           title={listing.title}
         />
       </div>
 
-      {/* Product gallery */}
+      {/* Gallery */}
       {images.length > 0 && (
-        <div className="mb-5 overflow-hidden rounded-card">
+        <section className="mb-5 overflow-hidden rounded-card border-[2px] border-line bg-white shadow-soft">
           <Gallery
             images={images}
             title={listing.title}
           />
-        </div>
+        </section>
       )}
 
-      {/* Product information */}
-      <section className="bazaa-card mb-4 p-5">
+      {/* Main product information */}
+      <section className="mb-4 overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card">
+        <div className="p-5 sm:p-6">
+          {/* Small marketplace label */}
+          <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-amberDeep">
+            Bazaa Marketplace
+          </div>
 
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <h1 className="bazaa-title text-2xl leading-tight">
-              {listing.title}
-            </h1>
+          <div className="flex flex-col gap-4">
+            {/* Title */}
+            <div className="min-w-0">
+              <h1 className="font-serif text-2xl font-bold leading-tight tracking-tight text-ink sm:text-3xl">
+                {listing.title}
+              </h1>
 
-            <div className="mt-2 text-2xl font-serif font-bold text-amberDeep">
-              ETB {Number(listing.price).toLocaleString()}
+              {/* Price */}
+              <div className="mt-3 font-serif text-3xl font-bold leading-none text-amberDeep sm:text-4xl">
+                ETB {Number(listing.price).toLocaleString()}
+              </div>
+            </div>
+
+            {/* Condition */}
+            {listing.condition && (
+              <div>
+                <span className="inline-flex items-center rounded-full border-[2px] border-green/20 bg-greenSoft px-3 py-1.5 text-xs font-bold text-green">
+                  ✓ {listing.condition}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Details */}
+          <div className="mt-5 grid grid-cols-2 gap-2 border-t-[2px] border-line pt-4 sm:grid-cols-4">
+            <div className="rounded-bazaa bg-paper p-3">
+              <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                Category
+              </div>
+
+              <div className="mt-1 truncate text-sm font-bold text-ink">
+                {listing.category}
+              </div>
+            </div>
+
+            {listing.subcategory && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  Type
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {listing.subcategory}
+                </div>
+              </div>
+            )}
+
+            {listing.brand && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  Brand
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {listing.brand}
+                </div>
+              </div>
+            )}
+
+            <div className="rounded-bazaa bg-paper p-3">
+              <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                Posted
+              </div>
+
+              <div className="mt-1 truncate text-sm font-bold text-ink">
+                {timeAgo(listing.created_at)}
+              </div>
             </div>
           </div>
 
-          {listing.condition && (
-            <span className="shrink-0 rounded-full border border-green/20 bg-greenSoft px-3 py-1 text-xs font-semibold text-green">
-              {listing.condition}
+          {/* Location */}
+          <div className="mt-3 flex items-start gap-3 rounded-bazaa border-[2px] border-line bg-white p-3">
+            <span
+              aria-hidden="true"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amberSoft text-base"
+            >
+              📍
             </span>
-          )}
+
+            <div className="min-w-0">
+              <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                Location
+              </div>
+
+              <div className="mt-0.5 text-sm font-bold text-ink">
+                {listing.location}
+              </div>
+
+              {listing.region && (
+                <div className="mt-0.5 text-xs text-muted">
+                  {listing.region}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Category / location / date */}
-        <div className="mt-4 border-t border-line pt-3 text-xs leading-5 text-muted">
-          <span>{listing.category}</span>
+        {/* Save area */}
+        <div className="flex items-center justify-between gap-3 border-t-[2px] border-line bg-paper px-5 py-3 sm:px-6">
+          <div>
+            <div className="text-sm font-bold text-ink">
+              Interested in this item?
+            </div>
 
-          {listing.subcategory && (
-            <>
-              <span className="mx-1.5">·</span>
-              <span>{listing.subcategory}</span>
-            </>
-          )}
+            <div className="text-xs text-muted">
+              Save it so you can find it later.
+            </div>
+          </div>
 
-          {listing.brand && (
-            <>
-              <span className="mx-1.5">·</span>
-              <span>{listing.brand}</span>
-            </>
-          )}
-
-          <span className="mx-1.5">·</span>
-          <span>{listing.location}</span>
-
-          {listing.region && (
-            <>
-              <span className="mx-1.5">·</span>
-              <span>{listing.region}</span>
-            </>
-          )}
-
-          <span className="mx-1.5">·</span>
-          <span>{timeAgo(listing.created_at)}</span>
+          <div className="shrink-0">
+            <FavoriteButton listingId={listing.id} />
+          </div>
         </div>
       </section>
 
@@ -173,91 +263,180 @@ export default async function ProductPage({ params }: Props) {
       </div>
 
       {/* Description */}
-      <section className="bazaa-card mb-4 p-5">
-        <h2 className="bazaa-title mb-3 text-lg">
-          Description
-        </h2>
+      <section className="mb-4 rounded-card border-[2px] border-line bg-white p-5 shadow-card sm:p-6">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amberSoft text-lg">
+            📝
+          </div>
 
-        <p className="whitespace-pre-wrap text-sm leading-6 text-ink/90">
-          {listing.description}
-        </p>
+          <h2 className="font-serif text-xl font-bold text-ink">
+            Description
+          </h2>
+        </div>
+
+        <div className="rounded-bazaa bg-paper p-4">
+          <p className="whitespace-pre-wrap text-sm leading-7 text-ink/90 sm:text-base">
+            {listing.description || 'No description provided.'}
+          </p>
+        </div>
       </section>
 
       {/* Seller */}
       {sellerId && (
         <Link
           href={`/seller/${sellerId}`}
-          className="bazaa-card mb-4 flex items-center gap-3 p-4 transition-transform hover:-translate-y-0.5"
+          className="mb-4 flex min-h-[82px] items-center gap-3 rounded-card border-[2px] border-line bg-white p-4 shadow-card transition-colors hover:bg-amberSoft sm:p-5"
         >
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink font-serif text-lg font-bold text-paper">
-            {(listing.email || '?').charAt(0).toUpperCase()}
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-ink font-serif text-xl font-bold text-paper">
+            {(listing.email || '?')
+              .charAt(0)
+              .toUpperCase()}
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-semibold text-ink">
+            <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
               Seller
             </div>
 
+            <div className="mt-1 text-base font-bold text-ink">
+              View seller
+            </div>
+
             <div className="mt-0.5 text-xs text-muted">
-              View all listings from this seller
+              See other listings from this seller
             </div>
           </div>
 
-          <span className="text-lg text-muted">
+          <span
+            aria-hidden="true"
+            className="text-xl font-bold text-amberDeep"
+          >
             →
           </span>
         </Link>
       )}
+           {/* Contact / Chat */}
+      <section className="mb-5 overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card">
+        <div className="bg-ink px-5 py-4 text-paper sm:px-6">
+          <div className="text-xs font-bold uppercase tracking-[0.16em] text-amber">
+            Contact seller
+          </div>
 
-      {/* Chat */}
-      <div className="mb-3">
-        <ChatButton
-          listingId={listing.id}
-          sellerId={sellerId}
-        />
-      </div>
+          <h2 className="mt-1 font-serif text-xl font-bold">
+            Ready to buy?
+          </h2>
 
-      {/* Contact buttons */}
-      {listing.phone && (
-        <div className="mb-3 grid grid-cols-2 gap-2">
+          <p className="mt-1 text-xs leading-5 text-paper/70">
+            Contact the seller directly about this listing.
+          </p>
+        </div>
+
+        <div className="p-4 sm:p-5">
+          {/* Chat */}
+          <div className="mb-3">
+            <ChatButton
+              listingId={listing.id}
+              sellerId={sellerId}
+            />
+          </div>
+
+          {/* Phone + WhatsApp */}
+          {listing.phone && (
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                href={`tel:${listing.phone.replace(
+                  /\s+/g,
+                  ''
+                )}`}
+                className="inline-flex min-h-[50px] items-center justify-center rounded-bazaa bg-green px-3 py-3 text-sm font-bold text-white transition-colors hover:opacity-90"
+              >
+                <span className="mr-2 text-base">📞</span>
+                Call
+              </a>
+
+              <a
+                href={`https://wa.me/${intlPhone(
+                  listing.phone
+                )}?text=${encodeURIComponent(
+                  'Hi, I am interested in: ' +
+                    listing.title
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-[50px] items-center justify-center rounded-bazaa bg-[#1FA855] px-3 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+              >
+                <span className="mr-2 text-base">💬</span>
+                WhatsApp
+              </a>
+            </div>
+          )}
+
+          {/* Email */}
           <a
-            href={`tel:${listing.phone.replace(/\s+/g, '')}`}
-            className="flex items-center justify-center rounded-bazaa bg-green px-4 py-3 text-sm font-semibold text-white transition-colors hover:opacity-90"
-          >
-            📞 Call
-          </a>
-
-          <a
-            href={`https://wa.me/${intlPhone(
-              listing.phone
-            )}?text=${encodeURIComponent(
-              'Hi, I am interested in: ' + listing.title
+            href={`mailto:${listing.email}?subject=${encodeURIComponent(
+              'Re: ' + listing.title
             )}`}
-            target="_blank"
-            rel="noopener"
-            className="flex items-center justify-center rounded-bazaa bg-[#1FA855] px-4 py-3 text-sm font-semibold text-white transition-colors hover:opacity-90"
+            className="mt-2 inline-flex min-h-[50px] w-full items-center justify-center rounded-bazaa border-[2px] border-ink bg-white px-4 py-3 text-sm font-bold text-ink transition-colors hover:bg-paper"
           >
-            WhatsApp
+            <span className="mr-2 text-base">✉️</span>
+            Email seller
           </a>
         </div>
-      )}
+      </section>
 
-      <a
-        href={`mailto:${listing.email}?subject=${encodeURIComponent(
-          'Re: ' + listing.title
-        )}`}
-        className="mb-4 flex items-center justify-center rounded-bazaa bg-ink px-4 py-3 text-sm font-semibold text-paper transition-colors hover:bg-ink/90"
-      >
-        ✉️ Email seller
-      </a>
+      {/* Safety */}
+      <section className="mb-6 overflow-hidden rounded-card border-[2px] border-amber/30 bg-amberSoft">
+        <div className="flex items-center gap-3 border-b border-amber/20 px-4 py-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-lg">
+            🛡️
+          </div>
 
-      {/* Favorite */}
-      <div className="mb-4 bazaa-card p-3">
-        <FavoriteButton listingId={listing.id} />
-      </div>
+          <div>
+            <h2 className="text-sm font-bold text-ink">
+              Stay safe on Bazaa
+            </h2>
+
+            <p className="mt-0.5 text-xs text-muted">
+              Simple steps for safer transactions.
+            </p>
+          </div>
+        </div>
+
+        <ul className="space-y-3 px-5 py-4 text-xs leading-5 text-muted">
+          <li className="flex gap-2">
+            <span className="font-bold text-amberDeep">
+              ✓
+            </span>
+            <span>
+              Meet in a public place and inspect the item
+              before paying.
+            </span>
+          </li>
+
+          <li className="flex gap-2">
+            <span className="font-bold text-amberDeep">
+              ✓
+            </span>
+            <span>
+              Don&apos;t send money in advance to someone
+              you haven&apos;t met.
+            </span>
+          </li>
+
+          <li className="flex gap-2">
+            <span className="font-bold text-amberDeep">
+              ✓
+            </span>
+            <span>
+              Be cautious of requests to move the
+              conversation off this site.
+            </span>
+          </li>
+        </ul>
+      </section>
 
       {/* Report */}
-      <div className="mb-5 text-center">
+      <div className="mb-7 text-center">
         <ReportButton
           listingId={listing.id}
           title={listing.title}
@@ -265,66 +444,60 @@ export default async function ProductPage({ params }: Props) {
         />
       </div>
 
-      {/* Safety tips */}
-      <section className="mb-6 rounded-card border border-amber/30 bg-amberSoft p-4">
-        <h2 className="mb-2 text-sm font-semibold text-ink">
-          Safety tips
-        </h2>
-
-        <ul className="ml-4 list-disc space-y-1 text-xs leading-5 text-muted">
-          <li>
-            Meet in a public place and inspect the item before paying.
-          </li>
-
-          <li>
-            Don&apos;t send money in advance to someone you haven&apos;t met.
-          </li>
-
-          <li>
-            Be cautious of requests to move the conversation off this site.
-          </li>
-        </ul>
-      </section>
-
       {/* Similar listings */}
       {similar.length > 0 && (
-        <section>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="bazaa-title text-xl">
-              Similar listings
-            </h2>
+        <section className="mb-8">
+          <div className="mb-4 flex items-end justify-between gap-3">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-amberDeep">
+                You may also like
+              </div>
+
+              <h2 className="mt-1 font-serif text-2xl font-bold text-ink">
+                Similar listings
+              </h2>
+            </div>
+
+            <span className="text-xs font-semibold text-muted">
+              {similar.length} items
+            </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {similar.map((s) => (
               <Link
                 key={s.id}
                 href={`/products/${listingSlug(s)}`}
-                className="bazaa-card overflow-hidden transition-transform hover:-translate-y-0.5"
+                className="group overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card transition-all hover:-translate-y-0.5 hover:shadow-soft"
               >
-                <div className="relative flex aspect-[4/3] items-center justify-center bg-paper">
+                <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b-[2px] border-line bg-paper">
                   {s.image_url ? (
                     <Image
                       src={s.image_url}
                       alt={s.title}
                       fill
-                      sizes="200px"
-                      className="object-cover"
+                      sizes="(max-width: 640px) 50vw, 220px"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
-                    <span className="text-2xl">
-                      {CATEGORY_CONFIG[s.category]?.icon || '📦'}
+                    <span className="text-3xl">
+                      {CATEGORY_CONFIG[s.category]
+                        ?.icon || '📦'}
                     </span>
                   )}
                 </div>
 
-                <div className="px-3 pt-2">
-                  <div className="text-sm font-bold text-amberDeep">
+                <div className="p-3">
+                  <div className="font-serif text-base font-bold text-amberDeep sm:text-lg">
                     ETB {Number(s.price).toLocaleString()}
                   </div>
 
-                  <div className="truncate pb-3 pt-1 text-xs text-ink">
+                  <div className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-ink sm:text-sm">
                     {s.title}
+                  </div>
+
+                  <div className="mt-2 text-[10px] font-medium text-muted">
+                    View listing →
                   </div>
                 </div>
               </Link>
@@ -332,7 +505,6 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </section>
       )}
-
     </div>
   );
-          }
+}
