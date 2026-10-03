@@ -277,13 +277,23 @@ export default function FilterBar({
 }: Props) {
   const router = useRouter();
 
-  const [priceOpen, setPriceOpen] = useState(false);
-  const [min, setMin] = useState(minPrice);
-  const [max, setMax] = useState(maxPrice);
+  const [priceOpen, setPriceOpen] =
+    useState(false);
 
-  const [sheet, setSheet] = useState<Sheet>(null);
-  const [search, setSearch] = useState('');
-  const [modelBrand, setModelBrand] = useState(brand);
+  const [min, setMin] =
+    useState(minPrice);
+
+  const [max, setMax] =
+    useState(maxPrice);
+
+  const [sheet, setSheet] =
+    useState<Sheet>(null);
+
+  const [search, setSearch] =
+    useState('');
+
+  const [modelBrand, setModelBrand] =
+    useState(brand);
 
   function getParam(name: string) {
     if (typeof window === 'undefined') {
@@ -291,31 +301,49 @@ export default function FilterBar({
     }
 
     return (
-      new URLSearchParams(window.location.search).get(name) || ''
+      new URLSearchParams(
+        window.location.search,
+      ).get(name) || ''
     );
   }
 
-  const currentModel = getParam('model');
-  const currentCondition = getParam('condition');
-  const currentBudget = getParam('budget');
+  const currentModel =
+    getParam('model');
 
-  function update(changes: Record<string, string>) {
-    const params = new URLSearchParams(window.location.search);
+  const currentCondition =
+    getParam('condition');
 
-    Object.entries(changes).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value);
-      } else {
-        params.delete(key);
-      }
-    });
+  const currentBudget =
+    getParam('budget');
+
+  function update(
+    changes: Record<string, string>,
+  ) {
+    const params =
+      new URLSearchParams(
+        window.location.search,
+      );
+
+    Object.entries(changes).forEach(
+      ([key, value]) => {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      },
+    );
 
     const query = params.toString();
 
-    router.push(query ? `/?${query}` : '/');
+    router.push(
+      query ? `/?${query}` : '/',
+    );
   }
 
-  const priceActive = Boolean(minPrice || maxPrice);
+  const priceActive = Boolean(
+    minPrice || maxPrice,
+  );
 
   const anyActive = Boolean(
     region ||
@@ -325,11 +353,11 @@ export default function FilterBar({
       brand ||
       currentModel ||
       currentCondition ||
-      currentBudget
+      currentBudget,
   );
 
   const pill =
-    'shrink-0 rounded-full border-[1.5px] bg-white px-4 py-2 text-sm font-semibold transition-colors';
+    'shrink-0 min-h-[44px] rounded-full border-[1.5px] bg-white px-4 py-2 text-sm font-semibold leading-5 transition-colors active:scale-[0.98]';
 
   const activePill =
     'border-amber bg-amberSoft text-amberDeep';
@@ -338,28 +366,43 @@ export default function FilterBar({
     'border-line text-ink hover:border-amber hover:bg-amberSoft';
 
   const row =
-    'flex w-full items-center justify-between border-b-[1.5px] border-line px-4 py-4 text-left transition-colors hover:bg-amberSoft';
+    'flex min-h-[56px] w-full items-center justify-between border-b-[1.5px] border-line px-4 py-4 text-left transition-colors active:bg-amberSoft hover:bg-amberSoft';
 
-  const query = search.trim().toLowerCase();
+  const query =
+    search.trim().toLowerCase();
 
-  const filteredBrands = brandOptions.filter((option) =>
-    option.name.toLowerCase().includes(query)
-  );
+  const filteredBrands =
+    brandOptions.filter((option) =>
+      option.name
+        .toLowerCase()
+        .includes(query),
+    );
 
   const popularBrands = query
     ? []
     : filteredBrands
-        .filter((option) => option.name !== 'Other')
+        .filter(
+          (option) =>
+            option.name !== 'Other',
+        )
         .slice(0, 8);
 
-  const otherBrands = filteredBrands
-    .filter((option) => !popularBrands.includes(option))
-    .sort((a, b) => {
-      if (a.name === 'Other') return 1;
-      if (b.name === 'Other') return -1;
+  const otherBrands =
+    filteredBrands
+      .filter(
+        (option) =>
+          !popularBrands.includes(
+            option,
+          ),
+      )
+      .sort((a, b) => {
+        if (a.name === 'Other') return 1;
+        if (b.name === 'Other') return -1;
 
-      return a.name.localeCompare(b.name);
-    });
+        return a.name.localeCompare(
+          b.name,
+        );
+      });
 
   /*
    * Some data may call Apple "iPhone".
@@ -371,11 +414,16 @@ export default function FilterBar({
       : modelBrand;
 
   const models =
-    PHONE_MODELS[normalizedModelBrand] || ['Other model'];
+    PHONE_MODELS[
+      normalizedModelBrand
+    ] || ['Other model'];
 
-  const filteredModels = models.filter((model) =>
-    model.toLowerCase().includes(query)
-  );
+  const filteredModels =
+    models.filter((model) =>
+      model
+        .toLowerCase()
+        .includes(query),
+    );
 
   function openBrandSheet() {
     setSearch('');
@@ -407,7 +455,9 @@ export default function FilterBar({
       <button
         key={option.name}
         type="button"
-        onClick={() => chooseBrand(option.name)}
+        onClick={() =>
+          chooseBrand(option.name)
+        }
         className={row}
       >
         <span
@@ -437,120 +487,91 @@ export default function FilterBar({
   }
 
   return (
-    <div className="mb-5">
-
-      <div className="flex gap-2 overflow-x-auto pb-2">
-
-        <select
-          value={region}
-          onChange={(event) =>
-            update({
-              region: event.target.value,
-            })
-          }
-          className={`${pill} ${
-            region ? activePill : inactivePill
-          }`}
-        >
-          <option value="">
-            Region
-          </option>
-
-          {REGIONS.map((item) => (
-            <option
-              key={item}
-              value={item}
-            >
-              {item}
+    <div className="mb-5 min-w-0">
+      <div className="-mx-1 overflow-hidden">
+        <div className="flex gap-2 overflow-x-auto px-1 pb-2 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <select
+            value={region}
+            onChange={(event) =>
+              update({
+                region:
+                  event.target.value,
+              })
+            }
+            className={`${pill} ${
+              region
+                ? activePill
+                : inactivePill
+            }`}
+          >
+            <option value="">
+              Region
             </option>
-          ))}
-        </select>
 
-        <button
-          type="button"
-          onClick={() =>
-            setPriceOpen((open) => !open)
-          }
-          className={`${pill} ${
-            priceActive ? activePill : inactivePill
-          }`}
-        >
-          Price, ETB
+            {REGIONS.map((item) => (
+              <option
+                key={item}
+                value={item}
+              >
+                {item}
+              </option>
+            ))}
+          </select>
 
-          <span className="ml-1 text-xs">
-            {priceOpen ? '▲' : '▼'}
-          </span>
-        </button>
-
-        {!subcategory &&
-          typeOptions.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setSheet('type')}
-              className={`${pill} ${inactivePill}`}
-            >
-              Type
-
-              <span className="ml-1 text-xs">
-                ▼
-              </span>
-            </button>
-          )}
-
-        {subcategory && (
           <button
             type="button"
-            onClick={() => {
-              setSearch('');
-              setSheet('condition');
-            }}
+            onClick={() =>
+              setPriceOpen(
+                (open) => !open,
+              )
+            }
             className={`${pill} ${
-              currentCondition
+              priceActive
                 ? activePill
                 : inactivePill
             }`}
           >
-            {currentCondition || 'Condition'}
+            Price, ETB
 
             <span className="ml-1 text-xs">
-              ▼
+              {priceOpen ? '▲' : '▼'}
             </span>
           </button>
-        )}
 
-        {subcategory && (
-          <button
-            type="button"
-            onClick={() => {
-              setSearch('');
-              setSheet('budget');
-            }}
-            className={`${pill} ${
-              currentBudget
-                ? activePill
-                : inactivePill
-            }`}
-          >
-            {currentBudget || 'Budget'}
+          {!subcategory &&
+            typeOptions.length > 0 && (
+              <button
+                type="button"
+                onClick={() =>
+                  setSheet('type')
+                }
+                className={`${pill} ${inactivePill}`}
+              >
+                Type
 
-            <span className="ml-1 text-xs">
-              ▼
-            </span>
-          </button>
-        )}
+                <span className="ml-1 text-xs">
+                  ▼
+                </span>
+              </button>
+            )}
 
-        {subcategory &&
-          brandOptions.length > 0 && (
+          {subcategory && (
             <button
               type="button"
-              onClick={openBrandSheet}
+              onClick={() => {
+                setSearch('');
+                setSheet(
+                  'condition',
+                );
+              }}
               className={`${pill} ${
-                brand
+                currentCondition
                   ? activePill
                   : inactivePill
               }`}
             >
-              {brand || 'Brand'}
+              {currentCondition ||
+                'Condition'}
 
               <span className="ml-1 text-xs">
                 ▼
@@ -558,107 +579,157 @@ export default function FilterBar({
             </button>
           )}
 
-        {subcategory && brand && (
-          <button
-            type="button"
-            onClick={() => {
-              setModelBrand(brand);
-              setSearch('');
-              setSheet('model');
-            }}
-            className={`${pill} ${
-              currentModel
-                ? activePill
-                : inactivePill
-            }`}
-          >
-            {currentModel || 'Model'}
+          {subcategory && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearch('');
+                setSheet('budget');
+              }}
+              className={`${pill} ${
+                currentBudget
+                  ? activePill
+                  : inactivePill
+              }`}
+            >
+              {currentBudget ||
+                'Budget'}
 
-            <span className="ml-1 text-xs">
-              ▼
-            </span>
-          </button>
-        )}
+              <span className="ml-1 text-xs">
+                ▼
+              </span>
+            </button>
+          )}
 
-        {subcategory && (
-          <button
-            type="button"
-            onClick={() => {
-              setSearch('');
-              setSheet('more');
-            }}
-            className={`${pill} ${inactivePill}`}
-          >
-            More
+          {subcategory &&
+            brandOptions.length > 0 && (
+              <button
+                type="button"
+                onClick={
+                  openBrandSheet
+                }
+                className={`${pill} ${
+                  brand
+                    ? activePill
+                    : inactivePill
+                }`}
+              >
+                {brand || 'Brand'}
 
-            <span className="ml-1 text-xs">
-              ▼
-            </span>
-          </button>
-        )}
+                <span className="ml-1 text-xs">
+                  ▼
+                </span>
+              </button>
+            )}
 
-        {anyActive && (
-          <button
-            type="button"
-            onClick={() => {
-              setMin('');
-              setMax('');
-              setPriceOpen(false);
-              setSearch('');
-              setModelBrand('');
+          {subcategory &&
+            brand && (
+              <button
+                type="button"
+                onClick={() => {
+                  setModelBrand(brand);
+                  setSearch('');
+                  setSheet('model');
+                }}
+                className={`${pill} ${
+                  currentModel
+                    ? activePill
+                    : inactivePill
+                }`}
+              >
+                {currentModel ||
+                  'Model'}
 
-              update({
-                region: '',
-                minPrice: '',
-                maxPrice: '',
-                subcategory: '',
-                brand: '',
-                model: '',
-                condition: '',
-                budget: '',
-              });
-            }}
-            className={`${pill} border-line bg-paper text-muted hover:border-danger hover:bg-dangerSoft hover:text-danger`}
-          >
-            Clear
-          </button>
-        )}
+                <span className="ml-1 text-xs">
+                  ▼
+                </span>
+              </button>
+            )}
+
+          {subcategory && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearch('');
+                setSheet('more');
+              }}
+              className={`${pill} ${inactivePill}`}
+            >
+              More
+
+              <span className="ml-1 text-xs">
+                ▼
+              </span>
+            </button>
+          )}
+
+          {anyActive && (
+            <button
+              type="button"
+              onClick={() => {
+                setMin('');
+                setMax('');
+                setPriceOpen(false);
+                setSearch('');
+                setModelBrand('');
+
+                update({
+                  region: '',
+                  minPrice: '',
+                  maxPrice: '',
+                  subcategory: '',
+                  brand: '',
+                  model: '',
+                  condition: '',
+                  budget: '',
+                });
+              }}
+              className={`${pill} border-line bg-paper text-muted hover:border-danger hover:bg-dangerSoft hover:text-danger`}
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
       {priceOpen && (
         <div className="mt-3 rounded-card border-[1.5px] border-line bg-white p-4 shadow-card">
-
           <div className="mb-3 text-sm font-semibold text-ink">
             Price range
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+              <input
+                type="number"
+                inputMode="numeric"
+                placeholder="Min"
+                value={min}
+                onChange={(event) =>
+                  setMin(
+                    event.target.value,
+                  )
+                }
+                className="bazaa-input min-w-0"
+              />
 
-            <input
-              type="number"
-              inputMode="numeric"
-              placeholder="Min"
-              value={min}
-              onChange={(event) =>
-                setMin(event.target.value)
-              }
-              className="bazaa-input"
-            />
+              <span className="shrink-0 text-muted">
+                –
+              </span>
 
-            <span className="shrink-0 text-muted">
-              –
-            </span>
-
-            <input
-              type="number"
-              inputMode="numeric"
-              placeholder="Max"
-              value={max}
-              onChange={(event) =>
-                setMax(event.target.value)
-              }
-              className="bazaa-input"
-            />
+              <input
+                type="number"
+                inputMode="numeric"
+                placeholder="Max"
+                value={max}
+                onChange={(event) =>
+                  setMax(
+                    event.target.value,
+                  )
+                }
+                className="bazaa-input min-w-0"
+              />
+            </div>
 
             <button
               type="button"
@@ -670,505 +741,396 @@ export default function FilterBar({
 
                 setPriceOpen(false);
               }}
-              className="bazaa-primary shrink-0"
+              className="bazaa-primary min-h-[46px] w-full shrink-0 sm:w-auto"
             >
               Apply
             </button>
-
           </div>
         </div>
       )}
-           {sheet === 'type' && (
+           {sheet && (
         <div
-          className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
-          onClick={() => setSheet(null)}
+          className="fixed inset-0 z-[100] flex items-end bg-ink/40 backdrop-blur-[2px]"
+          onClick={() => {
+            setSheet(null);
+            setSearch('');
+          }}
         >
           <div
-            className="max-h-[75vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
-            onClick={(event) => event.stopPropagation()}
+            className="max-h-[88vh] w-full overflow-hidden rounded-t-[22px] bg-white shadow-soft"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
           >
-            <div className="sticky top-0 border-b-[1.5px] border-line bg-white px-4 py-4">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted">
-                Filter by
-              </div>
+            <div className="mx-auto w-full max-w-2xl">
+              <div className="flex items-center justify-between border-b-[1.5px] border-line px-4 py-4">
+                <div>
+                  <h3 className="text-base font-bold text-ink">
+                    {sheet === 'type' &&
+                      'Choose type'}
 
-              <div className="mt-1 font-serif text-xl font-bold text-ink">
-                Type
-              </div>
-            </div>
+                    {sheet === 'brand' &&
+                      'Choose brand'}
 
-            {typeOptions.map((option) => (
-              <button
-                key={option.name}
-                type="button"
-                onClick={() => {
-                  update({
-                    subcategory: option.name,
-                    brand: '',
-                    model: '',
-                    condition: '',
-                    budget: '',
-                  });
+                    {sheet === 'model' &&
+                      'Choose model'}
 
-                  setModelBrand('');
-                  setSheet(null);
-                }}
-                className={row}
-              >
-                <span
-                  className={
-                    option.name === subcategory
-                      ? 'font-bold text-amberDeep'
-                      : 'text-ink'
-                  }
+                    {sheet ===
+                      'condition' &&
+                      'Condition'}
+
+                    {sheet === 'budget' &&
+                      'Budget'}
+
+                    {sheet === 'more' &&
+                      'More filters'}
+                  </h3>
+
+                  <p className="mt-0.5 text-xs text-muted">
+                    Tap an option to apply it
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSheet(null);
+                    setSearch('');
+                  }}
+                  aria-label="Close filter"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-paper text-xl text-ink transition-colors hover:bg-amberSoft"
                 >
-                  {option.name}{' '}
-                  <span className="text-sm font-normal text-muted">
-                    • {adsLabel(option.count)}
-                  </span>
-                </span>
-
-                {option.name === subcategory && (
-                  <span className="font-bold text-amberDeep">
-                    ✓
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {sheet === 'condition' && (
-        <div
-          className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
-          onClick={() => setSheet(null)}
-        >
-          <div
-            className="max-h-[75vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="sticky top-0 z-10 border-b-[1.5px] border-line bg-white px-4 py-4">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted">
-                Filter by
+                  ×
+                </button>
               </div>
 
-              <div className="mt-1 font-serif text-xl font-bold text-ink">
-                Condition
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                update({
-                  condition: '',
-                });
-
-                setSheet(null);
-              }}
-              className={row}
-            >
-              <span
-                className={
-                  !currentCondition
-                    ? 'font-bold text-amberDeep'
-                    : 'text-ink'
-                }
-              >
-                All conditions
-              </span>
-
-              {!currentCondition && (
-                <span className="font-bold text-amberDeep">
-                  ✓
-                </span>
-              )}
-            </button>
-
-            {CONDITIONS.map((condition) => (
-              <button
-                key={condition}
-                type="button"
-                onClick={() => {
-                  update({
-                    condition,
-                  });
-
-                  setSheet(null);
-                }}
-                className={row}
-              >
-                <span
-                  className={
-                    currentCondition === condition
-                      ? 'font-bold text-amberDeep'
-                      : 'text-ink'
-                  }
-                >
-                  {condition}
-                </span>
-
-                {currentCondition === condition && (
-                  <span className="font-bold text-amberDeep">
-                    ✓
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {sheet === 'budget' && (
-        <div
-          className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
-          onClick={() => setSheet(null)}
-        >
-          <div
-            className="max-h-[75vh] w-full overflow-y-auto rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="sticky top-0 z-10 border-b-[1.5px] border-line bg-white px-4 py-4">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted">
-                Filter by
-              </div>
-
-              <div className="mt-1 font-serif text-xl font-bold text-ink">
-                Budget
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                update({
-                  budget: '',
-                });
-
-                setSheet(null);
-              }}
-              className={row}
-            >
-              <span
-                className={
-                  !currentBudget
-                    ? 'font-bold text-amberDeep'
-                    : 'text-ink'
-                }
-              >
-                All budgets
-              </span>
-
-              {!currentBudget && (
-                <span className="font-bold text-amberDeep">
-                  ✓
-                </span>
-              )}
-            </button>
-
-            {BUDGETS.map((budget) => (
-              <button
-                key={budget}
-                type="button"
-                onClick={() => {
-                  update({
-                    budget,
-                  });
-
-                  setSheet(null);
-                }}
-                className={row}
-              >
-                <span
-                  className={
-                    currentBudget === budget
-                      ? 'font-bold text-amberDeep'
-                      : 'text-ink'
-                  }
-                >
-                  {budget}
-                </span>
-
-                {currentBudget === budget && (
-                  <span className="font-bold text-amberDeep">
-                    ✓
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {sheet === 'brand' && (
-        <div className="fixed inset-0 z-[60] flex flex-col bg-paper">
-          <div className="flex items-center gap-3 border-b-[1.5px] border-white/20 bg-ink p-3 text-paper">
-            <button
-              type="button"
-              onClick={() => {
-                setSheet(null);
-                setSearch('');
-              }}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl hover:bg-white/10"
-              aria-label="Back"
-            >
-              ‹
-            </button>
-
-            <div className="flex-1">
-              <input
-                type="text"
-                value={search}
-                onChange={(event) =>
-                  setSearch(event.target.value)
-                }
-                placeholder="Find a brand"
-                className="w-full rounded-bazaa border-[1.5px] border-white/20 bg-white px-4 py-2.5 text-sm text-ink outline-none placeholder:text-mutedLight focus:border-amber focus:ring-2 focus:ring-amber/20"
-              />
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto">
-            {brand && !query && (
-              <button
-                type="button"
-                onClick={() => {
-                  update({
-                    brand: '',
-                    model: '',
-                  });
-
-                  setModelBrand('');
-                  setSearch('');
-                }}
-                className={row}
-              >
-                <span className="font-semibold text-amberDeep">
-                  All brands
-                </span>
-              </button>
-            )}
-
-            {popularBrands.length > 0 && (
-              <>
-                <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
-                  Brands
-                </div>
-
-                {popularBrands.map(brandRow)}
-              </>
-            )}
-
-            {otherBrands.length > 0 && (
-              <>
-                <div className="border-b-[1.5px] border-line bg-paper px-4 py-2 text-xs font-bold uppercase tracking-wider text-muted">
-                  {query ? 'Results' : 'Other'}
-                </div>
-
-                {otherBrands.map(brandRow)}
-              </>
-            )}
-
-            {filteredBrands.length === 0 && (
-              <div className="px-6 py-16 text-center">
-                <div className="mb-2 text-2xl">
-                  ⌕
-                </div>
-
-                <div className="font-semibold text-ink">
-                  No brand found
-                </div>
-
-                <div className="mt-1 text-sm text-muted">
-                  Try another brand name.
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {sheet === 'model' && (
-        <div className="fixed inset-0 z-[60] flex flex-col bg-paper">
-          <div className="flex items-center gap-3 border-b-[1.5px] border-white/20 bg-ink p-3 text-paper">
-            <button
-              type="button"
-              onClick={() => {
-                setSheet(null);
-                setSearch('');
-              }}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl hover:bg-white/10"
-              aria-label="Back"
-            >
-              ‹
-            </button>
-
-            <div className="min-w-0 flex-1">
-              <div className="text-xs uppercase tracking-wider text-paper/60">
-                {subcategory || 'Product'}
-              </div>
-
-              <div className="truncate font-serif text-lg font-bold">
-                {modelBrand === 'iPhone'
-                  ? 'iPhone'
-                  : modelBrand || 'Model'}
-              </div>
-            </div>
-
-            <div className="w-[40%]">
-              <input
-                type="text"
-                value={search}
-                onChange={(event) =>
-                  setSearch(event.target.value)
-                }
-                placeholder="Find model"
-                className="w-full rounded-bazaa border-[1.5px] border-white/20 bg-white px-3 py-2 text-sm text-ink outline-none placeholder:text-mutedLight focus:border-amber focus:ring-2 focus:ring-amber/20"
-              />
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto">
-            {currentModel && (
-              <button
-                type="button"
-                onClick={() => {
-                  update({
-                    model: '',
-                  });
-
-                  setSearch('');
-                  setSheet(null);
-                }}
-                className={row}
-              >
-                <span className="font-semibold text-amberDeep">
-                  All {modelBrand || 'models'}
-                </span>
-              </button>
-            )}
-
-            {filteredModels.length > 0 && (
-              <>
-                <div className="border-b-[1.5px] border-line bg-amberSoft px-4 py-2 text-xs font-bold uppercase tracking-wider text-amberDeep">
-                  {modelBrand === 'iPhone'
-                    ? 'iPhone'
-                    : modelBrand}{' '}
-                  models
-                </div>
-
-                {filteredModels.map((model) => (
-                  <button
-                    key={model}
-                    type="button"
-                    onClick={() =>
-                      chooseModel(model)
+              {(
+                sheet === 'brand' ||
+                sheet === 'model'
+              ) && (
+                <div className="border-b-[1.5px] border-line bg-paper px-4 py-3">
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(event) =>
+                      setSearch(
+                        event.target.value,
+                      )
                     }
-                    className={row}
-                  >
-                    <span
-                      className={
-                        model === currentModel
-                          ? 'font-bold text-amberDeep'
-                          : 'text-ink'
-                      }
-                    >
-                      {model}
-                    </span>
+                    placeholder={
+                      sheet === 'brand'
+                        ? 'Search brands...'
+                        : 'Search models...'
+                    }
+                    autoFocus
+                    className="bazaa-input min-h-[46px]"
+                  />
+                </div>
+              )}
 
-                    {model === currentModel && (
-                      <span className="font-bold text-amberDeep">
-                        ✓
-                      </span>
+              <div className="max-h-[65vh] overflow-y-auto overscroll-contain">
+                {sheet === 'type' && (
+                  <div>
+                    {typeOptions.map(
+                      (option) => (
+                        <button
+                          key={
+                            option.name
+                          }
+                          type="button"
+                          onClick={() => {
+                            update({
+                              subcategory:
+                                option.name,
+                              brand: '',
+                              model: '',
+                            });
+
+                            setModelBrand('');
+                            setSheet(null);
+                          }}
+                          className={row}
+                        >
+                          <span
+                            className={
+                              option.name ===
+                              subcategory
+                                ? 'font-bold text-amberDeep'
+                                : 'text-ink'
+                            }
+                          >
+                            {
+                              option.name
+                            }{' '}
+                            <span className="text-sm font-normal text-muted">
+                              •{' '}
+                              {adsLabel(
+                                option.count,
+                              )}
+                            </span>
+                          </span>
+
+                          {option.name ===
+                            subcategory && (
+                            <span className="font-bold text-amberDeep">
+                              ✓
+                            </span>
+                          )}
+                        </button>
+                      ),
                     )}
-                  </button>
-                ))}
-              </>
-            )}
+                  </div>
+                )}
 
-            {filteredModels.length === 0 && (
-              <div className="px-6 py-16 text-center">
-                <div className="mb-2 text-2xl">
-                  ⌕
-                </div>
+                {sheet === 'brand' && (
+                  <div>
+                    {popularBrands.length >
+                      0 && (
+                      <>
+                        <div className="bg-paper px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-muted">
+                          Popular
+                        </div>
 
-                <div className="font-semibold text-ink">
-                  No model found
-                </div>
+                        {popularBrands.map(
+                          brandRow,
+                        )}
+                      </>
+                    )}
 
-                <div className="mt-1 text-sm text-muted">
-                  Try another model name.
-                </div>
+                    {otherBrands.length >
+                      0 && (
+                      <>
+                        <div className="bg-paper px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-muted">
+                          All brands
+                        </div>
+
+                        {otherBrands.map(
+                          brandRow,
+                        )}
+                      </>
+                    )}
+
+                    {filteredBrands.length ===
+                      0 && (
+                      <div className="px-5 py-12 text-center">
+                        <div className="mb-2 text-2xl">
+                          ⌕
+                        </div>
+
+                        <p className="text-sm font-semibold text-ink">
+                          No brands found
+                        </p>
+
+                        <p className="mt-1 text-xs text-muted">
+                          Try a different
+                          search.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {sheet === 'model' && (
+                  <div>
+                    {filteredModels.length >
+                      0 ? (
+                      filteredModels.map(
+                        (model) => (
+                          <button
+                            key={model}
+                            type="button"
+                            onClick={() =>
+                              chooseModel(
+                                model,
+                              )
+                            }
+                            className={row}
+                          >
+                            <span
+                              className={
+                                model ===
+                                currentModel
+                                  ? 'font-bold text-amberDeep'
+                                  : 'text-ink'
+                              }
+                            >
+                              {model}
+                            </span>
+
+                            {model ===
+                              currentModel && (
+                              <span className="font-bold text-amberDeep">
+                                ✓
+                              </span>
+                            )}
+                          </button>
+                        ),
+                      )
+                    ) : (
+                      <div className="px-5 py-12 text-center">
+                        <div className="mb-2 text-2xl">
+                          ⌕
+                        </div>
+
+                        <p className="text-sm font-semibold text-ink">
+                          No models found
+                        </p>
+
+                        <p className="mt-1 text-xs text-muted">
+                          Try a different
+                          search.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {sheet ===
+                  'condition' && (
+                  <div>
+                    {CONDITIONS.map(
+                      (item) => (
+                        <button
+                          key={item}
+                          type="button"
+                          onClick={() => {
+                            update({
+                              condition:
+                                item,
+                            });
+
+                            setSheet(null);
+                          }}
+                          className={row}
+                        >
+                          <span
+                            className={
+                              item ===
+                              currentCondition
+                                ? 'font-bold text-amberDeep'
+                                : 'text-ink'
+                            }
+                          >
+                            {item}
+                          </span>
+
+                          {item ===
+                            currentCondition && (
+                            <span className="font-bold text-amberDeep">
+                              ✓
+                            </span>
+                          )}
+                        </button>
+                      ),
+                    )}
+
+                    {currentCondition && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          update({
+                            condition: '',
+                          });
+
+                          setSheet(null);
+                        }}
+                        className="flex min-h-[56px] w-full items-center justify-center border-t-[1.5px] border-line px-4 py-4 text-sm font-semibold text-danger"
+                      >
+                        Clear condition
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {sheet === 'budget' && (
+                  <div>
+                    {BUDGETS.map(
+                      (item) => (
+                        <button
+                          key={item}
+                          type="button"
+                          onClick={() => {
+                            update({
+                              budget: item,
+                            });
+
+                            setSheet(null);
+                          }}
+                          className={row}
+                        >
+                          <span
+                            className={
+                              item ===
+                              currentBudget
+                                ? 'font-bold text-amberDeep'
+                                : 'text-ink'
+                            }
+                          >
+                            {item}
+                          </span>
+
+                          {item ===
+                            currentBudget && (
+                            <span className="font-bold text-amberDeep">
+                              ✓
+                            </span>
+                          )}
+                        </button>
+                      ),
+                    )}
+
+                    {currentBudget && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          update({
+                            budget: '',
+                          });
+
+                          setSheet(null);
+                        }}
+                        className="flex min-h-[56px] w-full items-center justify-center border-t-[1.5px] border-line px-4 py-4 text-sm font-semibold text-danger"
+                      >
+                        Clear budget
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {sheet === 'more' && (
+                  <div>
+                    <div className="px-4 py-4">
+                      <div className="mb-3 text-sm font-semibold text-ink">
+                        Additional filters
+                      </div>
+
+                      <div className="rounded-bazaa bg-paper p-4 text-sm leading-6 text-muted">
+                        Use the filters above
+                        for region, price,
+                        condition, budget,
+                        brand, and model.
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSheet(null);
+                        setSearch('');
+                      }}
+                      className="flex min-h-[52px] w-full items-center justify-center border-t-[1.5px] border-line px-4 py-4 text-sm font-semibold text-amberDeep"
+                    >
+                      Done
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-      )}
 
-      {sheet === 'more' && (
-        <div
-          className="fixed inset-0 z-[60] flex items-end bg-ink/50 backdrop-blur-sm"
-          onClick={() => setSheet(null)}
-        >
-          <div
-            className="w-full rounded-t-[20px] border-t-[1.5px] border-line bg-white shadow-soft"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="border-b-[1.5px] border-line px-4 py-4">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted">
-                More filters
-              </div>
-
-              <div className="mt-1 font-serif text-xl font-bold text-ink">
-                Other
-              </div>
+              <div className="h-[max(16px,env(safe-area-inset-bottom))]" />
             </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setSheet('condition');
-              }}
-              className={row}
-            >
-              <span className="text-ink">
-                Condition
-              </span>
-
-              <span className="text-lg text-muted">
-                ›
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setSheet('budget');
-              }}
-              className={row}
-            >
-              <span className="text-ink">
-                Budget
-              </span>
-
-              <span className="text-lg text-muted">
-                ›
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setSheet(null);
-              }}
-              className="m-4 w-[calc(100%-2rem)] rounded-bazaa border border-line bg-paper px-4 py-3 text-center font-semibold text-ink"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}
     </div>
   );
-     }
+                    }
