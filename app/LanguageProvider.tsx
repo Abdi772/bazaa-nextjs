@@ -7,20 +7,33 @@ import {
   useState,
 } from 'react';
 
-export type BazaaLanguage = 'English' | 'Amharic' | 'Oromo';
+export type BazaaLanguage =
+  | 'English'
+  | 'Amharic'
+  | 'Oromo';
 
 type LanguageContextType = {
   language: BazaaLanguage;
   t: (key: string) => string;
 };
 
-const translations: Record<BazaaLanguage, Record<string, string>> = {
+const translations: Record<
+  BazaaLanguage,
+  Record<string, string>
+> = {
+  // ==================================================
+  // ENGLISH
+  // ==================================================
+
   English: {
+    // Navigation
     home: 'Home',
     browse: 'Browse',
     sell: 'Sell',
     profile: 'Profile',
     settings: 'Settings',
+
+    // Search / homepage
     search: 'Search',
     categories: 'Categories',
     electronics: 'Electronics',
@@ -30,6 +43,46 @@ const translations: Record<BazaaLanguage, Record<string, string>> = {
     myAdverts: 'My adverts',
     postListing: 'Post a listing',
     logout: 'Log out',
+
+    buyAndSell:
+      'Buy and sell anything, right in your area.',
+
+    findWhatYouNeed:
+      'Find what you need nearby, or list something in minutes.',
+
+    searchPlaceholder:
+      'What are you looking for?',
+
+    popularCategories:
+      'Popular categories',
+
+    browseBy:
+      'Browse by what you’re looking for',
+
+    listings: 'listings',
+    listing: 'listing',
+
+    resultsFor: 'Results for',
+    allListings: 'All listings',
+    found: 'found',
+
+    backToAllCategories:
+      'Back to all categories',
+
+    backTo: 'Back to',
+
+    ad: 'ad',
+    ads: 'ads',
+
+    seeAllIn: 'See all in',
+
+    noListingsMatch:
+      'No listings match',
+
+    tryDifferent:
+      'Try a different search or category.',
+
+    // Settings
     language: 'Language',
     changeLanguage: 'Change language',
     changeEmail: 'Change email',
@@ -39,15 +92,21 @@ const translations: Record<BazaaLanguage, Record<string, string>> = {
     feedback: 'Feedback',
     password: 'Password',
     deleteAccount: 'Delete account',
-    buyAndSell: 'Buy and sell anything, right in your area.',
   },
 
+  // ==================================================
+  // AMHARIC
+  // ==================================================
+
   Amharic: {
+    // Navigation
     home: 'መነሻ',
     browse: 'ይፈልጉ',
     sell: 'ይሽጡ',
     profile: 'መገለጫ',
     settings: 'ቅንብሮች',
+
+    // Search / homepage
     search: 'ፈልግ',
     categories: 'ምድቦች',
     electronics: 'ኤሌክትሮኒክስ',
@@ -57,6 +116,46 @@ const translations: Record<BazaaLanguage, Record<string, string>> = {
     myAdverts: 'የእኔ ማስታወቂያዎች',
     postListing: 'ማስታወቂያ ይለጥፉ',
     logout: 'ውጣ',
+
+    buyAndSell:
+      'በአካባቢዎ ማንኛውንም ነገር ይግዙ እና ይሽጡ።',
+
+    findWhatYouNeed:
+      'የሚፈልጉትን በአቅራቢያዎ ያግኙ፣ ወይም ማስታወቂያ በደቂቃዎች ውስጥ ይለጥፉ።',
+
+    searchPlaceholder:
+      'ምን እየፈለጉ ነው?',
+
+    popularCategories:
+      'ታዋቂ ምድቦች',
+
+    browseBy:
+      'የሚፈልጉትን ይምረጡ',
+
+    listings: 'ማስታወቂያዎች',
+    listing: 'ማስታወቂያ',
+
+    resultsFor: 'የፍለጋ ውጤቶች',
+    allListings: 'ሁሉም ማስታወቂያዎች',
+    found: 'ተገኝተዋል',
+
+    backToAllCategories:
+      'ወደ ሁሉም ምድቦች ተመለስ',
+
+    backTo: 'ወደ ኋላ ተመለስ',
+
+    ad: 'ማስታወቂያ',
+    ads: 'ማስታወቂያዎች',
+
+    seeAllIn: 'ሁሉንም በዚህ ውስጥ ይመልከቱ',
+
+    noListingsMatch:
+      'ምንም ተመሳሳይ ማስታወቂያ አልተገኘም',
+
+    tryDifferent:
+      'የተለየ ፍለጋ ወይም ምድብ ይሞክሩ።',
+
+    // Settings
     language: 'ቋንቋ',
     changeLanguage: 'ቋንቋ ቀይር',
     changeEmail: 'ኢሜይል ቀይር',
@@ -66,15 +165,21 @@ const translations: Record<BazaaLanguage, Record<string, string>> = {
     feedback: 'አስተያየት',
     password: 'የይለፍ ቃል',
     deleteAccount: 'መለያ ሰርዝ',
-    buyAndSell: 'በአካባቢዎ ማንኛውንም ነገር ይግዙ እና ይሽጡ።',
   },
 
+  // ==================================================
+  // OROMO
+  // ==================================================
+
   Oromo: {
+    // Navigation
     home: 'Mana',
     browse: 'Barbaadi',
     sell: 'Gurguri',
     profile: 'Profaayilii',
     settings: 'Qindaa’ina',
+
+    // Search / homepage
     search: 'Barbaadi',
     categories: 'Ramaddii',
     electronics: 'Elektirooniksii',
@@ -84,6 +189,46 @@ const translations: Record<BazaaLanguage, Record<string, string>> = {
     myAdverts: 'Beeksisa koo',
     postListing: 'Beeksisa maxxansi',
     logout: 'Ba’i',
+
+    buyAndSell:
+      'Naannoo kee keessatti waan kamiyyuu bitaa fi gurguri.',
+
+    findWhatYouNeed:
+      'Waan barbaaddu naannoo kee irraa argadhu, yookaan daqiiqaa muraasa keessatti beeksisa maxxansi.',
+
+    searchPlaceholder:
+      'Maal barbaadaa jirta?',
+
+    popularCategories:
+      'Ramaddiiwwan beekamoo',
+
+    browseBy:
+      'Waan barbaadduun barbaadi',
+
+    listings: 'beeksisawwan',
+    listing: 'beeksisa',
+
+    resultsFor: 'Bu’aa barbaacha',
+    allListings: 'Beeksisawwan hunda',
+    found: 'argaman',
+
+    backToAllCategories:
+      'Gara ramaddiiwwan hundaatti deebi’i',
+
+    backTo: 'Gara duubaatti deebi’i',
+
+    ad: 'beeksisa',
+    ads: 'beeksisawwan',
+
+    seeAllIn: 'Hunda keessatti ilaali',
+
+    noListingsMatch:
+      'Beeksisni walsimu hin jiru',
+
+    tryDifferent:
+      'Barbaacha ykn ramaddii biraa yaali.',
+
+    // Settings
     language: 'Afaan',
     changeLanguage: 'Afaan jijjiiri',
     changeEmail: 'Imeelii jijjiiri',
@@ -93,14 +238,16 @@ const translations: Record<BazaaLanguage, Record<string, string>> = {
     feedback: 'Yaada',
     password: 'Jecha iccitii',
     deleteAccount: 'Herrega haqii',
-    buyAndSell: 'Naannoo kee keessatti waan kamiyyuu bitaa fi gurguri.',
   },
 };
 
-const LanguageContext = createContext<LanguageContextType>({
-  language: 'English',
-  t: (key) => translations.English[key] || key,
-});
+const LanguageContext =
+  createContext<LanguageContextType>({
+    language: 'English',
+
+    t: (key) =>
+      translations.English[key] || key,
+  });
 
 export function LanguageProvider({
   children,
@@ -112,7 +259,8 @@ export function LanguageProvider({
 
   useEffect(() => {
     const loadLanguage = () => {
-      const saved = localStorage.getItem('bazaa-language');
+      const saved =
+        localStorage.getItem('bazaa-language');
 
       if (
         saved === 'English' ||
@@ -129,23 +277,32 @@ export function LanguageProvider({
 
     window.addEventListener(
       'bazaa-language-change',
-      loadLanguage
+      loadLanguage,
     );
 
     return () => {
       window.removeEventListener(
         'bazaa-language-change',
-        loadLanguage
+        loadLanguage,
       );
     };
   }, []);
 
   function t(key: string) {
-    return translations[language][key] || translations.English[key] || key;
+    return (
+      translations[language][key] ||
+      translations.English[key] ||
+      key
+    );
   }
 
   return (
-    <LanguageContext.Provider value={{ language, t }}>
+    <LanguageContext.Provider
+      value={{
+        language,
+        t,
+      }}
+    >
       {children}
     </LanguageContext.Provider>
   );
