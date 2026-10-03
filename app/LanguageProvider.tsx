@@ -21,21 +21,16 @@ const translations: Record<
   BazaaLanguage,
   Record<string, string>
 > = {
-  // ==================================================
-  // ENGLISH
-  // ==================================================
-
   English: {
-    // Navigation
     home: 'Home',
     browse: 'Browse',
     sell: 'Sell',
     profile: 'Profile',
     settings: 'Settings',
 
-    // Search / homepage
     search: 'Search',
     categories: 'Categories',
+
     electronics: 'Electronics',
     phones: 'Phones',
     messages: 'Messages',
@@ -43,6 +38,14 @@ const translations: Record<
     myAdverts: 'My adverts',
     postListing: 'Post a listing',
     logout: 'Log out',
+
+    /* Category names */
+    electronicsCategory: 'Electronics',
+    vehiclesCategory: 'Vehicles',
+    fashionCategory: 'Fashion',
+    homeCategory: 'Home & Garden',
+    jobsCategory: 'Jobs',
+    servicesCategory: 'Services',
 
     buyAndSell:
       'Buy and sell anything, right in your area.',
@@ -82,7 +85,6 @@ const translations: Record<
     tryDifferent:
       'Try a different search or category.',
 
-    // Settings
     language: 'Language',
     changeLanguage: 'Change language',
     changeEmail: 'Change email',
@@ -94,21 +96,16 @@ const translations: Record<
     deleteAccount: 'Delete account',
   },
 
-  // ==================================================
-  // AMHARIC
-  // ==================================================
-
   Amharic: {
-    // Navigation
     home: 'መነሻ',
     browse: 'ይፈልጉ',
     sell: 'ይሽጡ',
     profile: 'መገለጫ',
     settings: 'ቅንብሮች',
 
-    // Search / homepage
     search: 'ፈልግ',
     categories: 'ምድቦች',
+
     electronics: 'ኤሌክትሮኒክስ',
     phones: 'ስልኮች',
     messages: 'መልዕክቶች',
@@ -116,6 +113,14 @@ const translations: Record<
     myAdverts: 'የእኔ ማስታወቂያዎች',
     postListing: 'ማስታወቂያ ይለጥፉ',
     logout: 'ውጣ',
+
+    /* Category names */
+    electronicsCategory: 'ኤሌክትሮኒክስ',
+    vehiclesCategory: 'ተሽከርካሪዎች',
+    fashionCategory: 'ፋሽን',
+    homeCategory: 'ቤት እና የአትክልት እቃዎች',
+    jobsCategory: 'ስራዎች',
+    servicesCategory: 'አገልግሎቶች',
 
     buyAndSell:
       'በአካባቢዎ ማንኛውንም ነገር ይግዙ እና ይሽጡ።',
@@ -147,7 +152,8 @@ const translations: Record<
     ad: 'ማስታወቂያ',
     ads: 'ማስታወቂያዎች',
 
-    seeAllIn: 'ሁሉንም በዚህ ውስጥ ይመልከቱ',
+    seeAllIn:
+      'ሁሉንም በዚህ ውስጥ ይመልከቱ',
 
     noListingsMatch:
       'ምንም ተመሳሳይ ማስታወቂያ አልተገኘም',
@@ -155,7 +161,6 @@ const translations: Record<
     tryDifferent:
       'የተለየ ፍለጋ ወይም ምድብ ይሞክሩ።',
 
-    // Settings
     language: 'ቋንቋ',
     changeLanguage: 'ቋንቋ ቀይር',
     changeEmail: 'ኢሜይል ቀይር',
@@ -167,21 +172,16 @@ const translations: Record<
     deleteAccount: 'መለያ ሰርዝ',
   },
 
-  // ==================================================
-  // OROMO
-  // ==================================================
-
   Oromo: {
-    // Navigation
     home: 'Mana',
     browse: 'Barbaadi',
     sell: 'Gurguri',
     profile: 'Profaayilii',
     settings: 'Qindaa’ina',
 
-    // Search / homepage
     search: 'Barbaadi',
     categories: 'Ramaddii',
+
     electronics: 'Elektirooniksii',
     phones: 'Bilbila',
     messages: 'Ergaawwan',
@@ -189,6 +189,14 @@ const translations: Record<
     myAdverts: 'Beeksisa koo',
     postListing: 'Beeksisa maxxansi',
     logout: 'Ba’i',
+
+    /* Category names */
+    electronicsCategory: 'Elektirooniksii',
+    vehiclesCategory: 'Konkolaattota',
+    fashionCategory: 'Faashinii',
+    homeCategory: 'Mana fi Qonna',
+    jobsCategory: 'Hojiiwwan',
+    servicesCategory: 'Tajaajiloota',
 
     buyAndSell:
       'Naannoo kee keessatti waan kamiyyuu bitaa fi gurguri.',
@@ -228,7 +236,6 @@ const translations: Record<
     tryDifferent:
       'Barbaacha ykn ramaddii biraa yaali.',
 
-    // Settings
     language: 'Afaan',
     changeLanguage: 'Afaan jijjiiri',
     changeEmail: 'Imeelii jijjiiri',
@@ -244,7 +251,6 @@ const translations: Record<
 const LanguageContext =
   createContext<LanguageContextType>({
     language: 'English',
-
     t: (key) =>
       translations.English[key] || key,
   });
@@ -310,4 +316,4 @@ export function LanguageProvider({
 
 export function useLanguage() {
   return useContext(LanguageContext);
-}
+     }
