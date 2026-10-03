@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -104,6 +104,11 @@ export default function ProfilePage() {
           <span>Post a listing</span>
         </Link>
 
+        <Link href="/settings" className={tile}>
+          <span aria-hidden="true">⚙️</span>
+          <span>Settings</span>
+        </Link>
+
         {isAdmin && (
           <Link href="/admin" className={tile}>
             <span aria-hidden="true">🛡️</span>
@@ -122,4 +127,4 @@ export default function ProfilePage() {
       </button>
     </div>
   );
-      }
+}
