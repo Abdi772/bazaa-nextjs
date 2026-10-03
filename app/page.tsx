@@ -1,5 +1,6 @@
  import Link from 'next/link';
 import Image from 'next/image';
+
 import {
   getListings,
   getCategoryCounts,
@@ -7,11 +8,14 @@ import {
   getBrandCounts,
   listingSlug,
 } from '@/lib/listings';
+
 import {
   CATEGORY_CONFIG,
   subcategoryImage,
 } from '@/lib/categories';
+
 import { getBrandLogo } from '@/lib/brandLogos';
+
 import CategorySidebar from './CategorySidebar';
 import FilterBar from './FilterBar';
 import LanguageText from './LanguageText';
@@ -31,7 +35,35 @@ function buildUrl(
   if (brand) params.set('brand', brand);
 
   const qs = params.toString();
+
   return qs ? `/?${qs}` : '/';
+}
+
+function categoryTranslationKey(
+  category: string,
+): string {
+  switch (category) {
+    case 'Electronics':
+      return 'electronicsCategory';
+
+    case 'Vehicles':
+      return 'vehiclesCategory';
+
+    case 'Furniture':
+      return 'furnitureCategory';
+
+    case 'Fashion':
+      return 'fashionCategory';
+
+    case 'Property':
+      return 'propertyCategory';
+
+    case 'Other':
+      return 'otherCategory';
+
+    default:
+      return category;
+  }
 }
 
 export default async function HomePage({
@@ -53,8 +85,7 @@ export default async function HomePage({
 }) {
   const query = searchParams.q || '';
   const category = searchParams.category || '';
-  const subcategory =
-    searchParams.subcategory || '';
+  const subcategory = searchParams.subcategory || '';
   const brand = searchParams.brand || '';
 
   const model = searchParams.model || '';
@@ -80,10 +111,6 @@ export default async function HomePage({
       ? categoryConfig.subcategories[subcategory] || []
       : [];
 
-  // ----------------------------------------
-  // PAGE STATES
-  // ----------------------------------------
-
   const showHome =
     !query &&
     !category &&
@@ -105,10 +132,6 @@ export default async function HomePage({
     brandNames.length > 0;
 
   const showListings = !showSubList;
-
-  // ----------------------------------------
-  // GET LISTINGS
-  // ----------------------------------------
 
   const [
     rawListings,
@@ -145,9 +168,7 @@ export default async function HomePage({
           {} as Record<string, number>,
         ),
 
-    showListings &&
-    category &&
-    subcategory
+    showListings && category && subcategory
       ? getBrandCounts(
           category,
           subcategory,
@@ -156,10 +177,6 @@ export default async function HomePage({
           {} as Record<string, number>,
         ),
   ]);
-
-  // ----------------------------------------
-  // MODEL / CONDITION / BUDGET FILTERING
-  // ----------------------------------------
 
   let listings = rawListings;
 
@@ -201,10 +218,6 @@ export default async function HomePage({
     });
   }
 
-  // ----------------------------------------
-  // BUDGET FILTER
-  // ----------------------------------------
-
   if (budget) {
     listings = listings.filter((listing) => {
       const price = Number(listing.price);
@@ -244,13 +257,8 @@ export default async function HomePage({
     });
   }
 
-  // ----------------------------------------
-  // FILTER OPTIONS
-  // ----------------------------------------
-
   const typeOptions =
-    categoryConfig &&
-    subNames.length > 1
+    categoryConfig && subNames.length > 1
       ? subNames.map((name) => ({
           name,
           count: subCounts[name] || 0,
@@ -264,32 +272,21 @@ export default async function HomePage({
     }),
   );
 
-  // ----------------------------------------
-  // BACK LINK
-  // ----------------------------------------
-
   let backHref = '/';
-  let backLabel =
-    'Back to all categories';
 
   if (brand) {
     backHref = buildUrl(
       category,
       subcategory,
     );
-    backLabel = `Back to ${subcategory}`;
   } else if (subcategory) {
     backHref = buildUrl(category);
-    backLabel = `Back to ${category}`;
   } else if (showAll) {
     backHref = buildUrl(category);
-    backLabel = `Back to ${category}`;
   }
 
   return (
     <div className="flex flex-col gap-6 md:flex-row">
-      {/* Desktop sidebar */}
-
       <div className="hidden md:block">
         <CategorySidebar
           currentCategory={category}
@@ -299,16 +296,10 @@ export default async function HomePage({
       </div>
 
       <div className="min-w-0 flex-1">
-
-        {/* =========================
-            HOME
-        ========================= */}
-
         {showHome && (
           <>
             <section className="mb-8 overflow-hidden rounded-card bg-ink px-6 py-8 text-paper shadow-soft sm:px-8 sm:py-10">
               <div className="max-w-2xl">
-
                 <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber">
                   Bazaa Marketplace
                 </div>
@@ -323,6 +314,7 @@ export default async function HomePage({
 
                 <form
                   action="/"
+                  method="get"
                   className="flex flex-col gap-2 sm:flex-row"
                 >
                   <SearchInput
@@ -339,8 +331,6 @@ export default async function HomePage({
               </div>
             </section>
 
-            {/* Categories heading */}
-
             <div className="mb-4">
               <h2 className="bazaa-title text-2xl">
                 <LanguageText k="popularCategories" />
@@ -350,8 +340,6 @@ export default async function HomePage({
                 <LanguageText k="browseBy" />
               </p>
             </div>
-
-            {/* Category cards */}
 
             <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
               {Object.entries(
@@ -374,7 +362,11 @@ export default async function HomePage({
 
                   <div className="p-3">
                     <div className="text-sm font-semibold text-ink">
-                      {name}
+                      <LanguageText
+                        k={categoryTranslationKey(
+                          name,
+                        )}
+                      />
                     </div>
 
                     <div className="mt-0.5 text-xs text-muted">
@@ -388,21 +380,22 @@ export default async function HomePage({
           </>
         )}
 
-        {/* =========================
-            PAGE HEADING
-        ========================= */}
-
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="bazaa-title text-2xl">
               {model ||
                 brand ||
                 subcategory ||
-                category ||
-                (query ? (
+                (category ? (
+                  <LanguageText
+                    k={categoryTranslationKey(
+                      category,
+                    )}
+                  />
+                ) : query ? (
                   <>
-                    <LanguageText k="resultsFor" /> "
-                    {query}"
+                    <LanguageText k="resultsFor" />{' '}
+                    "{query}"
                   </>
                 ) : (
                   <LanguageText k="allListings" />
@@ -412,13 +405,11 @@ export default async function HomePage({
             {showListings && (
               <p className="bazaa-muted mt-1">
                 {listings.length}{' '}
-                <LanguageText
-                  k={
-                    listings.length === 1
-                      ? 'listing'
-                      : 'listings'
-                  }
-                />{' '}
+                {listings.length === 1 ? (
+                  <LanguageText k="listing" />
+                ) : (
+                  <LanguageText k="listings" />
+                )}{' '}
                 <LanguageText k="found" />
               </p>
             )}
@@ -429,108 +420,91 @@ export default async function HomePage({
               href={backHref}
               className="rounded-full border border-line bg-white px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-amber hover:bg-amberSoft"
             >
-              ←{' '}
-              {brand ? (
-                <>
-                  <LanguageText k="backTo" />{' '}
-                  {subcategory}
-                </>
-              ) : subcategory ? (
-                <>
-                  <LanguageText k="backTo" />{' '}
-                  {category}
-                </>
-              ) : showAll ? (
-                <>
-                  <LanguageText k="backTo" />{' '}
-                  {category}
-                </>
+              ← <LanguageText k="backTo" />{' '}
+              {subcategory ? (
+                subcategory
+              ) : category ? (
+                <LanguageText
+                  k={categoryTranslationKey(
+                    category,
+                  )}
+                />
               ) : (
-                <LanguageText k="backToAllCategories" />
+                <LanguageText k="allListings" />
               )}
             </Link>
           )}
         </div>
+               {showSubList && categoryConfig && (
+          <div className="mb-6 overflow-hidden rounded-card border border-line bg-white shadow-card">
+            {subNames.map((subName) => {
+              const img = subcategoryImage(subName);
 
-        {/* =========================
-            SUB-CATEGORIES
-        ========================= */}
-
-        {showSubList &&
-          categoryConfig && (
-            <div className="mb-6 overflow-hidden rounded-card border border-line bg-white shadow-card">
-
-              {subNames.map((subName) => {
-                const img =
-                  subcategoryImage(subName);
-
-                return (
-                  <Link
-                    key={subName}
-                    href={buildUrl(
-                      category,
-                      subName,
+              return (
+                <Link
+                  key={subName}
+                  href={buildUrl(
+                    category,
+                    subName,
+                  )}
+                  className="group flex items-center gap-3 border-b border-line px-4 py-3.5 transition-colors last:border-b-0 hover:bg-amberSoft"
+                >
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-bazaa bg-paper">
+                    {img && (
+                      <Image
+                        src={img}
+                        alt={subName}
+                        fill
+                        sizes="56px"
+                        className="object-cover transition-transform duration-200 group-hover:scale-105"
+                      />
                     )}
-                    className="group flex items-center gap-3 border-b border-line px-4 py-3.5 transition-colors last:border-b-0 hover:bg-amberSoft"
-                  >
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-bazaa bg-paper">
-                      {img && (
-                        <Image
-                          src={img}
-                          alt={subName}
-                          fill
-                          sizes="56px"
-                          className="object-cover transition-transform duration-200 group-hover:scale-105"
-                        />
+                  </div>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-semibold text-ink">
+                      {subName}
+                    </span>
+
+                    <span className="mt-0.5 block text-xs text-muted">
+                      {subCounts[subName] || 0}{' '}
+                      {(subCounts[subName] || 0) ===
+                      1 ? (
+                        <LanguageText k="ad" />
+                      ) : (
+                        <LanguageText k="ads" />
                       )}
-                    </div>
-
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-base font-semibold text-ink">
-                        {subName}
-                      </span>
-
-                      <span className="mt-0.5 block text-xs text-muted">
-                        {subCounts[subName] || 0}{' '}
-                        <LanguageText
-                          k={
-                            (subCounts[
-                              subName
-                            ] || 0) === 1
-                              ? 'ad'
-                              : 'ads'
-                          }
-                        />
-                      </span>
                     </span>
+                  </span>
 
-                    <span className="text-lg text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-amberDeep">
-                      →
-                    </span>
-                  </Link>
-                );
-              })}
+                  <span className="text-lg text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-amberDeep">
+                    →
+                  </span>
+                </Link>
+              );
+            })}
 
-              <Link
-                href={`${buildUrl(
-                  category,
-                )}&all=1`}
-                className="flex items-center justify-between bg-paper px-4 py-4 transition-colors hover:bg-amberSoft"
-              >
-                <span className="text-sm font-semibold text-amberDeep">
-                  <LanguageText k="seeAllIn" />{' '}
-                  {category}
-                </span>
+            <Link
+              href={`${buildUrl(category)}&all=1`}
+              className="flex items-center justify-between bg-paper px-4 py-4 transition-colors hover:bg-amberSoft"
+            >
+              <span className="text-sm font-semibold text-amberDeep">
+                <LanguageText k="seeAllIn" />{' '}
+                {category ? (
+                  <LanguageText
+                    k={categoryTranslationKey(
+                      category,
+                    )}
+                  />
+                ) : null}
+              </span>
 
-                <span className="text-muted">
-                  →
-                </span>
-              </Link>
-            </div>
-          )}
-               {/* =========================
-            BRAND TILES
-        ========================= */}
+              <span className="text-muted">
+                →
+              </span>
+            </Link>
+          </div>
+        )}
 
         {showBrandTiles && (
           <div className="mb-6 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
@@ -571,10 +545,6 @@ export default async function HomePage({
           </div>
         )}
 
-        {/* =========================
-            FILTERS
-        ========================= */}
-
         {showListings && (
           <div className="mb-5">
             <FilterBar
@@ -589,14 +559,9 @@ export default async function HomePage({
           </div>
         )}
 
-        {/* =========================
-            LISTINGS
-        ========================= */}
-
         {showListings &&
           (listings.length === 0 ? (
             <div className="rounded-card border border-dashed border-line bg-white px-6 py-16 text-center">
-
               <div className="mb-3 text-3xl">
                 ⌕
               </div>
@@ -649,10 +614,38 @@ export default async function HomePage({
                       {listing.title}
                     </div>
 
-                    <div className="mt-1 flex justify-between text-xs text-muted">
-                      <span className="line-clamp-1">
-                        {listing.location}
-                      </span>
+                    <div className="mt-1 flex min-w-0 flex-wrap gap-x-1.5 gap-y-1 text-xs text-muted">
+                      {listing.brand && (
+                        <span>
+                          {listing.brand}
+                        </span>
+                      )}
+
+                      {listing.model && (
+                        <>
+                          {listing.brand && (
+                            <span>•</span>
+                          )}
+
+                          <span>
+                            {listing.model}
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      {listing.condition && (
+                        <span className="rounded-full bg-amberSoft px-2 py-1 text-[11px] font-semibold text-amberDeep">
+                          {listing.condition}
+                        </span>
+                      )}
+
+                      {listing.location && (
+                        <span className="line-clamp-1 text-xs text-muted">
+                          {listing.location}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -662,4 +655,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-}
+                      }
