@@ -293,8 +293,7 @@ export default async function HomePage({
                 </h1>
 
                 <p className="mb-6 max-w-xl text-sm leading-6 text-paper/75 sm:text-base">
-                  Find what you need nearby, or list
-                  something in minutes.
+                  <LanguageText k="findWhatYouNeed" />
                 </p>
 
                 <form
@@ -304,7 +303,8 @@ export default async function HomePage({
                   <input
                     name="q"
                     type="text"
-                    placeholder="What are you looking for?"
+                    placeholder=""
+                    aria-label=""
                     className="min-w-0 flex-1 rounded-bazaa border border-white/10 bg-white px-4 py-3 text-sm text-ink outline-none placeholder:text-mutedLight focus:border-amber focus:ring-2 focus:ring-amber/20"
                   />
 
@@ -322,11 +322,11 @@ export default async function HomePage({
 
             <div className="mb-4">
               <h2 className="bazaa-title text-2xl">
-                <LanguageText k="categories" />
+                <LanguageText k="popularCategories" />
               </h2>
 
               <p className="bazaa-muted mt-1">
-                <LanguageText k="browse" />
+                <LanguageText k="browseBy" />
               </p>
             </div>
 
@@ -356,7 +356,8 @@ export default async function HomePage({
                       </div>
 
                       <div className="mt-0.5 text-xs text-muted">
-                        {counts[name] || 0} listings
+                        {counts[name] || 0}{' '}
+                        <LanguageText k="listings" />
                       </div>
                     </div>
                   </Link>
@@ -377,18 +378,27 @@ export default async function HomePage({
                 brand ||
                 subcategory ||
                 category ||
-                (query
-                  ? `Results for "${query}"`
-                  : 'All listings')}
+                (query ? (
+                  <>
+                    <LanguageText k="resultsFor" /> "
+                    {query}"
+                  </>
+                ) : (
+                  <LanguageText k="allListings" />
+                ))}
             </h2>
 
             {showListings && (
               <p className="bazaa-muted mt-1">
                 {listings.length}{' '}
-                {listings.length === 1
-                  ? 'listing'
-                  : 'listings'}{' '}
-                found
+                <LanguageText
+                  k={
+                    listings.length === 1
+                      ? 'listing'
+                      : 'listings'
+                  }
+                />{' '}
+                <LanguageText k="found" />
               </p>
             )}
           </div>
@@ -398,7 +408,17 @@ export default async function HomePage({
               href={backHref}
               className="rounded-full border border-line bg-white px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-amber hover:bg-amberSoft"
             >
-              ← {backLabel}
+              ←{' '}
+              {brand || subcategory || showAll ? (
+                <>
+                  <LanguageText k="backTo" />{' '}
+                  {brand
+                    ? subcategory
+                    : category}
+                </>
+              ) : (
+                <LanguageText k="backToAllCategories" />
+              )}
             </Link>
           )}
         </div>
@@ -442,9 +462,13 @@ export default async function HomePage({
 
                       <span className="mt-0.5 block text-xs text-muted">
                         {subCounts[subName] || 0}{' '}
-                        {(subCounts[subName] || 0) === 1
-                          ? 'ad'
-                          : 'ads'}
+                        <LanguageText
+                          k={
+                            (subCounts[subName] || 0) === 1
+                              ? 'ad'
+                              : 'ads'
+                          }
+                        />
                       </span>
                     </span>
 
@@ -460,7 +484,8 @@ export default async function HomePage({
                 className="flex items-center justify-between bg-paper px-4 py-4 transition-colors hover:bg-amberSoft"
               >
                 <span className="text-sm font-semibold text-amberDeep">
-                  See all in {category}
+                  <LanguageText k="seeAllIn" />{' '}
+                  {category}
                 </span>
 
                 <span className="text-muted">
@@ -530,78 +555,3 @@ export default async function HomePage({
             />
           </div>
         )}
-
-        {/* =========================
-            LISTINGS
-        ========================= */}
-
-        {showListings &&
-          (listings.length === 0 ? (
-            <div className="rounded-card border border-dashed border-line bg-white px-6 py-16 text-center">
-
-              <div className="mb-3 text-3xl">
-                ⌕
-              </div>
-
-              <h3 className="mb-1 font-semibold text-ink">
-                No listings match
-              </h3>
-
-              <p className="text-sm text-muted">
-                Try a different search or category.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {listings.map((listing) => (
-                <Link
-                  key={listing.id}
-                  href={`/products/${listingSlug(
-                    listing,
-                  )}`}
-                  className="group overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
-                >
-                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bg-paper">
-                    {listing.image_url ? (
-                      <Image
-                        src={listing.image_url}
-                        alt={listing.title}
-                        fill
-                        sizes="(max-width: 640px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <span className="text-4xl">
-                        {CATEGORY_CONFIG[
-                          listing.category
-                        ]?.icon || '📦'}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="p-3.5">
-                    <div className="font-serif text-lg font-bold text-amberDeep">
-                      ETB{' '}
-                      {Number(
-                        listing.price,
-                      ).toLocaleString()}
-                    </div>
-
-                    <div className="mt-1 line-clamp-1 text-sm font-semibold text-ink">
-                      {listing.title}
-                    </div>
-
-                    <div className="mt-1 flex justify-between text-xs text-muted">
-                      <span className="line-clamp-1">
-                        {listing.location}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ))}
-      </div>
-    </div>
-  );
-              }
