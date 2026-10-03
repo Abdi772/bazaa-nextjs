@@ -39,13 +39,13 @@ const translations: Record<
     postListing: 'Post a listing',
     logout: 'Log out',
 
-    /* Category names */
+    /* Actual category names */
     electronicsCategory: 'Electronics',
     vehiclesCategory: 'Vehicles',
+    furnitureCategory: 'Furniture',
     fashionCategory: 'Fashion',
-    homeCategory: 'Home & Garden',
-    jobsCategory: 'Jobs',
-    servicesCategory: 'Services',
+    propertyCategory: 'Property',
+    otherCategory: 'Other',
 
     buyAndSell:
       'Buy and sell anything, right in your area.',
@@ -114,13 +114,13 @@ const translations: Record<
     postListing: 'ማስታወቂያ ይለጥፉ',
     logout: 'ውጣ',
 
-    /* Category names */
+    /* Actual category names */
     electronicsCategory: 'ኤሌክትሮኒክስ',
     vehiclesCategory: 'ተሽከርካሪዎች',
+    furnitureCategory: 'የቤት ዕቃዎች',
     fashionCategory: 'ፋሽን',
-    homeCategory: 'ቤት እና የአትክልት እቃዎች',
-    jobsCategory: 'ስራዎች',
-    servicesCategory: 'አገልግሎቶች',
+    propertyCategory: 'ንብረት',
+    otherCategory: 'ሌሎች',
 
     buyAndSell:
       'በአካባቢዎ ማንኛውንም ነገር ይግዙ እና ይሽጡ።',
@@ -190,13 +190,13 @@ const translations: Record<
     postListing: 'Beeksisa maxxansi',
     logout: 'Ba’i',
 
-    /* Category names */
+    /* Actual category names */
     electronicsCategory: 'Elektirooniksii',
     vehiclesCategory: 'Konkolaattota',
+    furnitureCategory: 'Meeshaalee Manaa',
     fashionCategory: 'Faashinii',
-    homeCategory: 'Mana fi Qonna',
-    jobsCategory: 'Hojiiwwan',
-    servicesCategory: 'Tajaajiloota',
+    propertyCategory: 'Qabeenya',
+    otherCategory: 'Kan biraa',
 
     buyAndSell:
       'Naannoo kee keessatti waan kamiyyuu bitaa fi gurguri.',
@@ -316,4 +316,4 @@ export function LanguageProvider({
 
 export function useLanguage() {
   return useContext(LanguageContext);
-     }
+   }
