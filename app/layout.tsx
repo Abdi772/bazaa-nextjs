@@ -1,57 +1,24 @@
- 'use client';
-
+ import type { Metadata } from 'next';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import './globals.css';
 
 import AuthButton from './AuthButton';
 import BottomNav from './BottomNav';
 import BackButton from './BackButton';
 import ThemeButton from './ThemeButton';
 
-export type BazaaLanguage = 'English' | 'Amharic' | 'Oromo';
+export const metadata: Metadata = {
+  title: 'Bazaa — Buy & Sell Marketplace',
+  description: 'Buy and sell anything, right in your area.',
+};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [language, setLanguage] = useState<BazaaLanguage>('English');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('bazaa-language');
-
-    if (
-      saved === 'English' ||
-      saved === 'Amharic' ||
-      saved === 'Oromo'
-    ) {
-      setLanguage(saved);
-    }
-
-    function handleLanguageChange() {
-      const current = localStorage.getItem('bazaa-language');
-
-      if (
-        current === 'English' ||
-        current === 'Amharic' ||
-        current === 'Oromo'
-      ) {
-        setLanguage(current);
-      }
-    }
-
-    window.addEventListener('bazaa-language-change', handleLanguageChange);
-
-    return () => {
-      window.removeEventListener(
-        'bazaa-language-change',
-        handleLanguageChange
-      );
-    };
-  }, []);
-
   return (
-    <html lang={language === 'Amharic' ? 'am' : language === 'Oromo' ? 'om' : 'en'}>
+    <html lang="en">
       <body className="bazaa-page min-h-screen antialiased">
         <header className="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper">
           <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
