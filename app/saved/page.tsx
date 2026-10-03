@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -17,6 +17,38 @@ export default function SavedPage() {
 
   useEffect(() => {
     loadSavedListings();
+
+    function handleFavoriteRemoved(event: Event) {
+      const customEvent =
+        event as CustomEvent<{ listingId: number }>;
+
+      const removedId = Number(
+        customEvent.detail?.listingId
+      );
+
+      if (!Number.isFinite(removedId)) {
+        return;
+      }
+
+      setListings((current) =>
+        current.filter(
+          (listing) =>
+            Number(listing.id) !== removedId
+        )
+      );
+    }
+
+    window.addEventListener(
+      'bazaa-favorite-removed',
+      handleFavoriteRemoved
+    );
+
+    return () => {
+      window.removeEventListener(
+        'bazaa-favorite-removed',
+        handleFavoriteRemoved
+      );
+    };
   }, []);
 
   async function loadSavedListings() {
@@ -96,14 +128,6 @@ export default function SavedPage() {
 
     setListings(orderedListings);
     setLoading(false);
-  }
-
-  function handleRemoved(id: number) {
-    setListings((current) =>
-      current.filter(
-        (listing) => Number(listing.id) !== id
-      )
-    );
   }
 
   if (loading) {
@@ -194,6 +218,7 @@ export default function SavedPage() {
       </div>
     );
   }
+
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
