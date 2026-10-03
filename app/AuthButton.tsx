@@ -104,34 +104,38 @@ export default function AuthButton() {
       <div className="flex items-center gap-2 text-xs sm:text-sm">
         <Link
           href="/post"
-          className="hidden rounded-bazaa bg-amber px-3 py-2 font-semibold text-ink transition-colors hover:bg-amberDeep md:inline-flex"
+          className="hidden rounded-bazaa border-[2px] border-amber bg-amber px-3 py-2 font-bold text-ink transition-colors hover:bg-amberDeep md:inline-flex"
         >
           + Post listing
         </Link>
 
         <Link
           href="/favorites"
-          className="hidden rounded-bazaa border border-white/20 bg-white/5 px-3 py-2 font-medium text-paper transition-colors hover:bg-white/10 md:inline-flex"
+          className="hidden rounded-bazaa border-[2px] border-white/30 bg-white/5 px-3 py-2 font-bold text-paper transition-colors hover:bg-white/10 md:inline-flex"
         >
           ♥ Saved
+        </Link>
+
+        <Link
+          href="/profile"
+          className="rounded-bazaa border-[2px] border-white/30 bg-white/5 px-3 py-2 font-bold text-paper transition-colors hover:border-amber hover:bg-white/10"
+        >
+          Profile
         </Link>
 
         {isAdmin && (
           <Link
             href="/admin"
-            className="rounded-bazaa border border-amber/50 px-3 py-2 font-medium text-paper transition-colors hover:border-amber hover:bg-white/5"
+            className="hidden rounded-bazaa border-[2px] border-amber/60 px-3 py-2 font-bold text-paper transition-colors hover:border-amber hover:bg-white/10 sm:inline-flex"
           >
             Admin
           </Link>
         )}
 
-        <span className="hidden max-w-[180px] truncate text-paper/70 md:inline">
-          {user.email}
-        </span>
-
         <button
+          type="button"
           onClick={() => supabase.auth.signOut()}
-          className="rounded-bazaa border border-white/20 px-3 py-2 font-medium text-paper transition-colors hover:bg-white/10"
+          className="hidden rounded-bazaa border-[2px] border-white/30 px-3 py-2 font-bold text-paper transition-colors hover:bg-white/10 sm:inline-flex"
         >
           Log out
         </button>
@@ -142,8 +146,9 @@ export default function AuthButton() {
   return (
     <>
       <button
+        type="button"
         onClick={() => setOpen(true)}
-        className="rounded-bazaa bg-amber px-3.5 py-2 font-semibold text-ink transition-colors hover:bg-amberDeep"
+        className="rounded-bazaa border-[2px] border-amber bg-amber px-3.5 py-2 font-bold text-ink transition-colors hover:bg-amberDeep"
       >
         Log in / Sign up
       </button>
@@ -154,20 +159,24 @@ export default function AuthButton() {
           onClick={close}
         >
           <div
-            className="w-full max-w-sm rounded-card border border-line bg-white p-5 text-ink shadow-soft"
+            className="w-full max-w-sm rounded-card border-[2px] border-line bg-white p-5 text-ink shadow-soft"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-5">
-              <h2 className="bazaa-title text-xl">Welcome to Bazaa</h2>
-              <p className="mt-1 text-sm text-muted">
+              <h2 className="bazaa-title text-xl">
+                Welcome to Bazaa
+              </h2>
+
+              <p className="mt-1 text-sm font-semibold text-muted">
                 Sign in or create your account to continue.
               </p>
             </div>
 
-            <div className="mb-5 flex rounded-bazaa bg-paper p-1">
+            <div className="mb-5 flex rounded-bazaa border-[2px] border-line bg-paper p-1">
               <button
+                type="button"
                 onClick={() => switchMode('login')}
-                className={`flex-1 rounded-[10px] py-2 text-sm font-semibold transition-colors ${
+                className={`flex-1 rounded-[10px] py-2 text-sm font-bold transition-colors ${
                   mode === 'login'
                     ? 'bg-ink text-paper shadow-sm'
                     : 'text-muted hover:text-ink'
@@ -177,8 +186,9 @@ export default function AuthButton() {
               </button>
 
               <button
+                type="button"
                 onClick={() => switchMode('signup')}
-                className={`flex-1 rounded-[10px] py-2 text-sm font-semibold transition-colors ${
+                className={`flex-1 rounded-[10px] py-2 text-sm font-bold transition-colors ${
                   mode === 'signup'
                     ? 'bg-ink text-paper shadow-sm'
                     : 'text-muted hover:text-ink'
@@ -189,13 +199,13 @@ export default function AuthButton() {
             </div>
 
             {error && (
-              <div className="mb-4 rounded-bazaa border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              <div className="mb-4 rounded-bazaa border-[2px] border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-700">
                 {error}
               </div>
             )}
 
             {notice && (
-              <div className="mb-4 rounded-bazaa border border-green-200 bg-greenSoft p-3 text-sm text-green">
+              <div className="mb-4 rounded-bazaa border-[2px] border-green-200 bg-greenSoft p-3 text-sm font-semibold text-green">
                 {notice}
               </div>
             )}
@@ -207,7 +217,7 @@ export default function AuthButton() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bazaa-input"
+                className="bazaa-input font-semibold"
               />
 
               <input
@@ -217,13 +227,13 @@ export default function AuthButton() {
                 placeholder="At least 6 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bazaa-input"
+                className="bazaa-input font-semibold"
               />
 
               <button
                 type="submit"
                 disabled={busy}
-                className="bazaa-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
+                className="bazaa-primary w-full border-[2px] border-amberDeep font-bold disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {busy
                   ? 'Please wait...'
@@ -234,8 +244,9 @@ export default function AuthButton() {
             </form>
 
             <button
+              type="button"
               onClick={close}
-              className="mt-3 w-full py-2 text-sm font-medium text-muted transition-colors hover:text-ink"
+              className="mt-3 w-full py-2 text-sm font-bold text-muted transition-colors hover:text-ink"
             >
               Cancel
             </button>
