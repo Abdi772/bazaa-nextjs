@@ -76,7 +76,6 @@ export default function FavoriteButton({
     })
   );
       }
-      }
     } else {
       const { error } = await supabase
         .from('favorites')
