@@ -20,6 +20,7 @@ import CategorySidebar from './CategorySidebar';
 import FilterBar from './FilterBar';
 import LanguageText from './LanguageText';
 import SearchInput from './SearchInput';
+import FavoriteButton from './FavoriteButton';
 
 export const revalidate = 60;
 
@@ -609,6 +610,12 @@ export default async function HomePage({
                         ]?.icon || '📦'}
                       </span>
                     )}
+
+                    <div className="absolute right-2.5 top-2.5 z-10">
+                      <FavoriteButton
+                        listingId={listing.id}
+                      />
+                    </div>
                   </div>
 
                   <div className="p-3.5">
@@ -664,4 +671,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-                   }
+               }
