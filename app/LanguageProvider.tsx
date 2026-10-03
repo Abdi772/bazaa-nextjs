@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 
@@ -12,6 +13,8 @@ export type BazaaLanguage =
   | 'Amharic'
   | 'Oromo';
 
+type TranslationMap = Record<string, string>;
+
 type LanguageContextType = {
   language: BazaaLanguage;
   t: (key: string) => string;
@@ -19,7 +22,7 @@ type LanguageContextType = {
 
 const translations: Record<
   BazaaLanguage,
-  Record<string, string>
+  TranslationMap
 > = {
   English: {
     home: 'Home',
@@ -223,12 +226,14 @@ const translations: Record<
     backToAllCategories:
       'Gara ramaddiiwwan hundaatti deebi’i',
 
-    backTo: 'Gara duubaatti deebi’i',
+    backTo:
+      'Gara duubaatti deebi’i',
 
     ad: 'beeksisa',
     ads: 'beeksisawwan',
 
-    seeAllIn: 'Hunda keessatti ilaali',
+    seeAllIn:
+      'Hunda keessatti ilaali',
 
     noListingsMatch:
       'Beeksisni walsimu hin jiru',
@@ -255,6 +260,16 @@ const LanguageContext =
       translations.English[key] || key,
   });
 
+function isValidLanguage(
+  value: string | null,
+): value is BazaaLanguage {
+  return (
+    value === 'English' ||
+    value === 'Amharic' ||
+    value === 'Oromo'
+  );
+}
+
 export function LanguageProvider({
   children,
 }: {
@@ -264,20 +279,16 @@ export function LanguageProvider({
     useState<BazaaLanguage>('English');
 
   useEffect(() => {
-    const loadLanguage = () => {
+    function loadLanguage() {
       const saved =
         localStorage.getItem('bazaa-language');
 
-      if (
-        saved === 'English' ||
-        saved === 'Amharic' ||
-        saved === 'Oromo'
-      ) {
+      if (isValidLanguage(saved)) {
         setLanguage(saved);
       } else {
         setLanguage('English');
       }
-    };
+    }
 
     loadLanguage();
 
@@ -294,21 +305,26 @@ export function LanguageProvider({
     };
   }, []);
 
-  function t(key: string) {
-    return (
-      translations[language][key] ||
-      translations.English[key] ||
-      key
-    );
-  }
+  const t = useMemo(() => {
+    return (key: string): string => {
+      return (
+        translations[language][key] ??
+        translations.English[key] ??
+        key
+      );
+    };
+  }, [language]);
+
+  const value = useMemo(
+    () => ({
+      language,
+      t,
+    }),
+    [language, t],
+  );
 
   return (
-    <LanguageContext.Provider
-      value={{
-        language,
-        t,
-      }}
-    >
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );
@@ -316,4 +332,4 @@ export function LanguageProvider({
 
 export function useLanguage() {
   return useContext(LanguageContext);
-   }
+ }
