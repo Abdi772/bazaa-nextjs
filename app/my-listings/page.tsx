@@ -57,8 +57,8 @@ export default function MyListingsPage() {
 
   if (!ready) {
     return (
-      <div className="mx-auto max-w-2xl">
-        <div className="bazaa-card flex min-h-40 items-center justify-center p-6">
+      <div className="mx-auto w-full max-w-2xl">
+        <div className="bazaa-card flex min-h-[180px] items-center justify-center p-5 sm:p-6">
           <p className="text-sm text-muted">
             Loading your listings...
           </p>
@@ -69,8 +69,8 @@ export default function MyListingsPage() {
 
   if (!loggedIn) {
     return (
-      <div className="mx-auto max-w-2xl">
-        <div className="bazaa-card p-8 text-center">
+      <div className="mx-auto w-full max-w-2xl">
+        <div className="bazaa-card p-5 text-center sm:p-8">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amberSoft text-2xl">
             🔐
           </div>
@@ -79,13 +79,13 @@ export default function MyListingsPage() {
             My listings
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-muted">
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
             Log in to see and manage your listings.
           </p>
 
           <Link
             href="/"
-            className="bazaa-primary mt-5"
+            className="bazaa-primary mt-5 min-h-[48px] w-full px-5 sm:w-auto"
           >
             Go to marketplace
           </Link>
@@ -95,23 +95,22 @@ export default function MyListingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
-
+    <div className="mx-auto w-full max-w-2xl">
       {/* Header */}
-      <div className="mb-5 flex items-center justify-between gap-3">
-        <div>
-          <h1 className="bazaa-title text-2xl">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="bazaa-title text-2xl sm:text-3xl">
             My listings
           </h1>
 
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-1 text-sm leading-5 text-muted">
             Manage the items you are selling.
           </p>
         </div>
 
         <Link
           href="/post"
-          className="bazaa-primary shrink-0 px-4 py-2.5 text-sm"
+          className="bazaa-primary min-h-[46px] w-full px-4 py-2.5 text-sm sm:w-auto"
         >
           + New listing
         </Link>
@@ -119,14 +118,14 @@ export default function MyListingsPage() {
 
       {/* Error */}
       {error && (
-        <div className="mb-4 rounded-card border border-danger/20 bg-dangerSoft px-4 py-3 text-sm text-danger">
+        <div className="mb-4 rounded-card border border-danger/20 bg-dangerSoft px-4 py-3 text-sm leading-5 text-danger">
           {error}
         </div>
       )}
 
       {/* Empty state */}
       {items.length === 0 && (
-        <div className="bazaa-card p-8 text-center">
+        <div className="bazaa-card p-6 text-center sm:p-8">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amberSoft text-2xl">
             📦
           </div>
@@ -135,13 +134,13 @@ export default function MyListingsPage() {
             No listings yet
           </h2>
 
-          <p className="mt-2 text-sm leading-6 text-muted">
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
             Start selling by creating your first listing.
           </p>
 
           <Link
             href="/post"
-            className="bazaa-primary mt-5"
+            className="bazaa-primary mt-5 min-h-[48px] w-full px-5 sm:w-auto"
           >
             Create a listing
           </Link>
@@ -154,10 +153,9 @@ export default function MyListingsPage() {
           {items.map((i) => (
             <div
               key={i.id}
-              className="bazaa-card overflow-hidden p-3"
+              className="bazaa-card overflow-hidden p-3 sm:p-4"
             >
-              <div className="flex gap-3">
-
+              <div className="flex min-w-0 gap-3 sm:gap-4">
                 {/* Image */}
                 <Link
                   href={`/products/${listingSlug(i)}`}
@@ -167,10 +165,10 @@ export default function MyListingsPage() {
                     <img
                       src={i.image_url}
                       alt=""
-                      className="h-24 w-24 rounded-bazaa object-cover"
+                      className="h-[88px] w-[88px] rounded-bazaa object-cover sm:h-24 sm:w-24"
                     />
                   ) : (
-                    <div className="flex h-24 w-24 items-center justify-center rounded-bazaa bg-paper text-2xl">
+                    <div className="flex h-[88px] w-[88px] items-center justify-center rounded-bazaa bg-paper text-2xl sm:h-24 sm:w-24">
                       📦
                     </div>
                   )}
@@ -178,27 +176,30 @@ export default function MyListingsPage() {
 
                 {/* Details */}
                 <div className="min-w-0 flex-1">
-
                   <Link
                     href={`/products/${listingSlug(i)}`}
-                    className="block truncate font-semibold text-ink hover:text-amberDeep"
+                    className="block line-clamp-2 text-sm font-bold leading-5 text-ink hover:text-amberDeep sm:text-base"
                   >
                     {i.title}
                   </Link>
 
-                  <div className="mt-1 text-sm font-bold text-amberDeep">
+                  <div className="mt-1.5 font-serif text-base font-bold leading-5 text-amberDeep sm:text-lg">
                     ETB {Number(i.price).toLocaleString()}
                   </div>
 
-                  <div className="mt-1 truncate text-xs text-muted">
-                    📍 {i.location}
+                  <div className="mt-1 flex min-w-0 items-center gap-1 text-xs leading-4 text-muted">
+                    <span aria-hidden="true">📍</span>
+
+                    <span className="min-w-0 truncate">
+                      {i.location}
+                    </span>
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-3 flex gap-2">
+                  <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                     <Link
                       href={`/edit/${i.id}`}
-                      className="bazaa-secondary px-3 py-1.5 text-xs"
+                      className="bazaa-secondary min-h-[42px] flex-1 px-3 py-2 text-xs sm:flex-none"
                     >
                       Edit
                     </Link>
@@ -206,19 +207,17 @@ export default function MyListingsPage() {
                     <button
                       type="button"
                       onClick={() => remove(i.id)}
-                      className="inline-flex items-center justify-center rounded-bazaa border border-danger/25 bg-dangerSoft px-3 py-1.5 text-xs font-semibold text-danger transition-colors hover:bg-danger/10"
+                      className="inline-flex min-h-[42px] flex-1 items-center justify-center rounded-bazaa border border-danger/25 bg-dangerSoft px-3 py-2 text-xs font-semibold text-danger transition-colors hover:bg-danger/10 sm:flex-none"
                     >
                       Delete
                     </button>
                   </div>
-
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
-
     </div>
   );
-                      }
+                   }
