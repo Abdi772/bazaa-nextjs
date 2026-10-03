@@ -38,10 +38,14 @@ export default function SettingsPage() {
   const [phoneLoading, setPhoneLoading] = useState(false);
   const [phoneMessage, setPhoneMessage] = useState('');
 
+  const [language, setLanguage] = useState('English');
+  const [languageMessage, setLanguageMessage] = useState('');
+
   function openSetting(setting: SettingKey) {
     setActive(setting);
     setEmailMessage('');
     setPhoneMessage('');
+    setLanguageMessage('');
 
     if (setting === 'email') {
       supabase.auth.getUser().then(({ data }) => {
@@ -56,12 +60,27 @@ export default function SettingsPage() {
         setPhone('');
       });
     }
+
+    if (setting === 'language') {
+      const savedLanguage = localStorage.getItem('bazaa-language');
+
+      if (
+        savedLanguage === 'English' ||
+        savedLanguage === 'Amharic' ||
+        savedLanguage === 'Oromo'
+      ) {
+        setLanguage(savedLanguage);
+      } else {
+        setLanguage('English');
+      }
+    }
   }
 
   function closeSetting() {
     setActive(null);
     setEmailMessage('');
     setPhoneMessage('');
+    setLanguageMessage('');
     setNewEmail('');
     setPhone('');
   }
@@ -132,56 +151,13 @@ export default function SettingsPage() {
     setCurrentPhone(value);
   }
 
-  const settingInfo: Record<
-    SettingKey,
-    { title: string; description: string }
-  > = {
-    business: {
-      title: 'Business details',
-      description:
-        'Business profile settings will be available here.',
-    },
-    phone: {
-      title: 'Add phone number',
-      description:
-        'Add your phone number to your Bazaa account.',
-    },
-    email: {
-      title: 'Change email',
-      description:
-        'Your email address can be changed here.',
-    },
-    language: {
-      title: 'Change language',
-      description:
-        'Choose the language you want to use on Bazaa.',
-    },
-    chats: {
-      title: 'Disable chats',
-      description:
-        'Control whether other users can contact you through Bazaa chats.',
-    },
-    feedback: {
-      title: 'Disable feedback',
-      description:
-        'Control feedback and communication preferences.',
-    },
-    notifications: {
-      title: 'Manage notifications',
-      description:
-        'Choose which Bazaa notifications you want to receive.',
-    },
-    password: {
-      title: 'Change password',
-      description:
-        'Change the password used to sign in to your Bazaa account.',
-    },
-    delete: {
-      title: 'Delete my account permanently',
-      description:
-        'This action is permanent. We will add the account deletion process here before allowing it.',
-    },
-  };
+  function saveLanguage() {
+    localStorage.setItem('bazaa-language', language);
+
+    setLanguageMessage(
+      `Language changed to ${language}.`
+    );
+  }
 
   return (
     <div className="mx-auto max-w-xl">
@@ -321,7 +297,11 @@ export default function SettingsPage() {
       {/* Log out */}
       <button
         type="button"
-        onClick={() => router.push('/profile')}
+        onClick={async () => {
+          await supabase.auth.signOut();
+          router.push('/');
+          router.refresh();
+        }}
         className="mt-5 flex min-h-[68px] w-full items-center justify-between border-y-[2px] border-line bg-white px-5 py-4 text-left text-[16px] font-bold text-ink transition-colors hover:bg-amberSoft active:bg-amberSoft"
       >
         <span>Log out</span>
@@ -342,8 +322,79 @@ export default function SettingsPage() {
             className="w-full max-w-xl rounded-card border-[2px] border-line bg-white p-5 shadow-soft"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Add phone number */}
-            {active === 'phone' ? (
+            {/* Change language */}
+            {active === 'language' ? (
+              <>
+                <div className="mb-5 flex items-center justify-between">
+                  <h2 className="font-serif text-xl font-bold text-ink">
+                    Change language
+                  </h2>
+
+                  <button
+                    type="button"
+                    onClick={closeSetting}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-muted hover:bg-paper"
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <p className="mb-4 text-sm font-semibold leading-6 text-muted">
+                  Choose the language you want to use on Bazaa.
+                </p>
+
+                <div className="space-y-2">
+                  {['English', 'Amharic', 'Oromo'].map(
+                    (option) => (
+                      <label
+                        key={option}
+                        className={`flex w-full cursor-pointer items-center justify-between rounded-xl border-[2px] px-4 py-4 text-[15px] font-bold transition-colors ${
+                          language === option
+                            ? 'border-amber bg-amberSoft text-amberDeep'
+                            : 'border-line bg-white text-ink hover:bg-paper'
+                        }`}
+                      >
+                        <span>{option}</span>
+
+                        <input
+                          type="radio"
+                          name="bazaa-language"
+                          value={option}
+                          checked={language === option}
+                          onChange={() => setLanguage(option)}
+                          className="h-5 w-5 accent-amber"
+                        />
+                      </label>
+                    )
+                  )}
+                </div>
+
+                {languageMessage && (
+                  <div className="mt-4 rounded-xl border-[2px] border-line bg-greenSoft px-4 py-3 text-sm font-semibold leading-6 text-green">
+                    {languageMessage}
+                  </div>
+                )}
+
+                <div className="mt-5 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={closeSetting}
+                    className="bazaa-secondary flex-1 border-[2px] font-bold"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={saveLanguage}
+                    className="bazaa-primary flex-1 border-[2px] border-amberDeep font-bold"
+                  >
+                    Save language
+                  </button>
+                </div>
+              </>
+            ) : active === 'phone' ? (
               <>
                 <div className="mb-5 flex items-center justify-between">
                   <h2 className="font-serif text-xl font-bold text-ink">
@@ -372,29 +423,26 @@ export default function SettingsPage() {
                   </div>
                 )}
 
-                <div>
-                  <label
-                    htmlFor="phone-number"
-                    className="mb-2 block text-sm font-bold text-ink"
-                  >
-                    Phone number
-                  </label>
+                <label
+                  htmlFor="phone-number"
+                  className="mb-2 block text-sm font-bold text-ink"
+                >
+                  Phone number
+                </label>
 
-                  <input
-                    id="phone-number"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+251 9XX XXX XXX"
-                    autoComplete="tel"
-                    inputMode="tel"
-                    className="bazaa-input font-semibold"
-                  />
-                </div>
+                <input
+                  id="phone-number"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+251 9XX XXX XXX"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  className="bazaa-input font-semibold"
+                />
 
                 <p className="mt-2 text-xs font-semibold leading-5 text-muted">
-                  Use your full international phone number, for example
-                  +251 9XX XXX XXX.
+                  Use your full international phone number.
                 </p>
 
                 {phoneMessage && (
@@ -417,7 +465,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={addPhone}
                     disabled={phoneLoading}
-                    className="bazaa-primary flex-1 border-[2px] border-amberDeep font-bold disabled:cursor-not-allowed disabled:opacity-60"
+                    className="bazaa-primary flex-1 border-[2px] border-amberDeep font-bold disabled:opacity-60"
                   >
                     {phoneLoading ? 'Saving...' : 'Save number'}
                   </button>
@@ -440,34 +488,30 @@ export default function SettingsPage() {
                   </button>
                 </div>
 
-                <div className="mb-4">
-                  <label className="mb-2 block text-sm font-bold text-ink">
-                    Current email
-                  </label>
+                <label className="mb-2 block text-sm font-bold text-ink">
+                  Current email
+                </label>
 
-                  <div className="rounded-xl border-[2px] border-line bg-paper px-4 py-3 text-sm font-semibold text-muted">
-                    {currentEmail || 'Loading...'}
-                  </div>
+                <div className="mb-4 rounded-xl border-[2px] border-line bg-paper px-4 py-3 text-sm font-semibold text-muted">
+                  {currentEmail || 'Loading...'}
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="new-email"
-                    className="mb-2 block text-sm font-bold text-ink"
-                  >
-                    New email address
-                  </label>
+                <label
+                  htmlFor="new-email"
+                  className="mb-2 block text-sm font-bold text-ink"
+                >
+                  New email address
+                </label>
 
-                  <input
-                    id="new-email"
-                    type="email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    placeholder="Enter your new email"
-                    autoComplete="email"
-                    className="bazaa-input font-semibold"
-                  />
-                </div>
+                <input
+                  id="new-email"
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="Enter your new email"
+                  autoComplete="email"
+                  className="bazaa-input font-semibold"
+                />
 
                 {emailMessage && (
                   <div className="mt-4 rounded-xl border-[2px] border-line bg-amberSoft px-4 py-3 text-sm font-semibold leading-6 text-ink">
@@ -489,7 +533,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={changeEmail}
                     disabled={emailLoading}
-                    className="bazaa-primary flex-1 border-[2px] border-amberDeep font-bold disabled:cursor-not-allowed disabled:opacity-60"
+                    className="bazaa-primary flex-1 border-[2px] border-amberDeep font-bold disabled:opacity-60"
                   >
                     {emailLoading ? 'Updating...' : 'Update email'}
                   </button>
@@ -499,7 +543,13 @@ export default function SettingsPage() {
               <>
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="font-serif text-xl font-bold text-ink">
-                    {settingInfo[active].title}
+                    {active === 'business' && 'Business details'}
+                    {active === 'chats' && 'Disable chats'}
+                    {active === 'feedback' && 'Disable feedback'}
+                    {active === 'notifications' && 'Manage notifications'}
+                    {active === 'password' && 'Change password'}
+                    {active === 'delete' &&
+                      'Delete my account permanently'}
                   </h2>
 
                   <button
@@ -513,7 +563,7 @@ export default function SettingsPage() {
                 </div>
 
                 <p className="text-sm font-semibold leading-6 text-muted">
-                  {settingInfo[active].description}
+                  This setting will be available here.
                 </p>
 
                 <button
@@ -530,4 +580,4 @@ export default function SettingsPage() {
       )}
     </div>
   );
-             }
+        }
