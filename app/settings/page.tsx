@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import ThemeButton from '../ThemeButton';
 
 const row =
-  'flex min-h-[68px] items-center justify-between border-b-[2px] border-line bg-white px-5 py-4 text-[16px] font-bold text-ink transition-colors hover:bg-amberSoft';
-
+  'flex w-full min-h-[68px] items-center justify-between border-b-[2px] border-line bg-white px-5 py-4 text-left text-[16px] font-bold text-ink transition-colors hover:bg-amberSoft';
 const section =
   'border-y-[2px] border-line bg-white';
 
