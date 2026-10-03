@@ -23,86 +23,64 @@ const row =
 const section =
   'border-y-[2px] border-line bg-white';
 
-const input =
-  'bazaa-input mt-2 text-base font-semibold';
-
 export default function SettingsPage() {
   const router = useRouter();
 
   const [active, setActive] = useState<SettingKey | null>(null);
 
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  const [passwordLoading, setPasswordLoading] = useState(false);
-  const [passwordMessage, setPasswordMessage] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-
-  const [loggingOut, setLoggingOut] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [currentEmail, setCurrentEmail] = useState('');
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailMessage, setEmailMessage] = useState('');
 
   function openSetting(setting: SettingKey) {
-    setPasswordMessage('');
-    setPasswordError('');
-
     setActive(setting);
+    setEmailMessage('');
+
+    if (setting === 'email') {
+      supabase.auth.getUser().then(({ data }) => {
+        setCurrentEmail(data.user?.email ?? '');
+        setNewEmail('');
+      });
+    }
   }
 
   function closeSetting() {
     setActive(null);
-
-    setNewPassword('');
-    setConfirmPassword('');
-    setPasswordMessage('');
-    setPasswordError('');
+    setEmailMessage('');
+    setNewEmail('');
   }
 
-  async function changePassword() {
-    setPasswordMessage('');
-    setPasswordError('');
+  async function changeEmail() {
+    const email = newEmail.trim();
 
-    if (!newPassword || !confirmPassword) {
-      setPasswordError('Please enter your new password twice.');
+    if (!email) {
+      setEmailMessage('Please enter your new email address.');
       return;
     }
 
-    if (newPassword.length < 6) {
-      setPasswordError(
-        'Your password must be at least 6 characters long.'
-      );
+    if (email === currentEmail) {
+      setEmailMessage('Please enter a different email address.');
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      setPasswordError('The passwords do not match.');
-      return;
-    }
-
-    setPasswordLoading(true);
+    setEmailLoading(true);
+    setEmailMessage('');
 
     const { error } = await supabase.auth.updateUser({
-      password: newPassword,
+      email,
     });
 
-    setPasswordLoading(false);
+    setEmailLoading(false);
 
     if (error) {
-      setPasswordError(error.message);
+      setEmailMessage(error.message);
       return;
     }
 
-    setPasswordMessage('Your password has been changed successfully.');
-
-    setNewPassword('');
-    setConfirmPassword('');
-  }
-
-  async function logout() {
-    setLoggingOut(true);
-
-    await supabase.auth.signOut();
-
-    router.push('/');
-    router.refresh();
+    setEmailMessage(
+      'Check your email for a confirmation link to complete the change.'
+    );
   }
 
   const settingInfo: Record<
@@ -114,49 +92,41 @@ export default function SettingsPage() {
       description:
         'Business profile settings will be available here.',
     },
-
     phone: {
       title: 'Add phone number',
       description:
         'Add your phone number to your Bazaa account.',
     },
-
     email: {
       title: 'Change email',
       description:
         'Your email address can be changed here.',
     },
-
     language: {
       title: 'Change language',
       description:
         'Choose the language you want to use on Bazaa.',
     },
-
     chats: {
       title: 'Disable chats',
       description:
         'Control whether other users can contact you through Bazaa chats.',
     },
-
     feedback: {
       title: 'Disable feedback',
       description:
         'Control feedback and communication preferences.',
     },
-
     notifications: {
       title: 'Manage notifications',
       description:
         'Choose which Bazaa notifications you want to receive.',
     },
-
     password: {
       title: 'Change password',
       description:
         'Change the password used to sign in to your Bazaa account.',
     },
-
     delete: {
       title: 'Delete my account permanently',
       description:
@@ -186,9 +156,7 @@ export default function SettingsPage() {
       <div className={section}>
         <Link href="/profile" className={row}>
           <span>Personal details</span>
-          <span className="text-3xl font-normal text-muted">
-            ›
-          </span>
+          <span className="text-3xl font-normal text-muted">›</span>
         </Link>
 
         <button
@@ -197,9 +165,7 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Business details</span>
-          <span className="text-3xl font-normal text-muted">
-            ›
-          </span>
+          <span className="text-3xl font-normal text-muted">›</span>
         </button>
       </div>
 
@@ -212,9 +178,7 @@ export default function SettingsPage() {
             className={row}
           >
             <span>Add phone number</span>
-            <span className="text-3xl font-normal text-muted">
-              ›
-            </span>
+            <span className="text-3xl font-normal text-muted">›</span>
           </button>
 
           <button
@@ -223,9 +187,7 @@ export default function SettingsPage() {
             className={row}
           >
             <span>Change email</span>
-            <span className="text-3xl font-normal text-muted">
-              ›
-            </span>
+            <span className="text-3xl font-normal text-muted">›</span>
           </button>
 
           <button
@@ -234,9 +196,7 @@ export default function SettingsPage() {
             className={row}
           >
             <span>Change language</span>
-            <span className="text-3xl font-normal text-muted">
-              ›
-            </span>
+            <span className="text-3xl font-normal text-muted">›</span>
           </button>
         </div>
       </div>
@@ -249,9 +209,7 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Disable chats</span>
-          <span className="text-3xl font-normal text-muted">
-            ›
-          </span>
+          <span className="text-3xl font-normal text-muted">›</span>
         </button>
 
         <button
@@ -260,9 +218,7 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Disable feedback</span>
-          <span className="text-3xl font-normal text-muted">
-            ›
-          </span>
+          <span className="text-3xl font-normal text-muted">›</span>
         </button>
 
         <button
@@ -271,9 +227,7 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Manage notifications</span>
-          <span className="text-3xl font-normal text-muted">
-            ›
-          </span>
+          <span className="text-3xl font-normal text-muted">›</span>
         </button>
       </div>
 
@@ -302,9 +256,7 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Change password</span>
-          <span className="text-3xl font-normal text-muted">
-            ›
-          </span>
+          <span className="text-3xl font-normal text-muted">›</span>
         </button>
 
         <button
@@ -313,26 +265,18 @@ export default function SettingsPage() {
           className="flex min-h-[68px] w-full items-center justify-between border-b-[2px] border-line bg-white px-5 py-4 text-left text-[16px] font-bold text-red-700 transition-colors hover:bg-red-50 active:bg-red-50"
         >
           <span>Delete my account permanently</span>
-          <span className="text-3xl font-normal text-red-400">
-            ›
-          </span>
+          <span className="text-3xl font-normal text-red-400">›</span>
         </button>
       </div>
 
       {/* Log out */}
       <button
         type="button"
-        onClick={logout}
-        disabled={loggingOut}
-        className="mt-5 flex min-h-[68px] w-full items-center justify-between border-y-[2px] border-line bg-white px-5 py-4 text-left text-[16px] font-bold text-ink transition-colors hover:bg-amberSoft active:bg-amberSoft disabled:opacity-60"
+        onClick={() => router.push('/profile')}
+        className="mt-5 flex min-h-[68px] w-full items-center justify-between border-y-[2px] border-line bg-white px-5 py-4 text-left text-[16px] font-bold text-ink transition-colors hover:bg-amberSoft active:bg-amberSoft"
       >
-        <span>
-          {loggingOut ? 'Logging out...' : 'Log out'}
-        </span>
-
-        <span className="text-3xl font-normal text-muted">
-          ›
-        </span>
+        <span>Log out</span>
+        <span className="text-3xl font-normal text-muted">›</span>
       </button>
 
       <p className="px-4 py-6 text-center text-xs font-semibold text-muted">
@@ -349,90 +293,96 @@ export default function SettingsPage() {
             className="w-full max-w-xl rounded-card border-[2px] border-line bg-white p-5 shadow-soft"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal header */}
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-serif text-xl font-bold text-ink">
-                {settingInfo[active].title}
-              </h2>
+            {/* Change email */}
+            {active === 'email' ? (
+              <>
+                <div className="mb-5 flex items-center justify-between">
+                  <h2 className="font-serif text-xl font-bold text-ink">
+                    Change email
+                  </h2>
 
-              <button
-                type="button"
-                onClick={closeSetting}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-muted hover:bg-paper"
-                aria-label="Close"
-              >
-                ×
-              </button>
-            </div>
+                  <button
+                    type="button"
+                    onClick={closeSetting}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-muted hover:bg-paper"
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
 
-            {/* Change password */}
-            {active === 'password' ? (
-              <div>
-                <p className="text-sm font-semibold leading-6 text-muted">
-                  Enter a new password for your Bazaa account.
-                </p>
+                <div className="mb-4">
+                  <label className="mb-2 block text-sm font-bold text-ink">
+                    Current email
+                  </label>
 
-                <label className="mt-5 block text-sm font-bold text-ink">
-                  New password
+                  <div className="rounded-xl border-[2px] border-line bg-paper px-4 py-3 text-sm font-semibold text-muted">
+                    {currentEmail || 'Loading...'}
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="new-email"
+                    className="mb-2 block text-sm font-bold text-ink"
+                  >
+                    New email address
+                  </label>
+
                   <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) =>
-                      setNewPassword(e.target.value)
-                    }
-                    placeholder="Enter new password"
-                    autoComplete="new-password"
-                    className={input}
+                    id="new-email"
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="Enter your new email"
+                    autoComplete="email"
+                    className="bazaa-input font-semibold"
                   />
-                </label>
+                </div>
 
-                <label className="mt-4 block text-sm font-bold text-ink">
-                  Confirm new password
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) =>
-                      setConfirmPassword(e.target.value)
-                    }
-                    placeholder="Enter password again"
-                    autoComplete="new-password"
-                    className={input}
-                  />
-                </label>
-
-                {passwordError && (
-                  <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold leading-5 text-red-700">
-                    {passwordError}
+                {emailMessage && (
+                  <div className="mt-4 rounded-xl border-[2px] border-line bg-amberSoft px-4 py-3 text-sm font-semibold leading-6 text-ink">
+                    {emailMessage}
                   </div>
                 )}
 
-                {passwordMessage && (
-                  <div className="mt-4 rounded-xl border border-green-200 bg-greenSoft px-4 py-3 text-sm font-semibold leading-5 text-green">
-                    {passwordMessage}
-                  </div>
-                )}
+                <div className="mt-5 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={closeSetting}
+                    className="bazaa-secondary flex-1 border-[2px] font-bold"
+                    disabled={emailLoading}
+                  >
+                    Cancel
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={changePassword}
-                  disabled={passwordLoading}
-                  className="bazaa-primary mt-5 w-full border-[2px] border-amberDeep font-bold disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {passwordLoading
-                    ? 'Changing password...'
-                    : 'Change password'}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={closeSetting}
-                  className="bazaa-secondary mt-3 w-full font-bold"
-                >
-                  Close
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    onClick={changeEmail}
+                    disabled={emailLoading}
+                    className="bazaa-primary flex-1 border-[2px] border-amberDeep font-bold disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {emailLoading ? 'Updating...' : 'Update email'}
+                  </button>
+                </div>
+              </>
             ) : (
               <>
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="font-serif text-xl font-bold text-ink">
+                    {settingInfo[active].title}
+                  </h2>
+
+                  <button
+                    type="button"
+                    onClick={closeSetting}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-muted hover:bg-paper"
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+
                 <p className="text-sm font-semibold leading-6 text-muted">
                   {settingInfo[active].description}
                 </p>
@@ -451,4 +401,4 @@ export default function SettingsPage() {
       )}
     </div>
   );
-             }
+}
