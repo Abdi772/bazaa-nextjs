@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ThemeButton from '../ThemeButton';
+import { supabase } from '../../lib/supabaseClient';
 
 type SettingKey =
   | 'business'
@@ -22,16 +23,86 @@ const row =
 const section =
   'border-y-[2px] border-line bg-white';
 
+const input =
+  'bazaa-input mt-2 text-base font-semibold';
+
 export default function SettingsPage() {
   const router = useRouter();
+
   const [active, setActive] = useState<SettingKey | null>(null);
 
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const [loggingOut, setLoggingOut] = useState(false);
+
   function openSetting(setting: SettingKey) {
+    setPasswordMessage('');
+    setPasswordError('');
+
     setActive(setting);
   }
 
   function closeSetting() {
     setActive(null);
+
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordMessage('');
+    setPasswordError('');
+  }
+
+  async function changePassword() {
+    setPasswordMessage('');
+    setPasswordError('');
+
+    if (!newPassword || !confirmPassword) {
+      setPasswordError('Please enter your new password twice.');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError(
+        'Your password must be at least 6 characters long.'
+      );
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('The passwords do not match.');
+      return;
+    }
+
+    setPasswordLoading(true);
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    setPasswordLoading(false);
+
+    if (error) {
+      setPasswordError(error.message);
+      return;
+    }
+
+    setPasswordMessage('Your password has been changed successfully.');
+
+    setNewPassword('');
+    setConfirmPassword('');
+  }
+
+  async function logout() {
+    setLoggingOut(true);
+
+    await supabase.auth.signOut();
+
+    router.push('/');
+    router.refresh();
   }
 
   const settingInfo: Record<
@@ -43,41 +114,49 @@ export default function SettingsPage() {
       description:
         'Business profile settings will be available here.',
     },
+
     phone: {
       title: 'Add phone number',
       description:
         'Add your phone number to your Bazaa account.',
     },
+
     email: {
       title: 'Change email',
       description:
         'Your email address can be changed here.',
     },
+
     language: {
       title: 'Change language',
       description:
         'Choose the language you want to use on Bazaa.',
     },
+
     chats: {
       title: 'Disable chats',
       description:
         'Control whether other users can contact you through Bazaa chats.',
     },
+
     feedback: {
       title: 'Disable feedback',
       description:
         'Control feedback and communication preferences.',
     },
+
     notifications: {
       title: 'Manage notifications',
       description:
         'Choose which Bazaa notifications you want to receive.',
     },
+
     password: {
       title: 'Change password',
       description:
         'Change the password used to sign in to your Bazaa account.',
     },
+
     delete: {
       title: 'Delete my account permanently',
       description:
@@ -107,7 +186,9 @@ export default function SettingsPage() {
       <div className={section}>
         <Link href="/profile" className={row}>
           <span>Personal details</span>
-          <span className="text-3xl font-normal text-muted">›</span>
+          <span className="text-3xl font-normal text-muted">
+            ›
+          </span>
         </Link>
 
         <button
@@ -116,7 +197,9 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Business details</span>
-          <span className="text-3xl font-normal text-muted">›</span>
+          <span className="text-3xl font-normal text-muted">
+            ›
+          </span>
         </button>
       </div>
 
@@ -129,7 +212,9 @@ export default function SettingsPage() {
             className={row}
           >
             <span>Add phone number</span>
-            <span className="text-3xl font-normal text-muted">›</span>
+            <span className="text-3xl font-normal text-muted">
+              ›
+            </span>
           </button>
 
           <button
@@ -138,7 +223,9 @@ export default function SettingsPage() {
             className={row}
           >
             <span>Change email</span>
-            <span className="text-3xl font-normal text-muted">›</span>
+            <span className="text-3xl font-normal text-muted">
+              ›
+            </span>
           </button>
 
           <button
@@ -147,7 +234,9 @@ export default function SettingsPage() {
             className={row}
           >
             <span>Change language</span>
-            <span className="text-3xl font-normal text-muted">›</span>
+            <span className="text-3xl font-normal text-muted">
+              ›
+            </span>
           </button>
         </div>
       </div>
@@ -160,7 +249,9 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Disable chats</span>
-          <span className="text-3xl font-normal text-muted">›</span>
+          <span className="text-3xl font-normal text-muted">
+            ›
+          </span>
         </button>
 
         <button
@@ -169,7 +260,9 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Disable feedback</span>
-          <span className="text-3xl font-normal text-muted">›</span>
+          <span className="text-3xl font-normal text-muted">
+            ›
+          </span>
         </button>
 
         <button
@@ -178,7 +271,9 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Manage notifications</span>
-          <span className="text-3xl font-normal text-muted">›</span>
+          <span className="text-3xl font-normal text-muted">
+            ›
+          </span>
         </button>
       </div>
 
@@ -207,7 +302,9 @@ export default function SettingsPage() {
           className={row}
         >
           <span>Change password</span>
-          <span className="text-3xl font-normal text-muted">›</span>
+          <span className="text-3xl font-normal text-muted">
+            ›
+          </span>
         </button>
 
         <button
@@ -216,18 +313,26 @@ export default function SettingsPage() {
           className="flex min-h-[68px] w-full items-center justify-between border-b-[2px] border-line bg-white px-5 py-4 text-left text-[16px] font-bold text-red-700 transition-colors hover:bg-red-50 active:bg-red-50"
         >
           <span>Delete my account permanently</span>
-          <span className="text-3xl font-normal text-red-400">›</span>
+          <span className="text-3xl font-normal text-red-400">
+            ›
+          </span>
         </button>
       </div>
 
       {/* Log out */}
       <button
         type="button"
-        onClick={() => router.push('/profile')}
-        className="mt-5 flex min-h-[68px] w-full items-center justify-between border-y-[2px] border-line bg-white px-5 py-4 text-left text-[16px] font-bold text-ink transition-colors hover:bg-amberSoft active:bg-amberSoft"
+        onClick={logout}
+        disabled={loggingOut}
+        className="mt-5 flex min-h-[68px] w-full items-center justify-between border-y-[2px] border-line bg-white px-5 py-4 text-left text-[16px] font-bold text-ink transition-colors hover:bg-amberSoft active:bg-amberSoft disabled:opacity-60"
       >
-        <span>Log out</span>
-        <span className="text-3xl font-normal text-muted">›</span>
+        <span>
+          {loggingOut ? 'Logging out...' : 'Log out'}
+        </span>
+
+        <span className="text-3xl font-normal text-muted">
+          ›
+        </span>
       </button>
 
       <p className="px-4 py-6 text-center text-xs font-semibold text-muted">
@@ -244,6 +349,7 @@ export default function SettingsPage() {
             className="w-full max-w-xl rounded-card border-[2px] border-line bg-white p-5 shadow-soft"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Modal header */}
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-serif text-xl font-bold text-ink">
                 {settingInfo[active].title}
@@ -259,20 +365,90 @@ export default function SettingsPage() {
               </button>
             </div>
 
-            <p className="text-sm font-semibold leading-6 text-muted">
-              {settingInfo[active].description}
-            </p>
+            {/* Change password */}
+            {active === 'password' ? (
+              <div>
+                <p className="text-sm font-semibold leading-6 text-muted">
+                  Enter a new password for your Bazaa account.
+                </p>
 
-            <button
-              type="button"
-              onClick={closeSetting}
-              className="bazaa-primary mt-5 w-full border-[2px] border-amberDeep font-bold"
-            >
-              Close
-            </button>
+                <label className="mt-5 block text-sm font-bold text-ink">
+                  New password
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) =>
+                      setNewPassword(e.target.value)
+                    }
+                    placeholder="Enter new password"
+                    autoComplete="new-password"
+                    className={input}
+                  />
+                </label>
+
+                <label className="mt-4 block text-sm font-bold text-ink">
+                  Confirm new password
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) =>
+                      setConfirmPassword(e.target.value)
+                    }
+                    placeholder="Enter password again"
+                    autoComplete="new-password"
+                    className={input}
+                  />
+                </label>
+
+                {passwordError && (
+                  <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold leading-5 text-red-700">
+                    {passwordError}
+                  </div>
+                )}
+
+                {passwordMessage && (
+                  <div className="mt-4 rounded-xl border border-green-200 bg-greenSoft px-4 py-3 text-sm font-semibold leading-5 text-green">
+                    {passwordMessage}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={changePassword}
+                  disabled={passwordLoading}
+                  className="bazaa-primary mt-5 w-full border-[2px] border-amberDeep font-bold disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {passwordLoading
+                    ? 'Changing password...'
+                    : 'Change password'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={closeSetting}
+                  className="bazaa-secondary mt-3 w-full font-bold"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm font-semibold leading-6 text-muted">
+                  {settingInfo[active].description}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={closeSetting}
+                  className="bazaa-primary mt-5 w-full border-[2px] border-amberDeep font-bold"
+                >
+                  Close
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
     </div>
   );
-        }
+             }
