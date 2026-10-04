@@ -16,6 +16,7 @@ import OwnerActions from './OwnerActions';
 import ReportButton from '../../ReportButton';
 import FavoriteButton from '../../FavoriteButton';
 import ChatButton from '../../ChatButton';
+import ContactButtons from '../../ContactButtons';
 import ListingActions from '../../ListingActions';
 
 type Props = {
@@ -371,16 +372,7 @@ export default async function ProductPage({
             </div>
           )}
 
-          {/* Email */}
-          <a
-            href={`mailto:${listing.email}?subject=${encodeURIComponent(
-              'Re: ' + listing.title
-            )}`}
-            className="mt-2 inline-flex min-h-[50px] w-full items-center justify-center rounded-bazaa border-[2px] border-ink bg-white px-4 py-3 text-sm font-bold text-ink transition-colors hover:bg-paper"
-          >
-            <span className="mr-2 text-base">✉️</span>
-            Email seller
-          </a>
+          <ContactButtons listingId={listing.id} title={listing.title} />
         </div>
       </section>
 
