@@ -6,12 +6,13 @@ import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabaseClient';
 import { useLanguage } from '../LanguageProvider';
+
 const tile =
   'flex min-h-[64px] items-center gap-3 border-b-[2px] border-line bg-white px-4 py-4 text-[15px] font-bold text-ink transition-colors hover:bg-amberSoft';
 
 export default function ProfilePage() {
   const router = useRouter();
- const { t } = useLanguage();
+  const { t } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [ready, setReady] = useState(false);
@@ -42,7 +43,7 @@ export default function ProfilePage() {
   if (!ready) {
     return (
       <p className="py-10 text-center text-sm font-semibold text-muted">
-        Loading...
+        {t('loading')}
       </p>
     );
   }
@@ -51,12 +52,11 @@ export default function ProfilePage() {
     return (
       <div className="mx-auto max-w-xl py-10 text-center">
         <h1 className="mb-2 text-xl font-bold text-ink">
-          Your profile
+          {t('yourProfile')}
         </h1>
 
         <p className="text-sm font-semibold leading-6 text-muted">
-          Use the Log in / Sign up button at the top of the page to see your
-          profile.
+          {t('profileLoginHint')}
         </p>
       </div>
     );
@@ -87,33 +87,33 @@ export default function ProfilePage() {
       <div className="overflow-hidden border-y-[2px] border-line bg-white">
         <Link href="/my-listings" className={tile}>
           <span aria-hidden="true">📋</span>
-          <span>My adverts</span>
+          <span>{t('myAdverts')}</span>
         </Link>
 
         <Link href="/saved" className={tile}>
           <span aria-hidden="true">❤️</span>
-          <span>Saved</span>
+          <span>{t('saved')}</span>
         </Link>
 
         <Link href="/messages" className={tile}>
           <span aria-hidden="true">💬</span>
-          <span>Messages</span>
+          <span>{t('messages')}</span>
         </Link>
 
         <Link href="/post" className={tile}>
           <span aria-hidden="true">➕</span>
-          <span>Post a listing</span>
+          <span>{t('postListing')}</span>
         </Link>
 
         <Link href="/settings" className={tile}>
           <span aria-hidden="true">⚙️</span>
-          <span>Settings</span>
+          <span>{t('settings')}</span>
         </Link>
 
         {isAdmin && (
           <Link href="/admin" className={tile}>
             <span aria-hidden="true">🛡️</span>
-            <span>Admin</span>
+            <span>{t('admin')}</span>
           </Link>
         )}
       </div>
@@ -124,7 +124,7 @@ export default function ProfilePage() {
         onClick={logout}
         className="mt-5 w-full rounded-xl border-[2px] border-red-300 bg-white py-3.5 font-bold text-red-700 transition-colors hover:bg-red-50"
       >
-        Log out
+        {t('logout')}
       </button>
     </div>
   );
