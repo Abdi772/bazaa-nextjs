@@ -125,7 +125,7 @@ export default function AuthButton() {
         </Link>
 
         <Link
-          href="/favorites"
+          href="/saved"
           className="hidden min-h-[42px] items-center justify-center rounded-bazaa border-[2px] border-white/30 bg-white/5 px-3 py-2 font-bold text-paper transition-colors hover:bg-white/10 md:inline-flex"
         >
           ♥ Saved
