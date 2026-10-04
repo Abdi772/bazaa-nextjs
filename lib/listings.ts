@@ -2,6 +2,9 @@
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Public columns only. Phone and email are NOT here on purpose.
+const PUBLIC_COLUMNS =
+  'id, title, price, category, subcategory, brand, model, condition, region, location, description, image_url, image_urls, user_id, created_at';
 
 // Server-side client: every query below runs on Vercel's server, not in
 // the visitor's browser. The database does the filtering (WHERE clauses),
@@ -22,8 +25,8 @@ export type Listing = {
   region: string | null;
   location: string;
   description: string;
-  email: string;
-  phone: string | null;
+  email?: string;
+  phone?: string | null;
   image_url: string | null;
   image_urls: string[] | null;
   user_id: string | null;
@@ -54,7 +57,7 @@ export async function getListings(
 
   let q = db
     .from('listings')
-    .select('*')
+    .select(PUBLIC_COLUMNS)
     .order(byPrice ? 'price' : 'created_at', {
       ascending: filters.sort === 'price_asc',
     });
@@ -122,7 +125,7 @@ export async function getListingById(
 
   const { data, error } = await db
     .from('listings')
-    .select('*')
+.select(PUBLIC_COLUMNS)
     .eq('id', id)
     .maybeSingle();
 
@@ -143,7 +146,7 @@ export async function getSimilarListings(
 
   const { data, error } = await db
     .from('listings')
-    .select('*')
+    .select(PUBLIC_COLUMNS)
     .eq('category', category)
     .neq('id', excludeId)
     .order('created_at', { ascending: false })
