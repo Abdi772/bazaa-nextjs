@@ -6,10 +6,11 @@ import AuthButton from './AuthButton';
 import BottomNav from './BottomNav';
 import BackButton from './BackButton';
 import ThemeButton from './ThemeButton';
+import SiteFooter from './SiteFooter';
 import { LanguageProvider } from './LanguageProvider';
 import { SITE_URL } from '@/lib/siteUrl';
 
- export const metadata: Metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: 'Bazaa — Buy & Sell Marketplace',
   description: 'Buy and sell anything, right in your area.',
@@ -51,9 +52,11 @@ export default function RootLayout({
             </div>
           </header>
 
-          <main className="mx-auto min-h-[calc(100vh-64px)] max-w-5xl overflow-x-hidden px-4 py-5 pb-24 sm:px-5 sm:py-6 md:pb-8">
+          <main className="mx-auto min-h-[calc(100vh-64px)] max-w-5xl overflow-x-hidden px-4 py-5 pb-6 sm:px-5 sm:py-6">
             {children}
           </main>
+
+          <SiteFooter />
 
           <BottomNav />
         </LanguageProvider>
