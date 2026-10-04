@@ -16,7 +16,15 @@ export default function AuthButton() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
-
+useEffect(() => {
+    const openLogin = () => {
+      setMode('login');
+      setOpen(true);
+    };
+    window.addEventListener('bazaa:open-login', openLogin);
+    return () => window.removeEventListener('bazaa:open-login', openLogin);
+  }, []);
+ 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
