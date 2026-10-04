@@ -7,10 +7,18 @@ import BottomNav from './BottomNav';
 import BackButton from './BackButton';
 import ThemeButton from './ThemeButton';
 import { LanguageProvider } from './LanguageProvider';
+import { SITE_URL } from '@/lib/siteUrl';
 
-export const metadata: Metadata = {
+ export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'Bazaa — Buy & Sell Marketplace',
   description: 'Buy and sell anything, right in your area.',
+  openGraph: {
+    title: 'Bazaa — Buy & Sell Marketplace',
+    description: 'Buy and sell anything, right in your area.',
+    siteName: 'Bazaa',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
