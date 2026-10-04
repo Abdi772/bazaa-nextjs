@@ -290,7 +290,7 @@ export default async function HomePage({
       category,
       subcategory,
     );
-  } else if (subcategory) {
+     } else if (subcategory) {
     backHref = buildUrl(category);
   } else if (showAll) {
     backHref = buildUrl(category);
@@ -309,7 +309,7 @@ export default async function HomePage({
       <div className="min-w-0 flex-1">
         {showHome && (
           <>
-            <section className="mb-7 overflow-hidden rounded-card bg-ink px-5 py-7 text-paper shadow-soft sm:px-8 sm:py-10">
+            <section className="mb-7 overflow-hidden rounded-card bazaa-hero px-5 py-7 text-paper shadow-soft sm:px-8 sm:py-10">
               <div className="max-w-2xl">
                 <div className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber sm:text-xs">
                   Bazaa Marketplace
@@ -359,7 +359,7 @@ export default async function HomePage({
                 <Link
                   key={name}
                   href={buildUrl(name)}
-                  className="group min-w-0 overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                  className="group min-w-0 overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
                 >
                   <div className="relative aspect-square overflow-hidden bg-paper">
                     <Image
@@ -372,7 +372,7 @@ export default async function HomePage({
                   </div>
 
                   <div className="p-2.5 sm:p-3">
-                    <div className="text-[13px] font-semibold leading-5 text-ink sm:text-sm">
+                    <div className="text-[13px] font-semibold leading-5 bazaa-text sm:text-sm">
                       <LanguageText
                         k={categoryTranslationKey(
                           name,
@@ -518,7 +518,8 @@ export default async function HomePage({
             </Link>
           </div>
         )}
-               {showBrandTiles && (
+
+        {showBrandTiles && (
           <div className="mb-6 grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 md:grid-cols-6">
             {brandNames.map((b) => {
               const logo = getBrandLogo(b);
@@ -573,16 +574,16 @@ export default async function HomePage({
 
         {showListings &&
           (listings.length === 0 ? (
-            <div className="rounded-card border border-dashed border-line bg-white px-5 py-14 text-center sm:px-6 sm:py-16">
+            <div className="rounded-card border border-dashed border-line bazaa-surface px-5 py-14 text-center sm:px-6 sm:py-16">
               <div className="mb-3 text-3xl">
                 ⌕
               </div>
 
-              <h3 className="mb-1 text-sm font-semibold text-ink sm:text-base">
+              <h3 className="mb-1 text-sm font-semibold bazaa-text sm:text-base">
                 <LanguageText k="noListingsMatch" />
               </h3>
 
-              <p className="text-sm leading-5 text-muted">
+              <p className="text-sm leading-5 bazaa-muted-text">
                 <LanguageText k="tryDifferent" />
               </p>
             </div>
@@ -594,9 +595,9 @@ export default async function HomePage({
                   href={`/products/${listingSlug(
                     listing,
                   )}`}
-                  className="group min-w-0 overflow-hidden rounded-card border border-line bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                  className="group min-w-0 overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
                 >
-                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bg-paper">
+                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bazaa-image-bg">
                     {listing.image_url ? (
                       <Image
                         src={listing.image_url}
@@ -621,18 +622,18 @@ export default async function HomePage({
                   </div>
 
                   <div className="p-2.5 sm:p-3.5">
-                    <div className="font-serif text-base font-bold leading-5 text-amberDeep sm:text-lg">
+                    <div className="font-serif text-base font-bold leading-5 bazaa-price sm:text-lg">
                       ETB{' '}
                       {Number(
                         listing.price,
                       ).toLocaleString()}
                     </div>
 
-                    <div className="mt-1 line-clamp-2 min-h-[2.5rem] text-[13px] font-semibold leading-5 text-ink sm:text-sm">
+                    <div className="mt-1 line-clamp-2 min-h-[2.5rem] text-[13px] font-semibold leading-5 bazaa-text sm:text-sm">
                       {listing.title}
                     </div>
 
-                    <div className="mt-1 flex min-w-0 flex-wrap gap-x-1.5 gap-y-0.5 text-[11px] leading-4 text-muted sm:text-xs">
+                    <div className="mt-1 flex min-w-0 flex-wrap gap-x-1.5 gap-y-0.5 text-[11px] leading-4 bazaa-muted-text sm:text-xs">
                       {listing.brand && (
                         <span className="max-w-full truncate">
                           {listing.brand}
@@ -654,13 +655,13 @@ export default async function HomePage({
 
                     <div className="mt-2 flex min-w-0 flex-wrap items-center gap-1.5">
                       {listing.condition && (
-                        <span className="max-w-full truncate rounded-full bg-amberSoft px-2 py-1 text-[10px] font-semibold leading-4 text-amberDeep sm:text-[11px]">
+                        <span className="max-w-full truncate rounded-full bazaa-soft-bg px-2 py-1 text-[10px] font-semibold leading-4 bazaa-price sm:text-[11px]">
                           {listing.condition}
                         </span>
                       )}
 
                       {listing.location && (
-                        <span className="min-w-0 max-w-full truncate text-[11px] leading-4 text-muted sm:text-xs">
+                        <span className="min-w-0 max-w-full truncate text-[11px] leading-4 bazaa-muted-text sm:text-xs">
                           {listing.location}
                         </span>
                       )}
@@ -673,4 +674,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-}
+       }
