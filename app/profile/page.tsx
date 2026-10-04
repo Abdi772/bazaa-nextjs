@@ -89,7 +89,7 @@ export default function ProfilePage() {
           <span>My adverts</span>
         </Link>
 
-        <Link href="/favorites" className={tile}>
+        <Link href="/saved" className={tile}>
           <span aria-hidden="true">❤️</span>
           <span>Saved</span>
         </Link>
