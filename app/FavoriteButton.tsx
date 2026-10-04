@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { useLanguage } from './LanguageProvider';
 
 export default function FavoriteButton({
   listingId,
@@ -9,6 +10,7 @@ export default function FavoriteButton({
   listingId: number | string;
 }) {
   const id = Number(listingId);
+  const { t } = useLanguage();
 
   const [userId, setUserId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -49,7 +51,7 @@ export default function FavoriteButton({
     }
 
     if (!userId) {
-      setHint('Log in to save listings.');
+      setHint(t('logInToSave'));
       return;
     }
 
@@ -64,17 +66,17 @@ export default function FavoriteButton({
         .eq('listing_id', id);
 
       if (error) {
-  setHint(error.message);
-} else {
-  setSaved(false);
+        setHint(error.message);
+      } else {
+        setSaved(false);
 
-  window.dispatchEvent(
-    new CustomEvent('bazaa-favorite-removed', {
-      detail: {
-        listingId: id,
-      },
-    })
-  );
+        window.dispatchEvent(
+          new CustomEvent('bazaa-favorite-removed', {
+            detail: {
+              listingId: id,
+            },
+          })
+        );
       }
     } else {
       const { error } = await supabase
@@ -94,22 +96,18 @@ export default function FavoriteButton({
     setBusy(false);
   }
 
+  const label = saved
+    ? t('removeFromSaved')
+    : t('saveListing');
+
   return (
     <div className="relative">
       <button
         type="button"
         onClick={toggle}
         disabled={busy}
-        aria-label={
-          saved
-            ? 'Remove from saved listings'
-            : 'Save listing'
-        }
-        title={
-          saved
-            ? 'Remove from saved listings'
-            : 'Save listing'
-        }
+        aria-label={label}
+        title={label}
         className={[
           'flex h-10 w-10 items-center justify-center',
           'rounded-full border',
