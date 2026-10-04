@@ -33,9 +33,9 @@ export default function BottomNav() {
         </svg>
       ),
     },
-    {
-      href: '/',
-      label: t('browse'),
+     {
+      href: '/saved',
+      label: t('saved'),
       icon: (
         <svg
           {...ICON}
@@ -43,8 +43,7 @@ export default function BottomNav() {
           className="h-[21px] w-[21px]"
           aria-hidden="true"
         >
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-4-4" />
+          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z" />
         </svg>
       ),
     },
