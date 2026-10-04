@@ -5,12 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabaseClient';
-
+import { useLanguage } from '../LanguageProvider';
 const tile =
   'flex min-h-[64px] items-center gap-3 border-b-[2px] border-line bg-white px-4 py-4 text-[15px] font-bold text-ink transition-colors hover:bg-amberSoft';
 
 export default function ProfilePage() {
   const router = useRouter();
+ const { t } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [ready, setReady] = useState(false);
