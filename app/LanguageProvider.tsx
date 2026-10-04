@@ -52,6 +52,9 @@ back: 'Back',
     noListings: 'No listings',
     sellerNoListings:
       'This seller has no active listings right now.',
+logInToSave: 'Log in to save listings.',
+    saveListing: 'Save listing',
+    removeFromSaved: 'Remove from saved listings',
    
     /* Actual category names */
     electronicsCategory: 'Electronics',
@@ -138,6 +141,9 @@ back: 'ተመለስ',
     noListings: 'ማስታወቂያ የለም',
     sellerNoListings:
       'ይህ ሻጭ አሁን ምንም ንቁ ማስታወቂያ የለውም።',
+logInToSave: 'ማስታወቂያዎችን ለማስቀመጥ ይግቡ።',
+    saveListing: 'ማስታወቂያ አስቀምጥ',
+    removeFromSaved: 'ከተቀመጡት አስወግድ',
    
     /* Actual category names */
     electronicsCategory: 'ኤሌክትሮኒክስ',
@@ -225,6 +231,9 @@ back: 'Duubatti',
     noListings: 'Beeksisni hin jiru',
     sellerNoListings:
       'Gurgurtichi kun yeroo ammaa beeksisa hojii irra jiru hin qabu.',
+logInToSave: 'Beeksisa olkaa’uuf seeni.',
+    saveListing: 'Beeksisa olkaa’i',
+    removeFromSaved: 'Beeksisa olkaa’ame irraa balleessi',
    
     /* Actual category names */
     electronicsCategory: 'Elektirooniksii',
