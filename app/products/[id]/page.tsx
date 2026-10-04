@@ -18,6 +18,7 @@ import FavoriteButton from '../../FavoriteButton';
 import ChatButton from '../../ChatButton';
 import ContactButtons from '../../ContactButtons';
 import ListingActions from '../../ListingActions';
+import SellerRating from '../../SellerRating';
 
 type Props = {
   params: { id: string };
@@ -306,6 +307,8 @@ export default async function ProductPage({
             <div className="mt-0.5 text-xs text-muted">
               See other listings from this seller
             </div>
+
+            <SellerRating sellerId={sellerId} />
           </div>
 
           <span
@@ -316,7 +319,8 @@ export default async function ProductPage({
           </span>
         </Link>
       )}
-           {/* Contact / Chat */}
+
+      {/* Contact / Chat */}
       <section className="mb-5 overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card">
         <div className="bg-ink px-5 py-4 text-paper sm:px-6">
           <div className="text-xs font-bold uppercase tracking-[0.16em] text-amber">
@@ -499,4 +503,4 @@ export default async function ProductPage({
       )}
     </div>
   );
-}
+       }
