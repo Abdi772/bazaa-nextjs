@@ -33,12 +33,12 @@ export default async function SellerPage({ params }: Props) {
 
   const { data } = await supabase
     .from('listings')
-    .select('id, title, price, image_url, location, category, email, created_at')
+.select('id, title, price, image_url, location, category, created_at')
     .eq('user_id', params.id)
     .order('created_at', { ascending: false });
 
   const items = (data ?? []) as Row[];
-  const initial = (items[0]?.email || '?').charAt(0).toUpperCase();
+  const initial = 'S';
   const since =
     items.length > 0
       ? new Date(items[items.length - 1].created_at).toLocaleDateString('en-US', {
