@@ -539,3 +539,23 @@ p {
     transform: none !important;
   }
 }
+
+/* ---------- Home page: hero and listing cards ---------- */
+
+.bazaa-hero {
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(216, 137, 31, 0.28) 0%, rgba(216, 137, 31, 0) 55%),
+    linear-gradient(135deg, #1b1a2e 0%, #26243d 100%);
+}
+
+.bazaa-image-bg {
+  background: var(--bazaa-surface-soft);
+}
+
+.bazaa-price {
+  color: #b96f16;
+}
+
+[data-bazaa-theme="dark"] .bazaa-price {
+  color: #e5a33b;
+}
