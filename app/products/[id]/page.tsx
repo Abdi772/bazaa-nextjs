@@ -18,7 +18,6 @@ import FavoriteButton from '../../FavoriteButton';
 import ChatButton from '../../ChatButton';
 import ContactButtons from '../../ContactButtons';
 import ListingActions from '../../ListingActions';
-import Reviews from '../../Reviews';
 
 type Props = {
   params: { id: string };
