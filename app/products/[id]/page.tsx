@@ -20,6 +20,8 @@ import ContactButtons from '../../ContactButtons';
 import ListingActions from '../../ListingActions';
 import SellerRating from '../../SellerRating';
 
+export const revalidate = 60;
+
 type Props = {
   params: { id: string };
 };
