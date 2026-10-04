@@ -41,6 +41,11 @@ const translations: Record<
     myAdverts: 'My adverts',
     postListing: 'Post a listing',
     logout: 'Log out',
+   admin: 'Admin',
+    loading: 'Loading...',
+    yourProfile: 'Your profile',
+    profileLoginHint:
+      'Use the Log in / Sign up button at the top of the page to see your profile.',
 
     /* Actual category names */
     electronicsCategory: 'Electronics',
@@ -116,6 +121,11 @@ const translations: Record<
     myAdverts: 'የእኔ ማስታወቂያዎች',
     postListing: 'ማስታወቂያ ይለጥፉ',
     logout: 'ውጣ',
+   admin: 'አስተዳዳሪ',
+    loading: 'በመጫን ላይ...',
+    yourProfile: 'የእርስዎ መገለጫ',
+    profileLoginHint:
+      'መገለጫዎን ለማየት በገጹ ላይኛው ክፍል ያለውን “ግባ / ተመዝገብ” ቁልፍ ይጠቀሙ።',
 
     /* Actual category names */
     electronicsCategory: 'ኤሌክትሮኒክስ',
@@ -192,6 +202,11 @@ const translations: Record<
     myAdverts: 'Beeksisa koo',
     postListing: 'Beeksisa maxxansi',
     logout: 'Ba’i',
+   admin: 'Bulchaa',
+    loading: 'Fe’aa jira...',
+    yourProfile: 'Piroofaayilii kee',
+    profileLoginHint:
+      'Piroofaayilii kee ilaaluuf button “Seeni / Galmaa’i” gubbaa fuula kanaa jiru fayyadami.',
 
     /* Actual category names */
     electronicsCategory: 'Elektirooniksii',
