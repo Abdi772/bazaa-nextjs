@@ -1,4 +1,4 @@
-export const metadata = { title: 'Safety tips — Bazaa' };
+ export const metadata = { title: 'Safety tips — Bazaa' };
 
 const tips = [
   'Meet in a public, busy place and go during the day.',
@@ -13,10 +13,10 @@ const tips = [
 export default function SafetyPage() {
   return (
     <div className="mx-auto max-w-2xl py-6">
-      <h1 className="mb-4 font-serif text-2xl font-bold text-ink">
+      <h1 className="mb-4 font-serif text-2xl font-bold">
         Safety tips for buyers and sellers
       </h1>
-      <ul className="list-disc space-y-3 pl-5 text-[15px] leading-7 text-ink">
+      <ul className="list-disc space-y-3 pl-5 text-[15px] leading-7">
         {tips.map((tip) => (
           <li key={tip}>{tip}</li>
         ))}
