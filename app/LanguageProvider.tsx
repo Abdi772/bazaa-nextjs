@@ -46,7 +46,13 @@ const translations: Record<
     yourProfile: 'Your profile',
     profileLoginHint:
       'Use the Log in / Sign up button at the top of the page to see your profile.',
-
+back: 'Back',
+    seller: 'Seller',
+    sellingSince: 'selling since',
+    noListings: 'No listings',
+    sellerNoListings:
+      'This seller has no active listings right now.',
+   
     /* Actual category names */
     electronicsCategory: 'Electronics',
     vehiclesCategory: 'Vehicles',
@@ -126,7 +132,13 @@ const translations: Record<
     yourProfile: 'የእርስዎ መገለጫ',
     profileLoginHint:
       'መገለጫዎን ለማየት በገጹ ላይኛው ክፍል ያለውን “ግባ / ተመዝገብ” ቁልፍ ይጠቀሙ።',
-
+back: 'ተመለስ',
+    seller: 'ሻጭ',
+    sellingSince: 'መሸጥ የጀመረው',
+    noListings: 'ማስታወቂያ የለም',
+    sellerNoListings:
+      'ይህ ሻጭ አሁን ምንም ንቁ ማስታወቂያ የለውም።',
+   
     /* Actual category names */
     electronicsCategory: 'ኤሌክትሮኒክስ',
     vehiclesCategory: 'ተሽከርካሪዎች',
@@ -207,7 +219,13 @@ const translations: Record<
     yourProfile: 'Piroofaayilii kee',
     profileLoginHint:
       'Piroofaayilii kee ilaaluuf button “Seeni / Galmaa’i” gubbaa fuula kanaa jiru fayyadami.',
-
+back: 'Duubatti',
+    seller: 'Gurgurtaa',
+    sellingSince: 'Gurguruu kan jalqabe',
+    noListings: 'Beeksisni hin jiru',
+    sellerNoListings:
+      'Gurgurtichi kun yeroo ammaa beeksisa hojii irra jiru hin qabu.',
+   
     /* Actual category names */
     electronicsCategory: 'Elektirooniksii',
     vehiclesCategory: 'Konkolaattota',
