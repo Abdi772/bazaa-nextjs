@@ -1,4 +1,4 @@
-export const metadata = { title: 'Contact — Bazaa' };
+ export const metadata = { title: 'Contact — Bazaa' };
 
 export default function ContactPage() {
   return (
@@ -9,10 +9,24 @@ export default function ContactPage() {
         will answer as soon as we can.
       </p>
       <p>
-        Email: <strong>YOUR-EMAIL-HERE</strong>
+        Email:{' '}
+        <a
+          href="mailto:drabdibiya@gmail.com"
+          className="font-bold underline"
+        >
+          drabdibiya@gmail.com
+        </a>
       </p>
       <p>
-        Telegram: <strong>YOUR-TELEGRAM-HERE</strong>
+        Telegram:{' '}
+        <a
+          href="https://t.me/kunisnidarb"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-bold underline"
+        >
+          @kunisnidarb
+        </a>
       </p>
     </div>
   );
