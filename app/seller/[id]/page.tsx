@@ -6,6 +6,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import { listingSlug } from '@/lib/listings';
 import { CATEGORY_CONFIG } from '@/lib/categories';
 import LanguageText from '../../LanguageText';
+import Reviews from '../../Reviews';
 
 export const revalidate = 60;
 
@@ -33,7 +34,7 @@ export default async function SellerPage({ params }: Props) {
 
   const { data } = await supabase
     .from('listings')
-.select('id, title, price, image_url, location, category, created_at')
+    .select('id, title, price, image_url, location, category, created_at')
     .eq('user_id', params.id)
     .order('created_at', { ascending: false });
 
@@ -73,6 +74,8 @@ export default async function SellerPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      <Reviews sellerId={params.id} />
 
       {items.length === 0 ? (
         <div className="text-center py-16 text-muted">
