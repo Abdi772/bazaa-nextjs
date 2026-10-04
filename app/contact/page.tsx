@@ -2,7 +2,7 @@
 
 export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-2xl space-y-4 py-6 text-[15px] leading-7 text-ink">
+    <div className="mx-auto max-w-2xl space-y-4 py-6 text-[15px] leading-7">
       <h1 className="font-serif text-2xl font-bold">Contact us</h1>
       <p>
         Questions, problems, or reports about a listing? Write to us and we
