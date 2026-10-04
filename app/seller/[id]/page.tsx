@@ -1,10 +1,11 @@
-import Link from 'next/link';
+ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { supabase } from '../../../lib/supabaseClient';
 import { listingSlug } from '@/lib/listings';
 import { CATEGORY_CONFIG } from '@/lib/categories';
+import LanguageText from '../../LanguageText';
 
 export const revalidate = 60;
 
@@ -49,7 +50,7 @@ export default async function SellerPage({ params }: Props) {
   return (
     <div>
       <Link href="/" className="text-sm text-muted underline">
-        ← Back
+        ← <LanguageText k="back" />
       </Link>
 
       <div className="flex items-center gap-3 my-4">
@@ -57,18 +58,30 @@ export default async function SellerPage({ params }: Props) {
           {initial}
         </div>
         <div>
-          <div className="font-serif text-xl font-bold">Seller</div>
+          <div className="font-serif text-xl font-bold">
+            <LanguageText k="seller" />
+          </div>
           <div className="text-sm text-muted">
-            {items.length} listing{items.length === 1 ? '' : 's'}
-            {since ? ` · selling since ${since}` : ''}
+            {items.length}{' '}
+            <LanguageText k={items.length === 1 ? 'listing' : 'listings'} />
+            {since && (
+              <>
+                {' · '}
+                <LanguageText k="sellingSince" /> {since}
+              </>
+            )}
           </div>
         </div>
       </div>
 
       {items.length === 0 ? (
         <div className="text-center py-16 text-muted">
-          <h3 className="text-ink font-semibold mb-2">No listings</h3>
-          <p>This seller has no active listings right now.</p>
+          <h3 className="text-ink font-semibold mb-2">
+            <LanguageText k="noListings" />
+          </h3>
+          <p>
+            <LanguageText k="sellerNoListings" />
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
