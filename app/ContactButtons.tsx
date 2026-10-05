@@ -32,9 +32,9 @@ export default function ContactButtons({
         return;
       }
       const { data } = await supabase
-        .from('listings')
-        .select('phone, email')
-        .eq('id', listingId)
+        .from('listing_contacts')
+.select('phone, email')
+.eq('listing_id', listingId)
         .maybeSingle();
       if (!alive) return;
       setPhone(data?.phone ?? null);
