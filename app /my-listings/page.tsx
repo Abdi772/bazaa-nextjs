@@ -1,0 +1,319 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+
+import { supabase } from '../../lib/supabaseClient';
+import { listingSlug, type Listing } from '../../lib/listings';
+
+export default function MyListingsPage() {
+  const [items, setItems] = useState<Listing[]>([]);
+  const [ready, setReady] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
+  const [error, setError] = useState('');
+
+  async function load() {
+    const { data: u } = await supabase.auth.getUser();
+
+    if (!u.user) {
+      setLoggedIn(false);
+      setReady(true);
+      return;
+    }
+
+    const { data, error: err } = await supabase
+      .from('listings')
+      .select('*')
+      .eq('user_id', u.user.id)
+      .order('created_at', { ascending: false });
+
+    if (err) {
+      setError(err.message);
+    }
+
+    setItems((data as Listing[]) || []);
+    setReady(true);
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  async function remove(id: number) {
+    if (!confirm('Delete this listing permanently?')) return;
+
+    const { error: err } = await supabase
+      .from('listings')
+      .delete()
+      .eq('id', id);
+
+    if (err) {
+      setError(err.message);
+      return;
+    }
+
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  }
+
+  async function toggleSold(id: number, current: string | null | undefined) {
+    const next = current === 'sold' ? null : 'sold';
+
+    const { error: err } = await supabase
+      .from('listings')
+      .update({ status: next })
+      .eq('id', id);
+
+    if (err) {
+      setError(err.message);
+      return;
+    }
+
+    setItems((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, status: next } : i)),
+    );
+  }
+
+  if (!ready) {
+    return (
+      <div className="mx-auto w-full max-w-3xl">
+        <div className="bazaa-card flex min-h-[220px] items-center justify-center p-6">
+          <div className="text-center">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amberSoft text-xl">
+              📦
+            </div>
+
+            <p className="text-sm font-semibold text-ink">
+              Loading your listings...
+            </p>
+
+            <p className="mt-1 text-xs text-muted">
+              Please wait a moment.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!loggedIn) {
+    return (
+      <div className="mx-auto w-full max-w-2xl">
+        <div className="overflow-hidden rounded-card border-[2px] border-line bg-white shadow-soft">
+          <div className="bg-ink px-5 py-7 text-paper sm:px-8">
+            <div className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber">
+              Bazaa
+            </div>
+
+            <h1 className="font-serif text-2xl font-bold">
+              My listings
+            </h1>
+
+            <p className="mt-2 text-sm leading-6 text-paper/70">
+              Manage the items you are selling from one place.
+            </p>
+          </div>
+
+          <div className="p-5 text-center sm:p-8">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amberSoft text-3xl">
+              🔐
+            </div>
+
+            <h2 className="font-serif text-xl font-bold text-ink">
+              Log in to continue
+            </h2>
+
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
+              Sign in to see, edit, and manage your listings.
+            </p>
+
+            <Link
+              href="/"
+              className="bazaa-primary mt-6 min-h-[50px] w-full sm:w-auto"
+            >
+              Go to marketplace
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-3xl">
+      {/* Header */}
+      <section className="mb-5 overflow-hidden rounded-card border-[2px] border-ink bg-ink text-paper shadow-soft">
+        <div className="px-5 py-6 sm:px-7 sm:py-7">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              <div className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber">
+                Seller dashboard
+              </div>
+
+              <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl">
+                My listings
+              </h1>
+
+              <p className="mt-2 max-w-md text-sm leading-6 text-paper/70">
+                Manage the items you are selling on Bazaa.
+              </p>
+            </div>
+
+            <Link
+              href="/post"
+              className="inline-flex min-h-[50px] w-full items-center justify-center rounded-bazaa bg-amber px-5 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-amberDeep sm:w-auto"
+            >
+              <span className="mr-2 text-lg leading-none">+</span>
+              New listing
+            </Link>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 bg-white/5 px-5 py-3 sm:px-7">
+          <p className="text-xs font-semibold text-paper/70">
+            {items.length === 1
+              ? '1 listing'
+              : `${items.length} listings`}
+          </p>
+        </div>
+      </section>
+
+      {/* Error */}
+      {error && (
+        <div
+          role="alert"
+          className="mb-5 rounded-card border-[2px] border-danger/25 bg-dangerSoft px-4 py-3 text-sm font-semibold leading-5 text-danger"
+        >
+          {error}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {items.length === 0 && (
+        <section className="overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card">
+          <div className="bg-paper px-5 py-8 text-center sm:px-8 sm:py-10">
+            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border-[2px] border-amber bg-amberSoft text-4xl">
+              📦
+            </div>
+
+            <h2 className="font-serif text-2xl font-bold text-ink">
+              No listings yet
+            </h2>
+
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
+              Your listings will appear here after you publish your first item.
+            </p>
+
+            <Link
+              href="/post"
+              className="bazaa-primary mt-6 min-h-[52px] w-full px-6 sm:w-auto"
+            >
+              Create your first listing
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* Listings */}
+      {items.length > 0 && (
+        <div className="space-y-4">
+          {items.map((i) => (
+            <article
+              key={i.id}
+              className="overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card transition-shadow hover:shadow-soft"
+            >
+              {/* Product area */}
+              <div className="p-3 sm:p-4">
+                <div className="flex min-w-0 gap-3 sm:gap-5">
+                  {/* Image */}
+                  <Link
+                    href={`/products/${listingSlug(i)}`}
+                    className="group relative block shrink-0 overflow-hidden rounded-bazaa border-[2px] border-line bg-paper"
+                  >
+                    {i.image_url ? (
+                      <img
+                        src={i.image_url}
+                        alt=""
+                        className="h-28 w-28 object-cover transition-transform duration-300 group-hover:scale-105 sm:h-36 sm:w-36"
+                      />
+                    ) : (
+                      <div className="flex h-28 w-28 items-center justify-center bg-paper text-4xl sm:h-36 sm:w-36">
+                        📦
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Details */}
+                  <div className="min-w-0 flex-1 py-0.5">
+                    <Link
+                      href={`/products/${listingSlug(i)}`}
+                      className="block line-clamp-2 text-base font-bold leading-6 text-ink hover:text-amberDeep sm:text-lg sm:leading-7"
+                    >
+                      {i.title}
+                    </Link>
+
+                    {i.status === 'sold' && (
+                      <span className="mt-1 inline-flex rounded-full bg-danger px-2.5 py-0.5 text-[11px] font-bold uppercase text-white">
+                        Sold
+                      </span>
+                    )}
+
+                    <div className="mt-2 font-serif text-xl font-bold leading-6 text-amberDeep sm:text-2xl">
+                      ETB {Number(i.price).toLocaleString()}
+                    </div>
+
+                    <div className="mt-2 flex min-w-0 items-center gap-1.5 text-xs font-medium leading-5 text-muted sm:text-sm">
+                      <span aria-hidden="true">📍</span>
+
+                      <span className="min-w-0 truncate">
+                        {i.location}
+                      </span>
+                    </div>
+
+                    {i.condition && (
+                      <div className="mt-2 hidden sm:inline-flex rounded-full bg-amberSoft px-2.5 py-1 text-[11px] font-bold text-amberDeep">
+                        {i.condition}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="grid grid-cols-2 gap-2 border-t-[2px] border-line bg-paper p-3 sm:flex sm:justify-end sm:px-4 sm:py-3">
+                <Link
+                  href={`/products/${listingSlug(i)}`}
+                  className="inline-flex min-h-[46px] items-center justify-center rounded-bazaa border-[2px] border-line bg-white px-4 py-2.5 text-sm font-bold text-ink transition-colors hover:bg-amberSoft sm:min-w-[110px]"
+                >
+                  View
+                </Link>
+
+                <Link
+                  href={`/edit/${i.id}`}
+                  className="inline-flex min-h-[46px] items-center justify-center rounded-bazaa border-[2px] border-amber bg-amberSoft px-4 py-2.5 text-sm font-bold text-amberDeep transition-colors hover:bg-amber hover:text-white sm:min-w-[110px]"
+                >
+                  Edit
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => toggleSold(i.id, i.status)}
+                  className="col-span-2 inline-flex min-h-[46px] items-center justify-center rounded-bazaa border-[2px] border-green/30 bg-greenSoft px-4 py-2.5 text-sm font-bold text-green transition-colors hover:bg-green/10 sm:col-span-1 sm:min-w-[110px]"
+                >
+                  {i.status === 'sold' ? 'Mark available' : 'Mark sold'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => remove(i.id)}
+                  className="col-span-2 inline-flex min-h-[46px] items-center justify-center rounded-bazaa border-[2px] border-danger/30 bg-dangerSoft px-4 py-2.5 text-sm font-bold text-danger transition-colors hover:bg-danger/10 sm:col-span-1 sm:min-w-[110px]"
+                >
+                  Delete
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+                       }
