@@ -1,10 +1,10 @@
- import { createClient } from '@supabase/supabase-js';
+  import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 // Public columns only. Phone and email are NOT here on purpose.
 const PUBLIC_COLUMNS =
-  'id, title, price, category, subcategory, brand, model, condition, region, location, description, specs, image_url, image_urls, user_id, created_at, status';
+  'id, title, price, category, subcategory, brand, model, condition, region, location, area, location_note, description, specs, image_url, image_urls, user_id, created_at, status';
 
 // Server-side client: every query below runs on Vercel's server, not in
 // the visitor's browser. The database does the filtering (WHERE clauses),
@@ -24,6 +24,8 @@ export type Listing = {
   condition: string | null;
   region: string | null;
   location: string;
+  area?: string | null;
+  location_note?: string | null;
   description: string;
   specs?: { label: string; value: string }[] | null;
   email?: string;
