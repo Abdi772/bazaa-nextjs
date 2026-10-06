@@ -32,9 +32,22 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Canon',
         'Sony',
         'Nikon',
+        'Fujifilm',
+        'Panasonic',
+        'Lumix',
+        'Olympus',
+        'Pentax',
+        'Leica',
+        'Kodak',
+        'Polaroid',
+        'Sigma',
+        'Yongnuo',
+        'Vivitar',
+        'JVC',
         'GoPro',
         'DJI',
-        'Fujifilm',
+        'Xiaomi',
+        'Samsung',
         'Other',
       ],
       Gaming: [
@@ -134,15 +147,13 @@ export const CONDITIONS = [
 // ---------- Cameras: types and models ----------
 
 export const CAMERA_TYPES = [
-  'DSLR',
-  'Mirrorless',
-  'Point & Shoot',
-  'Action Camera',
-  'Video Camera',
-  'Instant Camera',
-  'Security / CCTV',
-  'Drone',
-  'Lens',
+  'Digital Cameras',
+  'DSLR Cameras',
+  'Video Cameras',
+  'Action Cameras',
+  'Film Cameras',
+  'Camera Lenses',
+  'Drones',
   'Accessories',
 ];
 
@@ -199,6 +210,19 @@ export const CAMERA_MODELS: Record<string, string[]> = {
     'Instax Mini',
     'Other',
   ],
+  Panasonic: ['Lumix G7', 'Lumix GH5', 'Lumix S5', 'Other'],
+  Lumix: ['G7', 'GH5', 'S5', 'FZ300', 'Other'],
+  Olympus: ['OM-D E-M10', 'OM-D E-M5', 'PEN E-PL9', 'Other'],
+  Pentax: ['K-70', 'K-3 III', 'KF', 'Other'],
+  Leica: ['Q2', 'M10', 'D-Lux 7', 'Other'],
+  Kodak: ['PixPro AZ401', 'Ektar H35', 'Other'],
+  Polaroid: ['Now', 'OneStep', 'Other'],
+  Sigma: ['18-35mm f/1.8', '50mm f/1.4', '24-70mm f/2.8', 'Other'],
+  Yongnuo: ['YN50mm f/1.8', 'YN560 Flash', 'Other'],
+  Vivitar: ['Other'],
+  JVC: ['Other'],
+  Xiaomi: ['Mi Action Camera 4K', 'Other'],
+  Samsung: ['Other'],
   Other: ['Other'],
 };
 
@@ -255,4 +279,4 @@ export function subcategoryImage(
   return SUB_IMAGES.has(slug)
     ? `/categories/sub/${slug}.jpg`
     : null;
-}
+             }
