@@ -1,4 +1,4 @@
-// Phone models (keys are brand names; 'iPhone' maps to 'Apple').
+ // Phone models (keys are brand names; 'iPhone' maps to 'Apple').
 
 export const PHONE_MODELS: Record<string, string[]> = {
   Apple: [
@@ -297,3 +297,17 @@ export function modelsFor(subcategory: string, brand: string): string[] {
   const key = subcategory === 'Phones' && brand === 'iPhone' ? 'Apple' : brand;
   return MODELS_BY_SUBCATEGORY[subcategory]?.[key] ?? [];
 }
+
+// "Other ..." choices let the seller type a model that is not in our list.
+export const OTHER_MODEL = 'Other model';
+
+export function isOtherModel(model: string): boolean {
+  return model.startsWith('Other');
+}
+
+// The list shown on the Model screen: always ends with an "Other" choice.
+export function modelOptionsFor(subcategory: string, brand: string): string[] {
+  const list = modelsFor(subcategory, brand);
+  if (list.length === 0) return list;
+  return list.some(isOtherModel) ? list : [...list, OTHER_MODEL];
+    }
