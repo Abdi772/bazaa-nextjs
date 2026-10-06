@@ -1,4 +1,4 @@
-export type CategoryConfig = {
+ export type CategoryConfig = {
   icon: string;
   subcategories: Record<string, string[]>;
 };
@@ -28,7 +28,15 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Other',
       ],
       'TV & Audio': [],
-      Cameras: [],
+      Cameras: [
+        'Canon',
+        'Sony',
+        'Nikon',
+        'GoPro',
+        'DJI',
+        'Fujifilm',
+        'Other',
+      ],
       Gaming: [
         'PlayStation',
         'Xbox',
@@ -123,6 +131,77 @@ export const CONDITIONS = [
   'Used - Fair',
 ];
 
+// ---------- Cameras: types and models ----------
+
+export const CAMERA_TYPES = [
+  'DSLR',
+  'Mirrorless',
+  'Point & Shoot',
+  'Action Camera',
+  'Video Camera',
+  'Instant Camera',
+  'Security / CCTV',
+  'Drone',
+  'Lens',
+  'Accessories',
+];
+
+export const CAMERA_MODELS: Record<string, string[]> = {
+  Canon: [
+    'EOS 1500D',
+    'EOS 2000D',
+    'EOS 4000D',
+    'EOS 80D',
+    'EOS 90D',
+    'EOS 5D Mark IV',
+    'EOS R',
+    'EOS R6',
+    'EOS M50',
+    'Other',
+  ],
+  Sony: [
+    'Alpha a6000',
+    'Alpha a6400',
+    'Alpha a7 III',
+    'Alpha a7 IV',
+    'ZV-E10',
+    'ZV-1',
+    'Handycam',
+    'Other',
+  ],
+  Nikon: [
+    'D3500',
+    'D5600',
+    'D7500',
+    'D850',
+    'Z50',
+    'Z6 II',
+    'Z fc',
+    'Other',
+  ],
+  GoPro: [
+    'Hero 9',
+    'Hero 10',
+    'Hero 11',
+    'Hero 12',
+    'Other',
+  ],
+  DJI: [
+    'Osmo Action 3',
+    'Osmo Pocket 2',
+    'Mini 3',
+    'Mavic 3',
+    'Other',
+  ],
+  Fujifilm: [
+    'X-T30',
+    'X-S10',
+    'Instax Mini',
+    'Other',
+  ],
+  Other: ['Other'],
+};
+
 // ---------- Subcategory pictures ----------
 // Pictures live in public/categories/sub/<slug>.jpg
 // When you add a new picture, add its slug to this list.
@@ -176,4 +255,4 @@ export function subcategoryImage(
   return SUB_IMAGES.has(slug)
     ? `/categories/sub/${slug}.jpg`
     : null;
-     } 
+}
