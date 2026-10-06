@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -42,6 +42,8 @@ export default function EditPage() {
   const [condition, setCondition] = useState(CONDITIONS[0]);
   const [region, setRegion] = useState(ETHIOPIA_REGIONS[0]);
   const [location, setLocation] = useState('');
+  const [area, setArea] = useState('');
+  const [locationNote, setLocationNote] = useState('');
   const [description, setDescription] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -98,15 +100,11 @@ export default function EditPage() {
       setCondition(listing.condition ?? CONDITIONS[0]);
       setRegion(listing.region ?? ETHIOPIA_REGIONS[0]);
       setLocation(listing.location ?? '');
+      setArea(listing.area ?? '');
+      setLocationNote(listing.location_note ?? '');
       setDescription(listing.description ?? '');
-      const { data: contact } = await supabase
-        .from('listing_contacts')
-        .select('phone, email')
-        .eq('listing_id', id)
-        .maybeSingle();
-
-      setPhone(contact?.phone ?? '');
-      setEmail(contact?.email ?? '');
+      setPhone(listing.phone ?? '');
+      setEmail(listing.email ?? '');
 
       const savedImages =
         Array.isArray(listing.image_urls) &&
@@ -296,7 +294,11 @@ export default function EditPage() {
           condition,
           region,
           location: trimmedLocation,
+          area: area.trim() || null,
+          location_note: locationNote.trim() || null,
           description: trimmedDescription,
+          email: trimmedEmail,
+          phone: trimmedPhone,
           image_url: imageUrls[0] ?? null,
           image_urls: imageUrls,
         })
@@ -307,21 +309,6 @@ export default function EditPage() {
 
       if (updateError || !data) {
         setError(updateError?.message ?? 'Could not save your changes.');
-        setStatus('');
-        setBusy(false);
-        return;
-      }
-
-      const { error: contactError } = await supabase
-        .from('listing_contacts')
-        .upsert({
-          listing_id: data.id,
-          phone: trimmedPhone,
-          email: trimmedEmail,
-        });
-
-      if (contactError) {
-        setError(contactError.message);
         setStatus('');
         setBusy(false);
         return;
@@ -430,7 +417,7 @@ export default function EditPage() {
                   key={`${url}-${index}`}
                   className="relative overflow-hidden rounded-bazaa border-[1.5px] border-line bg-paper"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+{/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
                     alt={`Listing photo ${index + 1}`}
@@ -682,7 +669,7 @@ export default function EditPage() {
 
             <div>
               <label htmlFor="edit-location" className={labelClass}>
-                Location (city/area)
+                City / town
               </label>
               <input
                 id="edit-location"
@@ -690,8 +677,37 @@ export default function EditPage() {
                 required
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Bole, Addis Ababa"
+                placeholder="e.g. Addis Ababa"
                 autoComplete="address-level2"
+                disabled={busy}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="edit-area" className={labelClass}>
+                Area (optional)
+              </label>
+              <input
+                id="edit-area"
+                className={inputClass}
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                placeholder="e.g. Bole"
+                disabled={busy}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="edit-location-note" className={labelClass}>
+                Location description (optional)
+              </label>
+              <textarea
+                id="edit-location-note"
+                className={`${inputClass} min-h-[88px] resize-y`}
+                rows={3}
+                value={locationNote}
+                onChange={(e) => setLocationNote(e.target.value)}
+                placeholder="e.g. Near the main gate"
                 disabled={busy}
               />
             </div>
