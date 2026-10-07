@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 
-import { getModels } from '../../../lib/categories';
+import { modelsFor } from '../../../lib/models';
 import { supabase } from '../../../lib/supabaseClient';
 import {
   CATEGORY_CONFIG,
@@ -587,7 +587,7 @@ export default function EditPage() {
                 <label htmlFor="edit-model" className={labelClass}>
                   Model
                 </label>
-                {getModels(subcategory, brand).length > 0 ? (
+                {modelsFor(subcategory, brand).length > 0 ? (
                   <select
                     id="edit-model"
                     className={inputClass}
@@ -596,10 +596,10 @@ export default function EditPage() {
                     disabled={busy}
                   >
                     <option value="">Select model...</option>
-                    {model && !getModels(subcategory, brand).includes(model) && (
+                    {model && !modelsFor(subcategory, brand).includes(model) && (
                       <option value={model}>{model}</option>
                     )}
-                    {getModels(subcategory, brand).map((m) => (
+                    {modelsFor(subcategory, brand).map((m) => (
                       <option key={m} value={m}>{m}</option>
                     ))}
                   </select>
@@ -655,7 +655,7 @@ export default function EditPage() {
                 {ETHIOPIA_REGIONS.map((value) => (
                   <option key={value} value={value}>
                     {value}
-                       </option>
+                                     </option>
                 ))}
               </select>
             </div>
