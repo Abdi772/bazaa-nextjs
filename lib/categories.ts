@@ -18,13 +18,14 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Oppo',
         'Other',
       ],
-      'Computers & Tablets': [
+      Computers: [
         'Apple',
         'HP',
         'Dell',
         'Lenovo',
         'Samsung',
         'Asus',
+        'Acer',
         'Other',
       ],
       Tablets: [
@@ -38,7 +39,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Microsoft',
         'Other',
       ],
-      'TV & Audio': [
+      TV: [
         'Samsung',
         'LG',
         'Hisense',
@@ -46,7 +47,18 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Sony',
         'Skyworth',
         'Toshiba',
+        'Xiaomi',
+        'Other',
+      ],
+      Audio: [
         'JBL',
+        'Sony',
+        'Samsung',
+        'LG',
+        'Xiaomi',
+        'Anker',
+        'Edifier',
+        'Akai',
         'Other',
       ],
       Cameras: [
@@ -66,7 +78,33 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Nintendo',
         'Other',
       ],
-      'Other Electronics': [],
+      Freezer: [
+        'Samsung',
+        'LG',
+        'Hisense',
+        'Haier',
+        'Midea',
+        'Whirlpool',
+        'Other',
+      ],
+      Watch: [
+        'Casio',
+        'Rolex',
+        'Seiko',
+        'Citizen',
+        'Fossil',
+        'Tissot',
+        'Apple',
+        'Samsung',
+        'Other',
+      ],
+      // Tapping "Other" shows these as the options
+      Other: [
+        'Charger',
+        'Headphones',
+        'Smartwatch',
+        'Other accessories',
+      ],
     },
   },
 
@@ -191,24 +229,46 @@ export const OTHER_BRANDS: Record<string, string[]> = {
     'Alcatel',
     'ZTE',
     'Vivo',
+    'Cidea',
     'Other',
   ],
-  'TV & Audio': [
+  TV: [
     'Vizio',
     'Westinghouse',
-    'Xiaomi',
-    'Akai',
+    'Supersonic',
+    'Tornado',
+    'Vtex',
+    'Weyon',
+    'Wyinix',
+    'Westpool',
+    'Vivibright',
+    'UKA',
+    'TSTV',
+    'Tiger',
+    'THTF',
+    'Televes',
+    'Strong',
+    'StarTimes',
+    'SPJ',
+    'SPAK',
+    'Sonix',
+    'Solstar',
+    'Zum',
+    'ZEG',
+    'Yayi',
+    'XGA',
+    'Other',
+  ],
+  Audio: [
     'AKG',
     'Alesis',
     'Alpine',
-    'Anker',
     'Audio-Technica',
     'Bluesound',
     'Boombest',
     'Cambridge',
     'Creative',
     'Crown',
-    'Edifier',
     'Fender',
     'Focusrite',
     'Hama',
@@ -274,6 +334,7 @@ export const TABLET_OTHER_BRANDS = [
   'Alcatel',
   'ZTE',
   'Vivo',
+  'Cidea',
   'Other',
 ];
 
@@ -654,6 +715,7 @@ export const TABLET_MODELS: Record<string, string[]> = {
     'Vivo Pad5 Pro',
     'Other',
   ],
+  Cidea: ['Other'],
   Other: ['Other'],
 };
 
@@ -810,7 +872,15 @@ export function subcategorySlug(
 export function subcategoryImage(
   name: string,
 ): string | null {
-  const slug = subcategorySlug(name);
+  const raw = subcategorySlug(name);
+
+  // Reuse existing pictures after renaming
+  const aliases: Record<string, string> = {
+    computers: 'computers-tablets',
+    tv: 'tv-audio',
+  };
+
+  const slug = aliases[raw] ?? raw;
 
   return SUB_IMAGES.has(slug)
     ? `/categories/sub/${slug}.jpg`
@@ -839,4 +909,4 @@ export function getOtherBrands(
   subcategory: string,
 ): string[] {
   return OTHER_BRANDS[subcategory] ?? [];
- }
+}
