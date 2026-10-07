@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 
+import { modelsFor } from '../../lib/models';
 import { cleanSpecs, DEFAULT_PHONE_SPECS, hasSpecs, type SpecRow } from '../../lib/specs';
 import SpecsEditor from '../SpecsEditor';
 import { supabase } from '../../lib/supabaseClient';
@@ -116,7 +117,7 @@ export default function PostPage() {
   const modelList =
     builtInModels.length > 0
       ? builtInModels
-      : [];
+      : modelsFor(subcategory, brand);
 
   const shownModels = (() => {
     const clean = (v: string) =>
@@ -703,10 +704,10 @@ export default function PostPage() {
         <section className="bazaa-card p-4 sm:p-6">
           <div className="mb-4 sm:mb-5">
             <h2 className="font-serif text-xl font-bold text-ink">
-               Contact details
-            </h2>
+               Contact details 
+                         </h2>
 
-                        <p className="mt-1 text-sm leading-5 text-muted">
+            <p className="mt-1 text-sm leading-5 text-muted">
               Buyers will use these details to contact
               you.
             </p>
