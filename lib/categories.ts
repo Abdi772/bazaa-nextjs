@@ -839,4 +839,4 @@ export function getOtherBrands(
   subcategory: string,
 ): string[] {
   return OTHER_BRANDS[subcategory] ?? [];
-}
+ }
