@@ -14,23 +14,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Redmi',
         'Tecno',
         'Infinix',
-        'Itel',
         'Huawei',
-        'Nokia',
         'Oppo',
-        'Vivo',
-        'Honor',
-        'Realme',
-        'OnePlus',
-        'Google',
-        'Motorola',
-        'Sony',
-        'ZTE',
-        'Nothing',
-        'Poco',
-        'Asus',
-        'Lenovo',
-        'TCL',
         'Other',
       ],
       'Computers & Tablets': [
@@ -173,6 +158,24 @@ export const CONDITIONS = [
 // When the buyer/seller taps "Other", show this list.
 
 export const OTHER_BRANDS: Record<string, string[]> = {
+  Phones: [
+    'Itel',
+    'Nokia',
+    'Vivo',
+    'Honor',
+    'Realme',
+    'OnePlus',
+    'Google',
+    'Motorola',
+    'Sony',
+    'ZTE',
+    'Nothing',
+    'Poco',
+    'Asus',
+    'Lenovo',
+    'TCL',
+    'Other',
+  ],
   Tablets: [
     'Tecno',
     'OnePlus',
@@ -836,4 +839,4 @@ export function getOtherBrands(
   subcategory: string,
 ): string[] {
   return OTHER_BRANDS[subcategory] ?? [];
-       }
+}
