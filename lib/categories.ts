@@ -1,167 +1,197 @@
- export type CategoryConfig = {
+  export type CategoryConfig = {
   icon: string;
+  /** Brand names for each subcategory. Empty array means brand/model is not required. */
   subcategories: Record<string, string[]>;
 };
 
+/**
+ * Bazaa marketplace taxonomy.
+ *
+ * Design rule:
+ * - Popular model-heavy categories have curated brand lists.
+ * - Model data is maintained separately in MODEL_DATABASE.
+ * - Sellers can always enter a model manually when it is not listed.
+ * - For categories where a model is not useful, the brand/model fields can remain optional.
+ */
 export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
   Electronics: {
     icon: '📱',
     subcategories: {
-      Phones: [
-        'iPhone',
-        'Samsung',
-        'Xiaomi',
-        'Redmi',
-        'Tecno',
-        'Infinix',
-        'Huawei',
-        'Oppo',
-        'Other',
-      ],
-      Computers: [
-        'Apple',
-        'HP',
-        'Dell',
-        'Lenovo',
-        'Samsung',
-        'Asus',
-        'Acer',
-        'Other',
-      ],
-      Tablets: [
-        'Samsung',
-        'Apple',
-        'Lenovo',
-        'Huawei',
-        'Xiaomi',
-        'Honor',
-        'Amazon',
-        'Microsoft',
-        'Other',
-      ],
-      TV: [
-        'Samsung',
-        'LG',
-        'Hisense',
-        'TCL',
-        'Sony',
-        'Skyworth',
-        'Toshiba',
-        'Xiaomi',
-        'Other',
-      ],
-      Cameras: [
-        'Canon',
-        'Sony',
-        'Nikon',
-        'Fujifilm',
-        'Panasonic',
-        'Olympus',
-        'GoPro',
-        'DJI',
-        'Other',
-      ],
-      Gaming: [
-        'PlayStation',
-        'Xbox',
-        'Nintendo',
-        'Other',
-      ],
-      Freezer: [
-        'Samsung',
-        'LG',
-        'Hisense',
-        'Haier',
-        'Midea',
-        'Whirlpool',
-        'Other',
-      ],
-      Watch: [
-        'Casio',
-        'Rolex',
-        'Seiko',
-        'Citizen',
-        'Fossil',
-        'Tissot',
-        'Apple',
-        'Samsung',
-        'Other',
-      ],
-      // Rarely used / related items grouped in one place.
-      // These show as the row at the top (like Jiji).
-      Accessories: [
-        'Photo & Video',
-        'TV & DVD',
-        'Audio & Microphone',
-        'Networking',
-        'Printers & Scanners',
-        'Game Accessories',
-        'Security & Surveillance',
-        'Charger',
-        'Headphones',
-        'Smartwatch',
-        'Other accessories',
-      ],
+      Phones: ['Apple','Samsung','Tecno','Infinix','Xiaomi','Redmi','Huawei','Oppo','Vivo','OnePlus','Honor','Google','Nokia','Realme','Itel','Motorola','ZTE','Other'],
+      Tablets: ['Samsung','Apple','Lenovo','Huawei','Xiaomi','Honor','Amazon','Microsoft','Tecno','OnePlus','Oppo','Realme','TCL','Asus','Google','Nokia','Motorola','itel','Acer','ZTE','Other'],
+      Laptops: ['Apple','HP','Dell','Lenovo','Asus','Acer','MSI','Microsoft','Samsung','Huawei','Other'],
+      'Desktop Computers': ['Apple','HP','Dell','Lenovo','Asus','Acer','MSI','Custom PC','Other'],
+      Monitors: ['Samsung','LG','Dell','HP','AOC','BenQ','Asus','Acer','ViewSonic','Other'],
+      TVs: ['Samsung','LG','Hisense','TCL','Sony','Skyworth','Toshiba','Xiaomi','Panasonic','Philips','Other'],
+      Cameras: ['Canon','Sony','Nikon','Fujifilm','Panasonic','Olympus','GoPro','DJI','Leica','Pentax','Kodak','Other'],
+      'Camera Lenses': ['Canon','Sony','Nikon','Sigma','Tamron','Fujifilm','Panasonic','Tokina','Other'],
+      'Headphones & Earbuds': ['Apple','Samsung','JBL','Sony','Anker Soundcore','Bose','Beats','Huawei','Xiaomi','Other'],
+      Speakers: ['JBL','Sony','Samsung','LG','Bose','Marshall','Anker Soundcore','Harman Kardon','Other'],
+      'Smart Watches': ['Apple','Samsung','Huawei','Xiaomi','Amazfit','Garmin','Honor','Redmi','Other'],
+      'Gaming Consoles': ['Sony PlayStation','Microsoft Xbox','Nintendo','Steam Deck','Other'],
+      Projectors: ['Epson','BenQ','Sony','LG','Xiaomi','ViewSonic','Wanbo','Other'],
+      'Printers & Scanners': ['HP','Canon','Epson','Brother','Xerox','Ricoh','Other'],
+      'Computer Accessories': [],
+      'Phone Accessories': [],
+      'Chargers & Cables': [],
+      'Power Banks': ['Anker','Xiaomi','Baseus','Romoss','Oraimo','Other'],
+      'Routers & Networking': ['TP-Link','Huawei','ZTE','D-Link','Tenda','MikroTik','Ubiquiti','Other'],
+      'Storage Devices': ['Samsung','SanDisk','Kingston','Western Digital','Seagate','Crucial','Lexar','Other'],
+      Drones: ['DJI','Autel','Syma','Holy Stone','Other'],
+      'Security & CCTV': ['Hikvision','Dahua','TP-Link','Ezviz','Xiaomi','Hiksemi','Other'],
+      'TV & Media Accessories': [],
+      'Audio & Microphones': ['JBL','Sony','Bose','Shure','Rode','Sennheiser','Audio-Technica','Other'],
+      'Electronic Components': [],
+      'Other Electronics': [],
     },
   },
 
   Vehicles: {
     icon: '🚗',
     subcategories: {
-      Cars: [
-        'Toyota',
-        'Hyundai',
-        'Suzuki',
-        'Nissan',
-        'Volkswagen',
-        'Other',
-      ],
-      Motorcycles: [
-        'Bajaj',
-        'TVS',
-        'Other',
-      ],
-      'Trucks & Vans': [],
-      'Parts & Accessories': [],
+      Cars: ['Toyota','Hyundai','Suzuki','BYD','Nissan','Honda','Kia','Mitsubishi','Volkswagen','Mercedes-Benz','BMW','Lexus','Ford','Chevrolet','Mazda','Subaru','Audi','Land Rover','Jeep','Peugeot','Renault','Chery','Changan','Geely','Jetour','GAC','Great Wall','Haval','Isuzu','MG','Volvo','Tesla','Other'],
+      SUVs: ['Toyota','Hyundai','Suzuki','BYD','Nissan','Honda','Kia','Mitsubishi','Lexus','Land Rover','Jeep','Ford','Mazda','Subaru','Chery','Changan','Geely','Jetour','GAC','Haval','Other'],
+      'Pickup Trucks': ['Toyota','Ford','Isuzu','Nissan','Mitsubishi','Great Wall','Foton','JAC','Mahindra','Other'],
+      'Vans & Minivans': ['Toyota','Hyundai','Nissan','Kia','Mercedes-Benz','Volkswagen','Other'],
+      Minibuses: ['Toyota','Hyundai','Isuzu','Foton','King Long','Other'],
+      Buses: ['Isuzu','Higer','Yutong','Mercedes-Benz','Hyundai','King Long','Other'],
+      Trucks: ['Isuzu','Hino','Mitsubishi Fuso','Volvo','Scania','Mercedes-Benz','Sinotruk HOWO','FAW','Shacman','Other'],
+      Trailers: ['Schmitz Cargobull','Krone','Kögel','Other'],
+      Motorcycles: ['Bajaj','TVS','Honda','Yamaha','Suzuki','Hero','KTM','Kawasaki','BMW','Lifan','Other'],
+      Scooters: ['Honda','Yamaha','Suzuki','TVS','Piaggio','Other'],
+      'Three-Wheelers': ['Bajaj','TVS','Piaggio','Other'],
+      Bicycles: ['Giant','Trek','Scott','Cannondale','Specialized','Other'],
+      'Electric Vehicles': ['BYD','Tesla','Nissan','Hyundai','Kia','Other'],
+      Tractors: ['Massey Ferguson','John Deere','New Holland','Kubota','Mahindra','Sonalika','Other'],
+      'Heavy Equipment': ['Caterpillar','Komatsu','JCB','Volvo','Hitachi','Hyundai','XCMG','Sany','Other'],
+      'Vehicle Parts': [],
+      'Tires & Wheels': ['Michelin','Bridgestone','Goodyear','Continental','Pirelli','Yokohama','Other'],
+      'Car Accessories': [],
       'Other Vehicles': [],
     },
   },
 
-  Furniture: {
-    icon: '🛋️',
+  'Home & Living': {
+    icon: '🏠',
     subcategories: {
-      Sofas: [],
-      Beds: [],
-      'Tables & Chairs': [],
-      Storage: [],
-      'Other Furniture': [],
+      Furniture: [], Sofas: [], Beds: [], Mattresses: [], 'Tables & Chairs': [], Wardrobes: [], Cabinets: [], Shelves: [], 'TV Stands': [],
+      Refrigerators: ['Samsung','LG','Hisense','Haier','Midea','Whirlpool','Beko','Other'],
+      Freezers: ['Samsung','LG','Hisense','Haier','Midea','Whirlpool','Other'],
+      'Washing Machines': ['Samsung','LG','Hisense','Haier','Midea','Whirlpool','Beko','Other'],
+      'Air Conditioners': ['Samsung','LG','Midea','Hisense','Gree','Daikin','Carrier','Other'],
+      'Kitchen Appliances': ['Samsung','LG','Midea','Philips','Kenwood','Moulinex','Black+Decker','Other'],
+      Microwaves: ['Samsung','LG','Hisense','Midea','Panasonic','Other'],
+      Ovens: ['Samsung','LG','Beko','Midea','Ariston','Other'],
+      'Electric Stoves': ['Samsung','LG','Midea','Beko','Other'],
+      'Gas Stoves': ['Midea','Beko','Ariston','Other'],
+      'Small Appliances': [],
+      Lighting: [], Curtains: [], Carpets: [], 'Home Decor': [], 'Bathroom Items': [], 'Storage & Organization': [],
+      'Garden Equipment': [], 'Cleaning Equipment': [], 'Other Home & Living': [],
     },
   },
 
   Fashion: {
     icon: '👗',
     subcategories: {
-      "Men's Clothing": [],
-      "Women's Clothing": [],
-      Shoes: [],
-      'Bags & Accessories': [],
-      'Other Fashion': [],
+      "Men's Clothing": [], "Women's Clothing": [], "Kids' Clothing": [], Shoes: [], Sneakers: [], Sandals: [], Boots: [],
+      'Traditional Clothing': [], Sportswear: [], Bags: [], Backpacks: [], Wallets: [], Jewelry: [], Watches: ['Apple','Samsung','Casio','Seiko','Citizen','Fossil','Tissot','Rolex','Other'],
+      'Fashion Accessories': [], 'Other Fashion': [],
     },
   },
 
-  Property: {
-    icon: '🏠',
+  'Beauty & Personal Care': {
+    icon: '💄',
+    subcategories: { Skincare: [], Makeup: [], Perfumes: [], 'Hair Care': [], 'Hair Dryers': [], 'Hair Clippers': [], 'Hair Straighteners': [], 'Electric Shavers': [], 'Oral Care': [], 'Beauty Equipment': [], 'Other Beauty': [] },
+  },
+
+  'Baby & Kids': {
+    icon: '🍼',
+    subcategories: { 'Baby Clothing': [], 'Baby Shoes': [], Strollers: [], 'Car Seats': [], Cribs: [], 'Baby Furniture': [], 'Feeding Items': [], Toys: [], 'Educational Toys': [], 'Kids Bicycles': [], 'School Bags': [], 'Other Baby & Kids': [] },
+  },
+
+  'Tools & Machinery': {
+    icon: '🔧',
     subcategories: {
-      'For Rent': [],
-      'For Sale': [],
-      Land: [],
-      'Other Property': [],
+      'Power Tools': ['Bosch','Makita','DeWalt','Milwaukee','Stanley','Total','Ingco','Black+Decker','Other'],
+      'Hand Tools': ['Stanley','Total','Ingco','Bosch','Makita','Other'],
+      'Welding Equipment': ['Lincoln Electric','Miller','ESAB','Ingco','Total','Other'],
+      Generators: ['Honda','Yamaha','Firman','Perkins','Cummins','Caterpillar','Other'],
+      Compressors: ['Atlas Copco','Ingersoll Rand','Kaeser','Other'],
+      Pumps: ['Grundfos','Pedrollo','Kärcher','Other'],
+      'Workshop Equipment': [], 'Industrial Machinery': [], 'Other Tools & Machinery': [],
     },
+  },
+
+  Agriculture: {
+    icon: '🌾',
+    subcategories: {
+      'Farm Machinery': [], Tractors: ['Massey Ferguson','John Deere','New Holland','Kubota','Mahindra','Sonalika','Other'],
+      Plows: [], Cultivators: [], Seeders: [], Harvesters: [], Threshers: [], Sprayers: [],
+      'Irrigation Equipment': [], 'Water Pumps': [], 'Poultry Equipment': [], 'Livestock Equipment': [], 'Animal Feed': [], Seeds: [], Fertilizers: [], 'Farm Tools': [], 'Other Agriculture': [],
+    },
+  },
+
+  'Construction & Building': {
+    icon: '🏗️',
+    subcategories: {
+      'Building Materials': [], Cement: [], Steel: [], 'Wood & Timber': [], Bricks: [], Blocks: [], Sand: [], Gravel: [], Tiles: [], Paint: [], Roofing: [],
+      Plumbing: [], 'Electrical Materials': [], 'Doors & Windows': [], 'Construction Tools': [], 'Construction Machinery': ['Caterpillar','Komatsu','JCB','Volvo','Hitachi','Hyundai','XCMG','Sany','Other'], 'Other Construction': [],
+    },
+  },
+
+  'Office & Business': {
+    icon: '💼',
+    subcategories: { 'Office Furniture': [], 'Office Computers': ['Apple','HP','Dell','Lenovo','Other'], Printers: ['HP','Canon','Epson','Brother','Xerox','Ricoh','Other'], Scanners: ['HP','Canon','Epson','Brother','Other'], Photocopiers: ['Canon','Ricoh','Xerox','Konica Minolta','Kyocera','Other'], Projectors: ['Epson','BenQ','Sony','LG','Other'], 'POS Machines': [], 'Cash Registers': [], Safes: [], Shredders: [], Stationery: [], 'Commercial Equipment': [], 'Other Office & Business': [] },
+  },
+
+  'Sports & Fitness': {
+    icon: '⚽',
+    subcategories: { 'Gym Equipment': [], Treadmills: ['NordicTrack','ProForm','Technogym','Other'], 'Exercise Bikes': [], Dumbbells: [], 'Weight Sets': [], Football: [], Basketball: [], Volleyball: [], Tennis: [], Cycling: [], Camping: [], 'Outdoor Equipment': [], Sportswear: [], 'Other Sports & Fitness': [] },
+  },
+
+  'Books & Education': {
+    icon: '📚',
+    subcategories: { Textbooks: [], 'University Books': [], 'Medical Books': [], 'School Books': [], 'Children Books': [], 'Reference Books': [], 'Religious Books': [], Stationery: [], 'Educational Equipment': [], 'Musical Instruments': [], 'Other Books & Education': [] },
+  },
+
+  'Gaming & Entertainment': {
+    icon: '🎮',
+    subcategories: { 'PlayStation': ['Sony'], Xbox: ['Microsoft'], Nintendo: ['Nintendo'], 'Gaming PCs': ['Apple','HP','Dell','Lenovo','Asus','Acer','MSI','Other'], 'Gaming Laptops': ['Asus','Lenovo','Acer','MSI','HP','Dell','Other'], 'Gaming Monitors': ['Samsung','LG','AOC','BenQ','Asus','Other'], 'Gaming Chairs': [], Controllers: [], 'Gaming Headsets': [], 'Video Games': [], 'VR Headsets': ['Meta','Sony','HTC','Pico','Other'], 'Musical Instruments': [], Other: [] },
+  },
+
+  Property: {
+    icon: '🏡',
+    subcategories: { 'Houses for Sale': [], 'Houses for Rent': [], 'Apartments for Sale': [], 'Apartments for Rent': [], 'Rooms for Rent': [], Villas: [], Condominiums: [], Shops: [], Offices: [], Warehouses: [], Hotels: [], Restaurants: [], 'Commercial Buildings': [], 'Residential Land': [], 'Agricultural Land': [], 'Commercial Land': [], 'Industrial Land': [], Farms: [], 'Other Property': [] },
+  },
+
+  'Jobs & Services': {
+    icon: '💼',
+    subcategories: { Jobs: [], 'Full-Time Jobs': [], 'Part-Time Jobs': [], Freelance: [], Internship: [], Construction: [], Electrical: [], Plumbing: [], 'Car Repair': [], 'Phone Repair': [], 'Computer Repair': [], Cleaning: [], Transportation: [], Delivery: [], Photography: [], 'Graphic Design': [], 'Web Development': [], Tutoring: [], Translation: [], 'Other Services': [] },
+  },
+
+  'Animals & Pets': {
+    icon: '🐄',
+    subcategories: { Cattle: [], Sheep: [], Goats: [], Horses: [], Camels: [], Chickens: [], Birds: [], Dogs: [], Cats: [], Fish: [], 'Other Pets': [], 'Animal Equipment': [], 'Animal Feed': [] },
+  },
+
+  'Food & Groceries': {
+    icon: '🛒',
+    subcategories: { Grains: [], Fruits: [], Vegetables: [], Meat: [], Dairy: [], Eggs: [], Coffee: [], Spices: [], 'Cooking Oil': [], 'Packaged Food': [], Drinks: [], Snacks: [], 'Other Food': [] },
+  },
+
+  'Travel & Luggage': {
+    icon: '🧳',
+    subcategories: { Suitcases: [], 'Travel Bags': [], Backpacks: [], 'Travel Accessories': [], Tents: [], 'Sleeping Bags': [], 'Camping Equipment': [], Other: [] },
+  },
+
+  'Hobbies & Collectibles': {
+    icon: '🎨',
+    subcategories: { Collectibles: [], Antiques: [], Art: [], 'Musical Instruments': [], Crafts: [], Coins: [], Stamps: [], Toys: [], Photography: [], Other: [] },
   },
 
   Other: {
     icon: '📦',
-    subcategories: {},
+    subcategories: { 'Other Products': [] },
   },
 };
 
@@ -563,7 +593,7 @@ export const TABLET_MODELS: Record<string, string[]> = {
     'Tecno MegaPad Pro',
     'Tecno MegaPad 2',
     'Other',
-  ],
+    ],
   OnePlus: [
     'OnePlus Pad',
     'OnePlus Pad Go',
@@ -804,6 +834,87 @@ export const CAMERA_MODELS: Record<string, string[]> = {
   Other: ['Other'],
 };
 
+// ---------- Generic model database ----------
+// Curated common models. The UI must always provide manual model entry as a fallback.
+export const MODEL_DATABASE: Record<string, Record<string, string[]>> = {
+  Phones: {
+    Apple: ['iPhone 17 Pro Max','iPhone 17 Pro','iPhone 17','iPhone Air','iPhone 16 Pro Max','iPhone 16 Pro','iPhone 16 Plus','iPhone 16','iPhone 15 Pro Max','iPhone 15 Pro','iPhone 15 Plus','iPhone 15','iPhone 14 Pro Max','iPhone 14 Pro','iPhone 14','iPhone 13','iPhone 12','iPhone 11','Other'],
+    Samsung: ['Galaxy S26 Ultra','Galaxy S26+','Galaxy S26','Galaxy S25 Ultra','Galaxy S25+','Galaxy S25','Galaxy S24 Ultra','Galaxy S24+','Galaxy S24','Galaxy S23 Ultra','Galaxy S23','Galaxy A56','Galaxy A36','Galaxy A26','Galaxy A16','Galaxy A15','Galaxy A14','Galaxy A05','Galaxy A05s','Galaxy M55','Galaxy M35','Galaxy M15','Galaxy Z Fold7','Galaxy Z Flip7','Galaxy Z Fold6','Galaxy Z Flip6','Other'],
+    Tecno: ['Camon 40','Camon 30','Camon 20','Spark 40','Spark 30','Spark 20','Pova 7','Pova 6','Phantom V Fold','Phantom V Flip','Other'],
+    Infinix: ['Note 50','Note 40','Note 30','Hot 60','Hot 50','Hot 40','Smart 10','Smart 9','GT 30 Pro','GT 20 Pro','Other'],
+    Xiaomi: ['Xiaomi 15 Ultra','Xiaomi 15','Xiaomi 14','Xiaomi 13','Xiaomi 12','Other'],
+    Redmi: ['Redmi Note 14 Pro+','Redmi Note 14 Pro','Redmi Note 14','Redmi Note 13 Pro+','Redmi Note 13 Pro','Redmi Note 13','Redmi 14C','Redmi 13C','Redmi 12','Other'],
+    Huawei: ['Pura 80 Pro','Pura 70 Pro','Mate 70 Pro','Mate 60 Pro','Nova 13','Nova 12','Nova 11','Other'],
+    Oppo: ['Find X8 Pro','Find X8','Reno 13 Pro','Reno 13','Reno 12','A5 Pro','A3x','Other'],
+    Vivo: ['X200 Pro','X200','V50','V40','V30','Y200','Y100','Other'],
+    Honor: ['Magic7 Pro','Magic V5','200 Pro','200','X9c','X8c','Other'],
+    Google: ['Pixel 10 Pro XL','Pixel 10 Pro','Pixel 10','Pixel 9 Pro XL','Pixel 9 Pro','Pixel 9','Pixel 8 Pro','Pixel 8','Other'],
+    Nokia: ['G42','G22','C32','C22','105','Other'],
+    Other: ['Other'],
+  },
+  Laptops: {
+    Apple: ['MacBook Air M4','MacBook Air M3','MacBook Air M2','MacBook Pro M4','MacBook Pro M3','MacBook Pro M2','Other'],
+    HP: ['EliteBook 840','EliteBook 850','ProBook 450','ProBook 440','Pavilion 15','Pavilion 14','Envy 13','Envy 15','Victus 15','Victus 16','Omen 16','Other'],
+    Dell: ['Latitude 5440','Latitude 5430','Latitude 5420','Inspiron 15','Inspiron 14','XPS 13','XPS 15','G15','Other'],
+    Lenovo: ['ThinkPad T14','ThinkPad T480','ThinkPad T490','ThinkPad X1 Carbon','IdeaPad 3','IdeaPad 5','Yoga 7','Legion 5','Legion 7','LOQ 15','Other'],
+    Asus: ['VivoBook 15','VivoBook 14','ZenBook 14','ROG Zephyrus G14','ROG Strix G16','TUF Gaming A15','Other'],
+    Acer: ['Aspire 5','Aspire 3','Swift 3','Swift Go','Nitro 5','Nitro V','Predator Helios','Other'],
+    Other: ['Other'],
+  },
+  TVs: {
+    Samsung: ['Crystal UHD','QLED Q60','QLED Q70','QLED Q80','Neo QLED QN90','OLED S90','OLED S95','The Frame','Other'],
+    LG: ['UHD AI ThinQ','NanoCell','QNED','OLED C4','OLED C5','OLED G4','Other'],
+    Hisense: ['A6 Series','U6 Series','U7 Series','U8 Series','Other'],
+    TCL: ['P Series','C Series','QLED C6','QLED C7','Other'],
+    Sony: ['BRAVIA 3','BRAVIA 5','BRAVIA 7','BRAVIA 8','BRAVIA 9','Other'],
+    Other: ['Other'],
+  },
+  Refrigerators: {
+    Samsung: ['Bespoke','French Door','Side-by-Side','Top Freezer','Other'],
+    LG: ['InstaView','French Door','Side-by-Side','Smart Inverter','Other'],
+    Hisense: ['French Door','Side-by-Side','Top Mount','Other'],
+    Other: ['Other'],
+  },
+  'Washing Machines': {
+    Samsung: ['WW Series','AI EcoBubble','AddWash','Other'],
+    LG: ['AI DD','TurboWash','Inverter Direct Drive','Other'],
+    Hisense: ['WF Series','Other'],
+    Other: ['Other'],
+  },
+  Cars: {
+    Toyota: ['Corolla','Yaris','Vitz','RAV4','Land Cruiser','Land Cruiser Prado','Hilux','Hiace','Camry','Rush','Fortuner','Avensis','Belta','Premio','Allion','Probox','Succeed','Other'],
+    Hyundai: ['Tucson','Santa Fe','Elantra','Accent','Sonata','i10','i20','i30','Creta','Kona','Staria','H-1','Other'],
+    Suzuki: ['Dzire','Swift','Alto','Celerio','Baleno','Vitara','Ertiga','Jimny','S-Presso','Other'],
+    BYD: ['Seal','Atto 3','Dolphin','Qin','Song','Han','Tang','Seagull','Other'],
+    Nissan: ['Sunny','X-Trail','Patrol','Navara','Qashqai','Tiida','March','Note','Juke','Other'],
+    Honda: ['Civic','Accord','CR-V','Fit','HR-V','Vezel','Other'],
+    Kia: ['Sportage','Sorento','Picanto','Rio','Seltos','Carnival','K5','Other'],
+    Mitsubishi: ['Lancer','Pajero','Outlander','L200','ASX','Other'],
+    Volkswagen: ['Golf','Polo','Passat','Tiguan','Touareg','Transporter','Other'],
+    'Mercedes-Benz': ['C-Class','E-Class','S-Class','GLC','GLE','Sprinter','Other'],
+    BMW: ['3 Series','5 Series','7 Series','X3','X5','X6','Other'],
+    Lexus: ['RX','LX','NX','ES','LS','GX','Other'],
+    Ford: ['Ranger','Everest','Explorer','Escape','F-150','Other'],
+    Other: ['Other'],
+  },
+  SUVs: {
+    Toyota: ['Land Cruiser','Land Cruiser Prado','RAV4','Fortuner','Rush','Other'],
+    Hyundai: ['Tucson','Santa Fe','Creta','Kona','Other'],
+    Kia: ['Sportage','Sorento','Seltos','Other'],
+    Nissan: ['X-Trail','Patrol','Qashqai','Juke','Other'],
+    Other: ['Other'],
+  },
+  'Pickup Trucks': {
+    Toyota: ['Hilux','Tundra','Tacoma','Other'], Ford: ['Ranger','F-150','Maverick','Other'], Isuzu: ['D-Max','Other'], Nissan: ['Navara','Other'], Mitsubishi: ['L200','Other'], Other: ['Other'],
+  },
+  Motorcycles: {
+    Bajaj: ['Pulsar','Boxer','Discover','Platina','CT 100','Other'], TVS: ['Apache','HLX','Radeon','King','Other'], Honda: ['CB Series','CG Series','Africa Twin','Other'], Yamaha: ['FZ','MT-15','R15','XTZ','Other'], Suzuki: ['GSX','Gixxer','V-Strom','Other'], Other: ['Other'],
+  },
+  'Smart Watches': { Apple: ['Apple Watch Series 11','Apple Watch Series 10','Apple Watch Ultra 2','Apple Watch SE','Other'], Samsung: ['Galaxy Watch8','Galaxy Watch7','Galaxy Watch6','Galaxy Watch5','Other'], Huawei: ['Watch GT 5','Watch GT 4','Watch 4 Pro','Other'], Other: ['Other'] },
+  'Gaming Consoles': { 'Sony PlayStation': ['PS5 Pro','PS5 Slim','PS5','PS4 Pro','PS4','Other'], 'Microsoft Xbox': ['Xbox Series X','Xbox Series S','Xbox One X','Xbox One S','Other'], Nintendo: ['Switch 2','Switch OLED','Switch','Switch Lite','Other'], Other: ['Other'] },
+  Drones: { DJI: ['Mavic 4 Pro','Mavic 3','Mini 4 Pro','Mini 3 Pro','Air 3','Avata 2','Other'], Autel: ['EVO Lite','EVO II','Other'], Other: ['Other'] },
+};
+
 // ---------- Subcategory pictures ----------
 // Pictures live in public/categories/sub/<slug>.jpg
 // When you add a new picture, add its slug to this list.
@@ -875,18 +986,28 @@ export function getModels(
   subcategory: string,
   brand: string,
 ): string[] {
-  if (subcategory === 'Tablets') {
-    return TABLET_MODELS[brand] ?? ['Other'];
-  }
-  if (subcategory === 'Cameras') {
-    return CAMERA_MODELS[brand] ?? ['Other'];
-  }
-  return [];
+  // Preserve the detailed tablet and camera databases already in this file.
+  if (subcategory === 'Tablets') return TABLET_MODELS[brand] ?? ['Other'];
+  if (subcategory === 'Cameras') return CAMERA_MODELS[brand] ?? ['Other'];
+
+  // All other model-enabled categories use the shared database.
+  return MODEL_DATABASE[subcategory]?.[brand] ?? [];
 }
+
+/** True when a subcategory has a curated model list for the selected brand. */
+export function hasModels(subcategory: string, brand: string): boolean {
+  return getModels(subcategory, brand).length > 0;
+}
+
+/**
+ * Models are suggestions, not a restriction. The UI should always show
+ * an "Enter model manually" option when the seller cannot find a match.
+ */
+export const MANUAL_MODEL_LABEL = 'Enter model manually';
 
 // Extra brands shown after the buyer/seller taps "Other"
 export function getOtherBrands(
   subcategory: string,
 ): string[] {
   return OTHER_BRANDS[subcategory] ?? [];
-}
+                          }
