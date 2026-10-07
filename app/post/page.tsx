@@ -1,10 +1,9 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 
-import { modelsFor } from '../../lib/models';
 import { cleanSpecs, DEFAULT_PHONE_SPECS, hasSpecs, type SpecRow } from '../../lib/specs';
 import SpecsEditor from '../SpecsEditor';
 import { supabase } from '../../lib/supabaseClient';
@@ -117,7 +116,7 @@ export default function PostPage() {
   const modelList =
     builtInModels.length > 0
       ? builtInModels
-      : modelsFor(subcategory, brand);
+      : [];
 
   const shownModels = (() => {
     const clean = (v: string) =>
@@ -707,7 +706,7 @@ export default function PostPage() {
                Contact details
             </h2>
 
-            <p className="mt-1 text-sm leading-5 text-muted">
+                        <p className="mt-1 text-sm leading-5 text-muted">
               Buyers will use these details to contact
               you.
             </p>
