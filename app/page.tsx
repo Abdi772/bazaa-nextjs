@@ -1,4 +1,4 @@
-import Link from 'next/link';
+ import Link from 'next/link';
 import Image from 'next/image';
 
 import {
@@ -23,6 +23,7 @@ import FilterBar from './FilterBar';
 import LanguageText from './LanguageText';
 import SearchInput from './SearchInput';
 import FavoriteButton from './FavoriteButton';
+import ModelRow from './ModelRow';
 
 export const revalidate = 60;
 
@@ -663,42 +664,27 @@ export default async function HomePage({
         )}
 
         {showBrandTiles && modelNames.length > 0 && (
-          <div className="mb-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <div className="flex w-max gap-2">
-              {modelNames.map((m) => {
-                const selected = model === m;
-
-                return (
-                  <Link
-                    key={m}
-                    href={
-                      selected
-                        ? buildUrl(
-                            category,
-                            subcategory,
-                            brand,
-                            inMore,
-                          )
-                        : buildUrl(
-                            category,
-                            subcategory,
-                            brand,
-                            inMore,
-                            m,
-                          )
-                    }
-                    className={`whitespace-nowrap rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors ${
-                      selected
-                        ? 'border-amber bg-amber text-white'
-                        : 'border-line bg-white text-ink hover:border-amber'
-                    }`}
-                  >
-                    {m}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
+          <ModelRow
+            items={modelNames.map((m) => ({
+              name: m,
+              selected: model === m,
+              href:
+                model === m
+                  ? buildUrl(
+                      category,
+                      subcategory,
+                      brand,
+                      inMore,
+                    )
+                  : buildUrl(
+                      category,
+                      subcategory,
+                      brand,
+                      inMore,
+                      m,
+                    ),
+            }))}
+          />
         )}
 
         {showListings && (
@@ -722,7 +708,7 @@ export default async function HomePage({
                 ⌕
               </div>
 
-              <h3 className="mb-1 text-sm font-semibold bazaa-text sm:text-base">
+                 <h3 className="mb-1 text-sm font-semibold bazaa-text sm:text-base">
                 <LanguageText k="noListingsMatch" />
               </h3>
 
@@ -817,4 +803,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-       }
+      }
