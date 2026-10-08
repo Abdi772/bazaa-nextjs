@@ -40,6 +40,7 @@ export default function PostPage() {
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [customModel, setCustomModel] = useState('');
+  const [modelNumber, setModelNumber] = useState('');
   const [autoTitle, setAutoTitle] = useState('');
   const [year, setYear] = useState('');
   const [trim, setTrim] = useState('');
@@ -99,18 +100,26 @@ export default function PostPage() {
       : mainBrands;
 
   const brandLabel =
-    subcategory === 'Accessories' ? 'Type' : 'Brand';
+    [
+      'Accessories',
+      'Phone Accessories',
+      'Audio',
+      'Networking',
+      'Security & CCTV',
+    ].includes(subcategory)
+      ? 'Type'
+      : 'Brand';
 
   const modelLabel =
     subcategory === 'TV'
       ? 'Size'
-      : subcategory === 'Freezer'
+      : subcategory === 'Refrigerators & Freezers'
         ? 'Type'
         : 'Model';
 
-  // TV (sizes) and Freezer (types) do not depend on brand
+  // TV (sizes) and Refrigerators & Freezers (types) do not depend on brand
   const needsBrand =
-    subcategory !== 'TV' && subcategory !== 'Freezer';
+    subcategory !== 'TV' && subcategory !== 'Refrigerators & Freezers';
 
   const builtInModels =
     subcategory && (brand || !needsBrand)
@@ -158,6 +167,23 @@ export default function PostPage() {
     (_, i) => String(new Date().getFullYear() + 1 - i),
   );
 
+  const manualLabel =
+    modelLabel === 'Model' ? 'Model name' : modelLabel;
+
+  function onCustomModelChange(value: string) {
+    setCustomModel(value);
+
+    // keep the title in step while the seller types the model
+    if (
+      value.trim() &&
+      (!title.trim() || title === autoTitle)
+    ) {
+      const next = suggestTitle(brand, value.trim());
+      setTitle(next);
+      setAutoTitle(next);
+    }
+  }
+
   // "Samsung" + "Galaxy S24" -> "Samsung Galaxy S24"
   // "iPhone" + "iPhone 15" -> "iPhone 15"
   function suggestTitle(b: string, m: string) {
@@ -173,6 +199,7 @@ export default function PostPage() {
   function onModelPicked(value: string) {
     setModel(value);
     setCustomModel('');
+    setModelNumber('');
 
     if (!value || value === 'Other') return;
 
@@ -191,6 +218,7 @@ export default function PostPage() {
     setBrand('');
     setModel('');
     setCustomModel('');
+    setModelNumber('');
     setModelSearch('');
   }
 
@@ -277,6 +305,14 @@ export default function PostPage() {
           subcategory: subcategory || null,
           brand: brand || null,
           model: finalModel || null,
+          model_number:
+            model === 'Other' && modelNumber.trim()
+              ? modelNumber.trim()
+              : null,
+          model_custom:
+            modelList.length > 0 &&
+            model === 'Other' &&
+            !!customModel.trim(),
           year: isVehicle && year ? Number(year) : null,
           trim: isVehicle && trim.trim() ? trim.trim() : null,
           condition,
@@ -553,6 +589,7 @@ export default function PostPage() {
                     );
                     setModel('');
                     setCustomModel('');
+      setModelNumber('');
                     setModelSearch('');
                   }}
                 >
@@ -607,20 +644,42 @@ export default function PostPage() {
 
                       {shownModels.map((m) => (
                         <option key={m} value={m}>
-                          {m}
+                          {m === 'Other'
+                            ? `Can't find my ${modelLabel.toLowerCase()} - enter it manually`
+                            : m}
                         </option>
                       ))}
                     </select>
 
                     {model === 'Other' && (
-                      <input
-                        className={`${inputClass} mt-2`}
-                        value={customModel}
-                        onChange={(e) =>
-                          setCustomModel(e.target.value)
-                        }
-                        placeholder={`Type the ${modelLabel.toLowerCase()} name (optional)`}
-                      />
+                      <div className="mt-2 rounded-bazaa border border-line bg-surfaceSoft p-3">
+                        <p className="mb-2 text-sm font-semibold text-ink">
+                          Can't find your {modelLabel.toLowerCase()}? Enter it here.
+                        </p>
+                        <label className={labelClass}>
+                          {manualLabel}
+                        </label>
+                        <input
+                          required
+                          className={inputClass}
+                          value={customModel}
+                          onChange={(e) => onCustomModelChange(e.target.value)}
+                          placeholder="Type it here"
+                        />
+                        {modelLabel === 'Model' && (
+                          <>
+                            <label className={`${labelClass} mt-3`}>
+                              Model number (optional)
+                            </label>
+                            <input
+                              className={inputClass}
+                              value={modelNumber}
+                              onChange={(e) => setModelNumber(e.target.value)}
+                              placeholder="e.g. SM-A576B"
+                            />
+                          </>
+                        )}
+                      </div>
                     )}
                   </>
                 ) : (
@@ -632,7 +691,7 @@ export default function PostPage() {
                     placeholder="Model name (optional)"
                   />
                 )}
-              </div>
+               </div>
             )}
 
             {isVehicle && (
@@ -702,7 +761,7 @@ export default function PostPage() {
           </div>
         </section>
                <section className="bazaa-card p-4 sm:p-6">
-               <div className="mb-4 sm:mb-5">
+          <div className="mb-4 sm:mb-5">
             <h2 className="font-serif text-xl font-bold text-ink">
               Location
             </h2>
@@ -881,5 +940,5 @@ export default function PostPage() {
       </form>
     </div>
   );
-            }
-             
+                }
+           
