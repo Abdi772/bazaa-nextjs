@@ -43,6 +43,7 @@ export default function EditPage() {
   const [year, setYear] = useState('');
   const [trim, setTrim] = useState('');
   const [customModel, setCustomModel] = useState('');
+  const [modelNumber, setModelNumber] = useState('');
   const [modelSearch, setModelSearch] = useState('');
   const [condition, setCondition] = useState(CONDITIONS[0]);
   const [region, setRegion] = useState(ETHIOPIA_REGIONS[0]);
@@ -102,6 +103,7 @@ export default function EditPage() {
       setModel(listing.model ?? '');
       setYear(listing.year ? String(listing.year) : '');
       setTrim(listing.trim ?? '');
+      setModelNumber(listing.model_number ?? '');
       setCondition(listing.condition ?? CONDITIONS[0]);
       setRegion(listing.region ?? ETHIOPIA_REGIONS[0]);
       setLocation(listing.location ?? '');
@@ -174,12 +176,20 @@ export default function EditPage() {
     (_, i) => String(new Date().getFullYear() + 1 - i),
   );
 
-  const brandLabel = subcategory === 'Accessories' ? 'Type' : 'Brand';
+  const brandLabel = [
+      'Accessories',
+      'Phone Accessories',
+      'Audio',
+      'Networking',
+      'Security & CCTV',
+    ].includes(subcategory)
+      ? 'Type'
+      : 'Brand';
 
   const modelLabel =
     subcategory === 'TV'
       ? 'Size'
-      : subcategory === 'Freezer'
+      : subcategory === 'Refrigerators & Freezers'
         ? 'Type'
         : 'Model';
 
@@ -195,6 +205,20 @@ export default function EditPage() {
     return modelList.filter((m) => m === model || clean(m).includes(q));
   })();
 
+  const manualLabel =
+    modelLabel === 'Model' ? 'Model name' : modelLabel;
+
+  function onCustomModelChange(value: string) {
+    setCustomModel(value);
+
+  }
+
+  // Show the manual box for "Other" and for ads whose model is not in the list
+  const showManual =
+    modelList.length > 0 &&
+    (model === 'Other' ||
+      (!!model && !modelList.includes(model)));
+
   function onCategoryChange(value: string) {
     setCategory(value);
     setSubcategory('');
@@ -208,6 +232,7 @@ export default function EditPage() {
     setBrand('');
     setModel('');
     setCustomModel('');
+    setModelNumber('');
     setModelSearch('');
     setError('');
   }
@@ -216,6 +241,7 @@ export default function EditPage() {
     setBrand(value);
     setModel('');
     setCustomModel('');
+    setModelNumber('');
     setModelSearch('');
     setError('');
   }
@@ -359,6 +385,11 @@ export default function EditPage() {
             (model === 'Other' && customModel.trim()
               ? customModel.trim()
               : model.trim()) || null,
+          model_number:
+            (showManual ? modelNumber.trim() : '') || null,
+          model_custom:
+            showManual &&
+            (model !== 'Other' || !!customModel.trim()),
           year: isVehicle && year ? Number(year) : null,
           trim: isVehicle && trim.trim() ? trim.trim() : null,
           condition,
@@ -644,7 +675,7 @@ export default function EditPage() {
                   required
                   value={brand}
                   onChange={(e) => onBrandChange(e.target.value)}
-                  disabled={busy}
+       disabled={busy}
                 >
                   <option value="">Select {brandLabel.toLowerCase()}</option>
                   {brands.map((name) => (
@@ -682,6 +713,7 @@ export default function EditPage() {
                       onChange={(e) => {
                         setModel(e.target.value);
                         setCustomModel('');
+      setModelNumber('');
                       }}
                       disabled={busy}
                     >
@@ -693,19 +725,48 @@ export default function EditPage() {
                       )}
                       {shownModels.map((m) => (
                         <option key={m} value={m}>
-                          {m}
+                          {m === 'Other'
+                            ? `Can't find my ${modelLabel.toLowerCase()} - enter it manually`
+                            : m}
                         </option>
                       ))}
                     </select>
 
-                    {model === 'Other' && (
-                      <input
-                        className={`${inputClass} mt-2`}
-                        value={customModel}
-                        onChange={(e) => setCustomModel(e.target.value)}
-                        placeholder={`Type the ${modelLabel.toLowerCase()} name (optional)`}
+                    {showManual && (
+                      <div className="mt-2 rounded-bazaa border border-line bg-surfaceSoft p-3">
+                        <p className="mb-2 text-sm font-semibold text-ink">
+                          Can't find your {modelLabel.toLowerCase()}? Enter it here.
+                        </p>
+                        {model === 'Other' && (
+                          <>
+                        <label className={labelClass}>
+                          {manualLabel}
+                        </label>
+                        <input
+                          required
+                          className={inputClass}
+                          value={customModel}
+                          onChange={(e) => onCustomModelChange(e.target.value)}
+                          placeholder="Type it here"
                         disabled={busy}
-                      />
+                        />
+                          </>
+                        )}
+                        {modelLabel === 'Model' && (
+                          <>
+                            <label className={`${labelClass} mt-3`}>
+                              Model number (optional)
+                            </label>
+                            <input
+                              className={inputClass}
+                              value={modelNumber}
+                              onChange={(e) => setModelNumber(e.target.value)}
+                              placeholder="e.g. SM-A576B"
+                        disabled={busy}
+                            />
+                          </>
+                        )}
+                      </div>
                     )}
                   </>
                 ) : (
@@ -920,4 +981,4 @@ export default function EditPage() {
 }
 
 
-               
+                         
