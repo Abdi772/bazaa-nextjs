@@ -10,6 +10,7 @@ import {
   CATEGORY_CONFIG,
   ETHIOPIA_REGIONS,
   CONDITIONS,
+  getOtherBrands,
 } from '../../../lib/categories';
 import { listingSlug } from '../../../lib/listings';
 import { compressImage } from '../../../lib/compressImage';
@@ -39,6 +40,8 @@ export default function EditPage() {
   const [subcategory, setSubcategory] = useState('');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
+  const [customModel, setCustomModel] = useState('');
+  const [modelSearch, setModelSearch] = useState('');
   const [condition, setCondition] = useState(CONDITIONS[0]);
   const [region, setRegion] = useState(ETHIOPIA_REGIONS[0]);
   const [location, setLocation] = useState('');
@@ -126,9 +129,50 @@ export default function EditPage() {
     CATEGORY_CONFIG[category]?.subcategories ?? {},
   );
 
-  const brands = subcategory
+  const mainBrands = subcategory
     ? CATEGORY_CONFIG[category]?.subcategories[subcategory] ?? []
     : [];
+
+  // Main brands first, then the brands that sit under "Other"
+  const extraBrands = subcategory ? getOtherBrands(subcategory) : [];
+
+  const baseBrands =
+    extraBrands.length > 0
+      ? Array.from(
+          new Set([
+            ...mainBrands.filter((b) => b !== 'Other'),
+            ...extraBrands.filter((b) => b !== 'Other'),
+            'Other',
+          ]),
+        )
+      : mainBrands;
+
+  // Keep the ad's current brand selectable even if it is not in the list
+  const brands =
+    brand && baseBrands.length > 0 && !baseBrands.includes(brand)
+      ? [brand, ...baseBrands]
+      : baseBrands;
+
+  const brandLabel = subcategory === 'Accessories' ? 'Type' : 'Brand';
+
+  const modelLabel =
+    subcategory === 'TV'
+      ? 'Size'
+      : subcategory === 'Freezer'
+        ? 'Type'
+        : 'Model';
+
+  const modelList = modelsFor(subcategory, brand);
+
+  const shownModels = (() => {
+    const clean = (v: string) =>
+      v.toLowerCase().replace(/[^a-z0-9]+/g, '');
+    const q = clean(modelSearch);
+
+    if (!q) return modelList;
+
+    return modelList.filter((m) => m === model || clean(m).includes(q));
+  })();
 
   function onCategoryChange(value: string) {
     setCategory(value);
@@ -142,12 +186,16 @@ export default function EditPage() {
     setSubcategory(value);
     setBrand('');
     setModel('');
+    setCustomModel('');
+    setModelSearch('');
     setError('');
   }
 
   function onBrandChange(value: string) {
     setBrand(value);
     setModel('');
+    setCustomModel('');
+    setModelSearch('');
     setError('');
   }
 
@@ -286,7 +334,10 @@ export default function EditPage() {
           category,
           subcategory: subcategory || null,
           brand: brand || null,
-          model: model.trim() || null,
+          model:
+            (model === 'Other' && customModel.trim()
+              ? customModel.trim()
+              : model.trim()) || null,
           condition,
           region,
           location: trimmedLocation,
@@ -562,7 +613,7 @@ export default function EditPage() {
             {brands.length > 0 && (
               <div>
                 <label htmlFor="edit-brand" className={labelClass}>
-                  Brand
+                  {brandLabel}
                 </label>
                 <select
                   id="edit-brand"
@@ -572,7 +623,7 @@ export default function EditPage() {
                   onChange={(e) => onBrandChange(e.target.value)}
                   disabled={busy}
                 >
-                  <option value="">Select brand</option>
+                  <option value="">Select {brandLabel.toLowerCase()}</option>
                   {brands.map((name) => (
                     <option key={name} value={name}>
                       {name}
@@ -585,31 +636,62 @@ export default function EditPage() {
             {subcategory && (
               <div>
                 <label htmlFor="edit-model" className={labelClass}>
-                  Model
+                  {modelLabel}
                 </label>
-                {modelsFor(subcategory, brand).length > 0 ? (
-                  <select
-                    id="edit-model"
-                    className={inputClass}
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                    disabled={busy}
-                  >
-                    <option value="">Select model...</option>
-                    {model && !modelsFor(subcategory, brand).includes(model) && (
-                      <option value={model}>{model}</option>
+
+                {modelList.length > 0 ? (
+                  <>
+                    {modelList.length > 15 && (
+                      <input
+                        type="search"
+                        className={`${inputClass} mb-2`}
+                        value={modelSearch}
+                        onChange={(e) => setModelSearch(e.target.value)}
+                        placeholder={`Search ${modelLabel.toLowerCase()}...`}
+                        disabled={busy}
+                      />
                     )}
-                    {modelsFor(subcategory, brand).map((m) => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
+
+                    <select
+                      id="edit-model"
+                      className={inputClass}
+                      value={model}
+                      onChange={(e) => {
+                        setModel(e.target.value);
+                        setCustomModel('');
+                      }}
+                      disabled={busy}
+                    >
+                      <option value="">
+                         Select {modelLabel.toLowerCase()}...
+                      </option>
+                      {model && !modelList.includes(model) && (
+                        <option value={model}>{model}</option>
+                      )}
+                      {shownModels.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+
+                    {model === 'Other' && (
+                      <input
+                        className={`${inputClass} mt-2`}
+                        value={customModel}
+                        onChange={(e) => setCustomModel(e.target.value)}
+                        placeholder={`Type the ${modelLabel.toLowerCase()} name (optional)`}
+                        disabled={busy}
+                      />
+                    )}
+                  </>
                 ) : (
                   <input
                     id="edit-model"
                     className={inputClass}
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
-                    placeholder="e.g. Model name"
+                    placeholder="Model name (optional)"
                     autoComplete="off"
                     disabled={busy}
                   />
@@ -776,3 +858,4 @@ export default function EditPage() {
 }
 
 
+             
