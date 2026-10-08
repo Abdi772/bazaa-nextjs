@@ -40,6 +40,8 @@ export default function EditPage() {
   const [subcategory, setSubcategory] = useState('');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
+  const [year, setYear] = useState('');
+  const [trim, setTrim] = useState('');
   const [customModel, setCustomModel] = useState('');
   const [modelSearch, setModelSearch] = useState('');
   const [condition, setCondition] = useState(CONDITIONS[0]);
@@ -98,6 +100,8 @@ export default function EditPage() {
       setSubcategory(listing.subcategory ?? '');
       setBrand(listing.brand ?? '');
       setModel(listing.model ?? '');
+      setYear(listing.year ? String(listing.year) : '');
+      setTrim(listing.trim ?? '');
       setCondition(listing.condition ?? CONDITIONS[0]);
       setRegion(listing.region ?? ETHIOPIA_REGIONS[0]);
       setLocation(listing.location ?? '');
@@ -152,6 +156,23 @@ export default function EditPage() {
     brand && baseBrands.length > 0 && !baseBrands.includes(brand)
       ? [brand, ...baseBrands]
       : baseBrands;
+
+  // Vehicles also get Year and Trim
+  const isVehicle = [
+    'Cars',
+    'Pickup Trucks',
+    'Vans & Minivans',
+    'Minibuses',
+    'Buses',
+    'Trucks',
+    'Motorcycles',
+    'Three-Wheelers',
+  ].includes(subcategory);
+
+  const yearOptions = Array.from(
+    { length: new Date().getFullYear() + 1 - 1979 },
+    (_, i) => String(new Date().getFullYear() + 1 - i),
+  );
 
   const brandLabel = subcategory === 'Accessories' ? 'Type' : 'Brand';
 
@@ -338,6 +359,8 @@ export default function EditPage() {
             (model === 'Other' && customModel.trim()
               ? customModel.trim()
               : model.trim()) || null,
+          year: isVehicle && year ? Number(year) : null,
+          trim: isVehicle && trim.trim() ? trim.trim() : null,
           condition,
           region,
           location: trimmedLocation,
@@ -663,7 +686,7 @@ export default function EditPage() {
                       disabled={busy}
                     >
                       <option value="">
-                         Select {modelLabel.toLowerCase()}...
+                        Select {modelLabel.toLowerCase()}...
                       </option>
                       {model && !modelList.includes(model) && (
                         <option value={model}>{model}</option>
@@ -697,6 +720,45 @@ export default function EditPage() {
                   />
                 )}
               </div>
+            )}
+
+            {isVehicle && (
+              <>
+                <div>
+                  <label htmlFor="edit-year" className={labelClass}>
+                    Year
+                  </label>
+                  <select
+                    id="edit-year"
+                    className={inputClass}
+                    value={year}
+                    onChange={(e) => setYear(e.target.value)}
+                    disabled={busy}
+                  >
+                    <option value="">Select year (optional)</option>
+                    {yearOptions.map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="edit-trim" className={labelClass}>
+                    Trim / Variant
+                  </label>
+                  <input
+                    id="edit-trim"
+                    className={inputClass}
+                    value={trim}
+                    onChange={(e) => setTrim(e.target.value)}
+                    placeholder="e.g. XLi, GLS, 4x4 (optional)"
+                    autoComplete="off"
+                    disabled={busy}
+                  />
+                </div>
+              </>
             )}
 
             <div>
@@ -858,4 +920,4 @@ export default function EditPage() {
 }
 
 
-             
+               
