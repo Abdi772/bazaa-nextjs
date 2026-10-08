@@ -20,7 +20,6 @@ export type Listing = {
   subcategory: string | null;
   brand: string | null;
   model: string | null;
- model: string | null;
   year?: number | null;
   trim?: string | null;
   model_number?: string | null;
