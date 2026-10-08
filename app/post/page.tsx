@@ -41,6 +41,8 @@ export default function PostPage() {
   const [model, setModel] = useState('');
   const [customModel, setCustomModel] = useState('');
   const [autoTitle, setAutoTitle] = useState('');
+  const [year, setYear] = useState('');
+  const [trim, setTrim] = useState('');
   const [modelSearch, setModelSearch] = useState('');
   const [condition, setCondition] = useState(
     CONDITIONS[0],
@@ -139,6 +141,23 @@ export default function PostPage() {
     setModel('');
   }
 
+  // Vehicles also get Year and Trim
+  const isVehicle = [
+    'Cars',
+    'Pickup Trucks',
+    'Vans & Minivans',
+    'Minibuses',
+    'Buses',
+    'Trucks',
+    'Motorcycles',
+    'Three-Wheelers',
+  ].includes(subcategory);
+
+  const yearOptions = Array.from(
+    { length: new Date().getFullYear() + 1 - 1979 },
+    (_, i) => String(new Date().getFullYear() + 1 - i),
+  );
+
   // "Samsung" + "Galaxy S24" -> "Samsung Galaxy S24"
   // "iPhone" + "iPhone 15" -> "iPhone 15"
   function suggestTitle(b: string, m: string) {
@@ -167,6 +186,8 @@ export default function PostPage() {
 
   function onSubcategoryChange(value: string) {
     setSubcategory(value);
+    setYear('');
+    setTrim('');
     setBrand('');
     setModel('');
     setCustomModel('');
@@ -256,6 +277,8 @@ export default function PostPage() {
           subcategory: subcategory || null,
           brand: brand || null,
           model: finalModel || null,
+          year: isVehicle && year ? Number(year) : null,
+          trim: isVehicle && trim.trim() ? trim.trim() : null,
           condition,
           region,
           location: location.trim(),
@@ -612,6 +635,45 @@ export default function PostPage() {
               </div>
             )}
 
+            {isVehicle && (
+              <>
+                <div>
+                  <label htmlFor="listing-year" className={labelClass}>
+                    Year
+                  </label>
+                  <select
+                    id="listing-year"
+                    className={inputClass}
+                    value={year}
+                    onChange={(e) => setYear(e.target.value)}
+                    
+                  >
+                    <option value="">Select year (optional)</option>
+                    {yearOptions.map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="listing-trim" className={labelClass}>
+                    Trim / Variant
+                  </label>
+                  <input
+                    id="listing-trim"
+                    className={inputClass}
+                    value={trim}
+                    onChange={(e) => setTrim(e.target.value)}
+                    placeholder="e.g. XLi, GLS, 4x4 (optional)"
+                    autoComplete="off"
+                    
+                  />
+                </div>
+              </>
+            )}
+
             <div>
               <label
                 htmlFor="listing-condition"
@@ -640,7 +702,7 @@ export default function PostPage() {
           </div>
         </section>
                <section className="bazaa-card p-4 sm:p-6">
-          <div className="mb-4 sm:mb-5">
+               <div className="mb-4 sm:mb-5">
             <h2 className="font-serif text-xl font-bold text-ink">
               Location
             </h2>
@@ -707,7 +769,7 @@ export default function PostPage() {
             <p className="mt-1 text-sm leading-5 text-muted">
               Give buyers the important details about
               the item.
-                            </p>
+            </p>
           </div>
 
           <textarea
@@ -819,4 +881,5 @@ export default function PostPage() {
       </form>
     </div>
   );
-       }
+            }
+             
