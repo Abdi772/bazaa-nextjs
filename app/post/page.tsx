@@ -40,6 +40,7 @@ export default function PostPage() {
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [customModel, setCustomModel] = useState('');
+  const [autoTitle, setAutoTitle] = useState('');
   const [modelSearch, setModelSearch] = useState('');
   const [condition, setCondition] = useState(
     CONDITIONS[0],
@@ -136,6 +137,32 @@ export default function PostPage() {
     setSubcategory('');
     setBrand('');
     setModel('');
+  }
+
+  // "Samsung" + "Galaxy S24" -> "Samsung Galaxy S24"
+  // "iPhone" + "iPhone 15" -> "iPhone 15"
+  function suggestTitle(b: string, m: string) {
+    const startsWithBrand = m
+      .toLowerCase()
+      .startsWith(b.toLowerCase());
+
+    const base = startsWithBrand ? m : `${b} ${m}`.trim();
+
+    return subcategory === 'TV' ? `${base} TV` : base;
+  }
+
+  function onModelPicked(value: string) {
+    setModel(value);
+    setCustomModel('');
+
+    if (!value || value === 'Other') return;
+
+    // Only fill the title if it is empty or still our own suggestion
+    if (!title.trim() || title === autoTitle) {
+      const next = suggestTitle(brand, value);
+      setTitle(next);
+      setAutoTitle(next);
+    }
   }
 
   function onSubcategoryChange(value: string) {
@@ -547,10 +574,9 @@ export default function PostPage() {
                       className={inputClass}
                       required
                       value={model}
-                      onChange={(e) => {
-                        setModel(e.target.value);
-                        setCustomModel('');
-                      }}
+                      onChange={(e) =>
+                        onModelPicked(e.target.value)
+                      }
                     >
                       <option value="">
                         Select {modelLabel.toLowerCase()}...
@@ -681,7 +707,7 @@ export default function PostPage() {
             <p className="mt-1 text-sm leading-5 text-muted">
               Give buyers the important details about
               the item.
-            </p>
+                            </p>
           </div>
 
           <textarea
@@ -704,8 +730,8 @@ export default function PostPage() {
         <section className="bazaa-card p-4 sm:p-6">
           <div className="mb-4 sm:mb-5">
             <h2 className="font-serif text-xl font-bold text-ink">
-               Contact details 
-                         </h2>
+              Contact details
+            </h2>
 
             <p className="mt-1 text-sm leading-5 text-muted">
               Buyers will use these details to contact
@@ -793,5 +819,4 @@ export default function PostPage() {
       </form>
     </div>
   );
-}
-
+       }
