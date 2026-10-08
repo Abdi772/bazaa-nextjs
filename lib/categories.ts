@@ -18,6 +18,17 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Oppo',
         'Other',
       ],
+      'Phone Accessories': [
+        'Chargers',
+        'Cables',
+        'Power Banks',
+        'Cases & Covers',
+        'Screen Protectors',
+        'Car Chargers',
+        'Wireless Chargers',
+        'Phone Holders',
+        'Other',
+      ],
       Computers: [
         'Apple',
         'HP',
@@ -26,6 +37,26 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Samsung',
         'Asus',
         'Acer',
+        'Other',
+      ],
+      Monitors: [
+        'Dell',
+        'HP',
+        'Samsung',
+        'LG',
+        'Acer',
+        'Asus',
+        'Lenovo',
+        'AOC',
+        'Other',
+      ],
+      Webcams: [
+        'Logitech',
+        'Razer',
+        'Microsoft',
+        'HP',
+        'Elgato',
+        'Anker',
         'Other',
       ],
       Tablets: [
@@ -50,6 +81,16 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Xiaomi',
         'Other',
       ],
+      Audio: [
+        'Headphones & Earbuds',
+        'Speakers',
+        'Microphones',
+        'Sound Systems',
+        'Home Theater',
+        'Amplifiers & Mixers',
+        'Radios & Players',
+        'Other',
+      ],
       Cameras: [
         'Canon',
         'Sony',
@@ -61,46 +102,64 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'DJI',
         'Other',
       ],
+      Drones: [
+        'DJI',
+        'Autel',
+        'Other',
+      ],
+      'Security & CCTV': [
+        'CCTV Cameras',
+        'DVR',
+        'NVR',
+        'Security Systems',
+        'Smart Doorbells',
+        'Access Control',
+        'Other',
+      ],
       Gaming: [
         'PlayStation',
         'Xbox',
         'Nintendo',
         'Other',
       ],
-      Freezer: [
-        'Samsung',
-        'LG',
-        'Hisense',
-        'Haier',
-        'Midea',
-        'Whirlpool',
-        'Other',
-      ],
       Watch: [
-        'Casio',
-        'Rolex',
-        'Seiko',
-        'Citizen',
-        'Fossil',
-        'Tissot',
         'Apple',
         'Samsung',
+        'Huawei',
+        'Xiaomi',
+        'Amazfit',
+        'Garmin',
+        'Casio',
+        'Rolex',
         'Other',
       ],
-      // Rarely used / related items grouped in one place.
-      // These show as the row at the top (like Jiji).
+      'Printers & Scanners': [
+        'HP',
+        'Canon',
+        'Epson',
+        'Brother',
+        'Xerox',
+        'Ricoh',
+        'Samsung',
+        'Other',
+      ],
+      Networking: [
+        'Routers',
+        'Wi-Fi Extenders',
+        'Modems',
+        'Switches',
+        'Access Points',
+        'Network Cards',
+        'Other',
+      ],
+      // Other small items in one place
       Accessories: [
-        'Photo & Video',
-        'TV & DVD',
-        'Audio & Microphone',
-        'Networking',
-        'Printers & Scanners',
+        'Keyboards & Mice',
+        'Laptop Bags',
+        'Hubs & Adapters',
+        'Storage & Memory',
         'Game Accessories',
-        'Security & Surveillance',
-        'Charger',
-        'Headphones',
-        'Smartwatch',
-        'Other accessories',
+        'Other small items',
       ],
     },
   },
@@ -245,7 +304,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         'Cabinet',
         'Other',
       ],
-      Refrigerators: [
+      'Refrigerators & Freezers': [
         'Samsung',
         'LG',
         'Hisense',
@@ -712,6 +771,24 @@ export const CONDITIONS = [
 // When the buyer/seller taps "Other", show this list.
 
 export const OTHER_BRANDS: Record<string, string[]> = {
+  Monitors: [
+    'MSI',
+    'BenQ',
+    'ViewSonic',
+    'Philips',
+    'Gigabyte',
+    'Other',
+  ],
+  Watch: [
+    'Seiko',
+    'Citizen',
+    'Fossil',
+    'Tissot',
+    'Fitbit',
+    'Honor',
+    'Redmi',
+    'Other',
+  ],
   'Cars': [
     'Volkswagen',
     'Mercedes-Benz',
@@ -1072,7 +1149,7 @@ export const TABLET_MODELS: Record<string, string[]> = {
     'Honor Pad GT',
     'Honor Pad GT Pro',
     'Honor MagicPad 2',
-   'Honor MagicPad 3',
+    'Honor MagicPad 3',
     'Honor MagicPad 3 Pro',
     'Honor MagicPad 4',
     'Other',
@@ -1668,7 +1745,7 @@ export const PHONE_MODELS: Record<string, string[]> = {
     'Huawei Y5p',
     'Other',
   ],
-  Oppo: [
+ Oppo: [
     'Oppo Find X8 Ultra',
     'Oppo Find X8 Pro',
     'Oppo Find X8',
@@ -1929,7 +2006,7 @@ export const PHONE_MODELS: Record<string, string[]> = {
     'Realme Narzo 30',
     'Other',
   ],
-  OnePlus: [
+ OnePlus: [
     'OnePlus 15',
     'OnePlus 13R',
     'OnePlus 13',
@@ -2224,7 +2301,7 @@ export const PHONE_MODELS: Record<string, string[]> = {
     'Zenfone Max M1',
     'Other',
   ],
-  Lenovo: [
+ Lenovo: [
     'Legion Phone Duel 2',
     'Legion Phone Duel',
     'Legion Y90',
@@ -2622,9 +2699,89 @@ export const WATCH_MODELS: Record<string, string[]> = {
     'Galaxy Fit3',
     'Other',
   ],
+  Huawei: [
+    'Watch GT 5 Pro',
+    'Watch GT 5',
+    'Watch GT 4',
+    'Watch GT 3 Pro',
+    'Watch GT 3',
+    'Watch GT 2 Pro',
+    'Watch Fit 3',
+    'Watch Fit 2',
+    'Watch D2',
+    'Watch Ultimate',
+    'Watch 4 Pro',
+    'Watch 3',
+    'Band 9',
+    'Band 8',
+    'Band 7',
+    'Other',
+  ],
+  Xiaomi: [
+    'Watch S4',
+    'Watch S3',
+    'Watch S1 Pro',
+    'Watch 2 Pro',
+    'Mi Watch',
+    'Smart Band 9',
+    'Smart Band 8',
+    'Mi Band 7',
+    'Mi Band 6',
+    'Mi Band 5',
+    'Other',
+  ],
+  Amazfit: [
+    'Balance',
+    'Active',
+    'GTR 4',
+    'GTR 3 Pro',
+    'GTS 4',
+    'GTS 4 Mini',
+    'Bip 5',
+    'Bip 3',
+    'T-Rex 3',
+    'T-Rex 2',
+    'Cheetah',
+    'Falcon',
+    'Other',
+  ],
+  Garmin: [
+    'Fenix 8',
+    'Fenix 7',
+    'Forerunner 965',
+    'Forerunner 265',
+    'Forerunner 165',
+    'Venu 3',
+    'Vivoactive 5',
+    'Instinct 3',
+    'Lily 2',
+    'Vivosmart 5',
+    'Other',
+  ],
+  Fitbit: [
+    'Charge 6',
+    'Versa 4',
+    'Sense 2',
+    'Inspire 3',
+    'Other',
+  ],
+  Honor: [
+    'Watch 4 Pro',
+    'Watch GS 3',
+    'Watch GS Pro',
+    'Band 9',
+    'Band 7',
+    'Other',
+  ],
+  Redmi: [
+    'Watch 5',
+    'Watch 4',
+    'Watch 3 Active',
+    'Smart Band 2',
+    'Other',
+  ],
   Other: ['Other'],
 };
-
 // TV "model" = screen size (works for every brand)
 export const TV_SIZES = [
   '24 inch',
@@ -3096,8 +3253,7 @@ export const CAR_MODELS: Record<string, string[]> = {
   ],
   Other: ['Other'],
 };
-
-export const MOTORCYCLE_MODELS: Record<string, string[]> = {
+ export const MOTORCYCLE_MODELS: Record<string, string[]> = {
   Bajaj: [
     'Boxer BM 100',
     'Boxer BM 150',
@@ -3179,6 +3335,43 @@ export const MOTORCYCLE_MODELS: Record<string, string[]> = {
     'R 1250 GS',
     'G 310 R',
     'S 1000 RR',
+    'Other',
+  ],
+  Other: ['Other'],
+};
+
+export const DRONE_MODELS: Record<string, string[]> = {
+  DJI: [
+    'Mini 4 Pro',
+    'Mini 3 Pro',
+    'Mini 3',
+    'Mini 2 SE',
+    'Mini 2',
+    'Mini SE',
+    'Air 3',
+    'Air 2S',
+    'Mavic 3 Pro',
+    'Mavic 3',
+    'Mavic Air 2',
+    'Mavic 2 Pro',
+    'Mavic 2 Zoom',
+    'Mavic Pro',
+    'Phantom 4 Pro',
+    'Phantom 4',
+    'Avata 2',
+    'Avata',
+    'FPV',
+    'Neo',
+    'Flip',
+    'Matrice 30',
+    'Agras T40',
+    'Other',
+  ],
+  Autel: [
+    'EVO Nano+',
+    'EVO Lite+',
+    'EVO II Pro',
+    'EVO II',
     'Other',
   ],
   Other: ['Other'],
@@ -3354,7 +3547,7 @@ export function subcategoryImage(
   return SUB_IMAGES.has(slug)
     ? `/categories/sub/${slug}.jpg`
     : null;
-}
+   }
 
 
 // ---------- Helpers ----------
@@ -3384,9 +3577,11 @@ export function getModels(
       return CAR_MODELS[brand] ?? ['Other'];
     case 'Motorcycles':
       return MOTORCYCLE_MODELS[brand] ?? ['Other'];
+    case 'Drones':
+      return DRONE_MODELS[brand] ?? ['Other'];
     case 'TV':
       return TV_SIZES;
-    case 'Freezer':
+    case 'Refrigerators & Freezers':
       return FREEZER_TYPES;
     default:
       return [];
@@ -3398,6 +3593,4 @@ export function getOtherBrands(
   subcategory: string,
 ): string[] {
   return OTHER_BRANDS[subcategory] ?? [];
-  }
-      
-  
+}
