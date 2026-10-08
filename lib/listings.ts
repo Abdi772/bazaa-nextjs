@@ -4,8 +4,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 // Public columns only. Phone and email are NOT here on purpose.
 const PUBLIC_COLUMNS =
-  'id, title, price, category, subcategory, brand, model, condition, region, location, description, specs, image_url, image_urls, user_id, created_at, status';
-
+  'id, title, price, category, subcategory, brand, model, year, trim, model_number, condition, region, location, description, specs, image_url, image_urls, user_id, created_at, status';
 // Server-side client: every query below runs on Vercel's server, not in
 // the visitor's browser. The database does the filtering (WHERE clauses),
 // so only matching rows are ever sent over the network.
@@ -21,6 +20,10 @@ export type Listing = {
   subcategory: string | null;
   brand: string | null;
   model: string | null;
+ model: string | null;
+  year?: number | null;
+  trim?: string | null;
+  model_number?: string | null;
   condition: string | null;
   region: string | null;
   location: string;
