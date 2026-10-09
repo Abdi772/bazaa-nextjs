@@ -42,6 +42,10 @@ export default function EditPage() {
   const [model, setModel] = useState('');
   const [year, setYear] = useState('');
   const [trim, setTrim] = useState('');
+  const [bedrooms, setBedrooms] = useState('');
+  const [bathrooms, setBathrooms] = useState('');
+  const [sizeSqm, setSizeSqm] = useState('');
+  const [furnished, setFurnished] = useState('');
   const [customModel, setCustomModel] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [modelSearch, setModelSearch] = useState('');
@@ -104,6 +108,10 @@ export default function EditPage() {
       setYear(listing.year ? String(listing.year) : '');
       setTrim(listing.trim ?? '');
       setModelNumber(listing.model_number ?? '');
+      setBedrooms(listing.bedrooms != null ? String(listing.bedrooms) : '');
+      setBathrooms(listing.bathrooms != null ? String(listing.bathrooms) : '');
+      setSizeSqm(listing.size_sqm != null ? String(listing.size_sqm) : '');
+      setFurnished(listing.furnished ?? '');
       setCondition(listing.condition ?? CONDITIONS[0]);
       setRegion(listing.region ?? ETHIOPIA_REGIONS[0]);
       setLocation(listing.location ?? '');
@@ -173,6 +181,14 @@ export default function EditPage() {
     'Three-Wheelers',
   ].includes(subcategory);
 
+  // Property fields
+  const isHome =
+    subcategory === 'For Rent' || subcategory === 'For Sale';
+  const showSize =
+    isHome ||
+    subcategory === 'Land' ||
+    subcategory === 'Commercial';
+
   const yearOptions = Array.from(
     { length: new Date().getFullYear() + 1 - 1979 },
     (_, i) => String(new Date().getFullYear() + 1 - i),
@@ -237,6 +253,10 @@ export default function EditPage() {
 
   function onSubcategoryChange(value: string) {
     setSubcategory(value);
+    setBedrooms('');
+    setBathrooms('');
+    setSizeSqm('');
+    setFurnished('');
     setBrand('');
     setModel('');
     setCustomModel('');
@@ -400,6 +420,10 @@ export default function EditPage() {
             (model !== 'Other' || !!customModel.trim()),
           year: isVehicle && year ? Number(year) : null,
           trim: isVehicle && trim.trim() ? trim.trim() : null,
+          bedrooms: isHome && bedrooms ? Number(bedrooms) : null,
+          bathrooms: isHome && bathrooms ? Number(bathrooms) : null,
+          size_sqm: showSize && sizeSqm ? Number(sizeSqm) : null,
+          furnished: isHome && furnished ? furnished : null,
           condition,
           region,
           location: trimmedLocation,
@@ -646,7 +670,7 @@ export default function EditPage() {
                     {name}
                   </option>
                 ))}
-              </select>
+                   </select>
             </div>
 
             {subcategories.length > 0 && (
@@ -677,7 +701,7 @@ export default function EditPage() {
                 <label htmlFor="edit-brand" className={labelClass}>
                   {brandLabel}
                 </label>
-    <select
+                <select
                   id="edit-brand"
                   className={inputClass}
                   required
@@ -695,7 +719,7 @@ export default function EditPage() {
               </div>
             )}
 
-            {subcategory && (
+            {subcategory && category !== 'Property' && (
               <div>
                 <label htmlFor="edit-model" className={labelClass}>
                   {modelLabel}
@@ -790,6 +814,81 @@ export default function EditPage() {
                   placeholder="e.g. SM-A576B (optional)"
                   autoComplete="off"
                   disabled={busy}
+                />
+              </div>
+            )}
+
+            {isHome && (
+              <>
+                <div>
+                  <label htmlFor="edit-bedrooms" className={labelClass}>
+                    Bedrooms
+                  </label>
+                  <input
+                    id="edit-bedrooms"
+                    className={inputClass}
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    value={bedrooms}
+                    onChange={(e) => setBedrooms(e.target.value)}
+                    disabled={busy}
+                    placeholder="e.g. 3 (optional)"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="edit-bathrooms" className={labelClass}>
+                    Bathrooms
+                  </label>
+                  <input
+                    id="edit-bathrooms"
+                    className={inputClass}
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    value={bathrooms}
+                    onChange={(e) => setBathrooms(e.target.value)}
+                    disabled={busy}
+                    placeholder="e.g. 2 (optional)"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="edit-furnished" className={labelClass}>
+                    Furnished
+                  </label>
+                  <select
+                    id="edit-furnished"
+                    className={inputClass}
+                    value={furnished}
+                    onChange={(e) => setFurnished(e.target.value)}
+                    disabled={busy}
+                  >
+                    <option value="">Select (optional)</option>
+                    <option value="Furnished">Furnished</option>
+                    <option value="Semi-furnished">Semi-furnished</option>
+                    <option value="Unfurnished">Unfurnished</option>
+                  </select>
+                </div>
+              </>
+            )}
+
+            {showSize && (
+              <div>
+                <label htmlFor="edit-size" className={labelClass}>
+                  Size (m²)
+                </label>
+                <input
+                  id="edit-size"
+                  className={inputClass}
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  value={sizeSqm}
+                  onChange={(e) => setSizeSqm(e.target.value)}
+                    disabled={busy}
+                  placeholder="e.g. 120 (optional)"
                 />
               </div>
             )}
@@ -992,4 +1091,5 @@ export default function EditPage() {
 }
 
 
-               
+
+                             
