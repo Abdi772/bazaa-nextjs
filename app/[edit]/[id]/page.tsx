@@ -197,7 +197,9 @@ export default function EditPage() {
 
   // Model number is shown for Electronics (phones, laptops, appliances...)
   const showModelNumber =
-    category === 'Electronics' && modelLabel === 'Model';
+    !!subcategory &&
+    category === 'Electronics' &&
+    modelLabel === 'Model';
 
   const modelList = modelsFor(subcategory, brand);
 
@@ -675,8 +677,8 @@ export default function EditPage() {
                 <label htmlFor="edit-brand" className={labelClass}>
                   {brandLabel}
                 </label>
-                <select
-    id="edit-brand"
+    <select
+                  id="edit-brand"
                   className={inputClass}
                   required
                   value={brand}
@@ -990,5 +992,4 @@ export default function EditPage() {
 }
 
 
-
-                                                  
+               
