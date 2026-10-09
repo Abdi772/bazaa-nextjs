@@ -670,7 +670,7 @@ export default function EditPage() {
                     {name}
                   </option>
                 ))}
-                   </select>
+        </select>
             </div>
 
             {subcategories.length > 0 && (
@@ -1092,4 +1092,4 @@ export default function EditPage() {
 
 
 
-                             
+          
