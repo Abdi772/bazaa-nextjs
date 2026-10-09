@@ -495,49 +495,6 @@ export default function PostPage() {
           <div className="space-y-4">
             <div>
               <label
-                htmlFor="listing-title"
-                className={labelClass}
-              >
-                Title
-              </label>
-
-              <input
-                id="listing-title"
-                className={inputClass}
-                required
-                value={title}
-                onChange={(e) =>
-                  setTitle(e.target.value)
-                }
-                placeholder="e.g. iPhone 13 Pro, 128GB"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="listing-price"
-                className={labelClass}
-              >
-                Price (ETB)
-              </label>
-
-              <input
-                id="listing-price"
-                className={inputClass}
-                type="number"
-                inputMode="numeric"
-                min="0"
-                required
-                value={price}
-                onChange={(e) =>
-                  setPrice(e.target.value)
-                }
-                placeholder="e.g. 45000"
-              />
-            </div>
-
-            <div>
-              <label
                 htmlFor="listing-category"
                 className={labelClass}
               >
@@ -694,7 +651,7 @@ export default function PostPage() {
                           onChange={(e) => onCustomModelChange(e.target.value)}
                           placeholder="Type it here"
                         />
-                                       </div>
+                      </div>
                     )}
                   </>
                 ) : (
@@ -731,7 +688,7 @@ export default function PostPage() {
             {isHome && (
               <>
                 <div>
-                  <label htmlFor="listing-bedrooms" className={labelClass}>
+                                     <label htmlFor="listing-bedrooms" className={labelClass}>
                     Bedrooms
                   </label>
                   <input
@@ -840,6 +797,49 @@ export default function PostPage() {
 
             <div>
               <label
+                htmlFor="listing-title"
+                className={labelClass}
+              >
+                Title
+              </label>
+
+              <input
+                id="listing-title"
+                className={inputClass}
+                required
+                value={title}
+                onChange={(e) =>
+                  setTitle(e.target.value)
+                }
+                placeholder="e.g. iPhone 13 Pro, 128GB"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="listing-price"
+                className={labelClass}
+              >
+                Price (ETB)
+              </label>
+
+              <input
+                id="listing-price"
+                className={inputClass}
+                type="number"
+                inputMode="numeric"
+                min="0"
+                required
+                value={price}
+                onChange={(e) =>
+                  setPrice(e.target.value)
+                }
+                placeholder="e.g. 45000"
+              />
+            </div>
+
+            <div>
+              <label
                 htmlFor="listing-condition"
                 className={labelClass}
               >
@@ -865,6 +865,36 @@ export default function PostPage() {
             </div>
           </div>
         </section>
+
+        <section className="bazaa-card p-4 sm:p-6">
+          <div className="mb-4 sm:mb-5">
+            <h2 className="font-serif text-xl font-bold text-ink">
+              Description
+            </h2>
+
+            <p className="mt-1 text-sm leading-5 text-muted">
+              Give buyers the important details about
+              the item.
+            </p>
+          </div>
+
+          <textarea
+            id="listing-description"
+            className={`${inputClass} min-h-[140px] resize-y`}
+            rows={5}
+            required
+            value={description}
+            onChange={(e) =>
+              setDescription(e.target.value)
+            }
+            placeholder="Condition, details, why you're selling..."
+          />
+
+          {hasSpecs(subcategory) && (
+            <SpecsEditor rows={specs} onChange={setSpecs} />
+          )}
+        </section>
+
                <section className="bazaa-card p-4 sm:p-6">
           <div className="mb-4 sm:mb-5">
             <h2 className="font-serif text-xl font-bold text-ink">
@@ -922,35 +952,6 @@ export default function PostPage() {
               />
             </div>
           </div>
-        </section>
-
-        <section className="bazaa-card p-4 sm:p-6">
-          <div className="mb-4 sm:mb-5">
-            <h2 className="font-serif text-xl font-bold text-ink">
-              Description
-            </h2>
-
-            <p className="mt-1 text-sm leading-5 text-muted">
-              Give buyers the important details about
-              the item.
-            </p>
-          </div>
-
-          <textarea
-            id="listing-description"
-            className={`${inputClass} min-h-[140px] resize-y`}
-            rows={5}
-            required
-            value={description}
-            onChange={(e) =>
-              setDescription(e.target.value)
-            }
-            placeholder="Condition, details, why you're selling..."
-          />
-
-          {hasSpecs(subcategory) && (
-            <SpecsEditor rows={specs} onChange={setSpecs} />
-          )}
         </section>
 
         <section className="bazaa-card p-4 sm:p-6">
@@ -1047,4 +1048,4 @@ export default function PostPage() {
   );
                 }
 
-               
+             
