@@ -151,7 +151,9 @@ export default function PostPage() {
   }
 
   // Vehicles also get Year and Trim
-  const isVehicle = [
+  const isVehicle =
+    category === 'Vehicles' ||
+    [
     'Cars',
     'Pickup Trucks',
     'Vans & Minivans',
@@ -161,6 +163,10 @@ export default function PostPage() {
     'Motorcycles',
     'Three-Wheelers',
   ].includes(subcategory);
+
+  // Model number is shown for Electronics (phones, laptops, appliances...)
+  const showModelNumber =
+    category === 'Electronics' && modelLabel === 'Model';
 
   const yearOptions = Array.from(
     { length: new Date().getFullYear() + 1 - 1979 },
@@ -306,7 +312,7 @@ export default function PostPage() {
           brand: brand || null,
           model: finalModel || null,
           model_number:
-            model === 'Other' && modelNumber.trim()
+            showModelNumber && modelNumber.trim()
               ? modelNumber.trim()
               : null,
           model_custom:
@@ -666,19 +672,6 @@ export default function PostPage() {
                           onChange={(e) => onCustomModelChange(e.target.value)}
                           placeholder="Type it here"
                         />
-                        {modelLabel === 'Model' && (
-                          <>
-                            <label className={`${labelClass} mt-3`}>
-                              Model number (optional)
-                            </label>
-                            <input
-                              className={inputClass}
-                              value={modelNumber}
-                              onChange={(e) => setModelNumber(e.target.value)}
-                              placeholder="e.g. SM-A576B"
-                            />
-                          </>
-                        )}
                       </div>
                     )}
                   </>
@@ -692,6 +685,25 @@ export default function PostPage() {
                   />
                 )}
                </div>
+            )}
+
+            {showModelNumber && (
+              <div>
+                <label
+                  htmlFor="listing-model-number"
+                  className={labelClass}
+                >
+                  Model number
+                </label>
+                <input
+                  id="listing-model-number"
+                  className={inputClass}
+                  value={modelNumber}
+                  onChange={(e) => setModelNumber(e.target.value)}
+                  placeholder="e.g. SM-A576B (optional)"
+                  autoComplete="off"
+                />
+              </div>
             )}
 
             {isVehicle && (
@@ -941,4 +953,5 @@ export default function PostPage() {
     </div>
   );
                 }
-           
+
+             
