@@ -44,6 +44,10 @@ export default function PostPage() {
   const [autoTitle, setAutoTitle] = useState('');
   const [year, setYear] = useState('');
   const [trim, setTrim] = useState('');
+  const [bedrooms, setBedrooms] = useState('');
+  const [bathrooms, setBathrooms] = useState('');
+  const [sizeSqm, setSizeSqm] = useState('');
+  const [furnished, setFurnished] = useState('');
   const [modelSearch, setModelSearch] = useState('');
   const [condition, setCondition] = useState(
     CONDITIONS[0],
@@ -166,7 +170,17 @@ export default function PostPage() {
 
   // Model number is shown for Electronics (phones, laptops, appliances...)
   const showModelNumber =
-    category === 'Electronics' && modelLabel === 'Model';
+    !!subcategory &&
+    category === 'Electronics' &&
+    modelLabel === 'Model';
+
+  // Property fields
+  const isHome =
+    subcategory === 'For Rent' || subcategory === 'For Sale';
+  const showSize =
+    isHome ||
+    subcategory === 'Land' ||
+    subcategory === 'Commercial';
 
   const yearOptions = Array.from(
     { length: new Date().getFullYear() + 1 - 1979 },
@@ -219,6 +233,10 @@ export default function PostPage() {
 
   function onSubcategoryChange(value: string) {
     setSubcategory(value);
+    setBedrooms('');
+    setBathrooms('');
+    setSizeSqm('');
+    setFurnished('');
     setYear('');
     setTrim('');
     setBrand('');
@@ -321,6 +339,10 @@ export default function PostPage() {
             !!customModel.trim(),
           year: isVehicle && year ? Number(year) : null,
           trim: isVehicle && trim.trim() ? trim.trim() : null,
+          bedrooms: isHome && bedrooms ? Number(bedrooms) : null,
+          bathrooms: isHome && bathrooms ? Number(bathrooms) : null,
+          size_sqm: showSize && sizeSqm ? Number(sizeSqm) : null,
+          furnished: isHome && furnished ? furnished : null,
           condition,
           region,
           location: location.trim(),
@@ -612,7 +634,7 @@ export default function PostPage() {
               </div>
             )}
 
-            {subcategory && (
+            {subcategory && category !== 'Property' && (
               <div>
                 <label
                   htmlFor="listing-model"
@@ -672,7 +694,7 @@ export default function PostPage() {
                           onChange={(e) => onCustomModelChange(e.target.value)}
                           placeholder="Type it here"
                         />
-                      </div>
+                                       </div>
                     )}
                   </>
                 ) : (
@@ -702,6 +724,77 @@ export default function PostPage() {
                   onChange={(e) => setModelNumber(e.target.value)}
                   placeholder="e.g. SM-A576B (optional)"
                   autoComplete="off"
+                />
+              </div>
+            )}
+
+            {isHome && (
+              <>
+                <div>
+                  <label htmlFor="listing-bedrooms" className={labelClass}>
+                    Bedrooms
+                  </label>
+                  <input
+                    id="listing-bedrooms"
+                    className={inputClass}
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    value={bedrooms}
+                    onChange={(e) => setBedrooms(e.target.value)}
+                    placeholder="e.g. 3 (optional)"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="listing-bathrooms" className={labelClass}>
+                    Bathrooms
+                  </label>
+                  <input
+                    id="listing-bathrooms"
+                    className={inputClass}
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    value={bathrooms}
+                    onChange={(e) => setBathrooms(e.target.value)}
+                    placeholder="e.g. 2 (optional)"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="listing-furnished" className={labelClass}>
+                    Furnished
+                  </label>
+                  <select
+                    id="listing-furnished"
+                    className={inputClass}
+                    value={furnished}
+                    onChange={(e) => setFurnished(e.target.value)}
+                  >
+                    <option value="">Select (optional)</option>
+                    <option value="Furnished">Furnished</option>
+                    <option value="Semi-furnished">Semi-furnished</option>
+                    <option value="Unfurnished">Unfurnished</option>
+                  </select>
+                </div>
+              </>
+            )}
+
+            {showSize && (
+              <div>
+                <label htmlFor="listing-size" className={labelClass}>
+                  Size (m²)
+                </label>
+                <input
+                  id="listing-size"
+                  className={inputClass}
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  value={sizeSqm}
+                  onChange={(e) => setSizeSqm(e.target.value)}
+                  placeholder="e.g. 120 (optional)"
                 />
               </div>
             )}
@@ -953,4 +1046,5 @@ export default function PostPage() {
     </div>
   );
                 }
-           
+
+               
