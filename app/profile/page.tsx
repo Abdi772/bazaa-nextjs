@@ -8,7 +8,7 @@ import { supabase } from '../../lib/supabaseClient';
 import { useLanguage } from '../LanguageProvider';
 
 const tile =
-  'flex min-h-[64px] items-center gap-3 border-b-[2px] border-line bg-white px-4 py-4 text-[15px] font-bold text-ink transition-colors hover:bg-amberSoft';
+  'flex min-h-[64px] items-center gap-3 border-b border-line bg-surface px-4 py-4 text-[15px] font-bold text-fg transition-colors hover:bg-amberSoft';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -51,7 +51,7 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-xl py-10 text-center">
-        <h1 className="mb-2 text-xl font-bold text-ink">
+        <h1 className="mb-2 text-xl font-bold text-fg">
           {t('yourProfile')}
         </h1>
 
@@ -67,13 +67,13 @@ export default function ProfilePage() {
   return (
     <div className="mx-auto max-w-xl">
       {/* Profile header */}
-      <div className="mb-6 flex items-center gap-4 border-b-[2px] border-line bg-white px-4 py-4">
+      <div className="mb-6 flex items-center gap-4 border-b border-line bg-surface px-4 py-4">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-amber text-2xl font-bold text-ink ring-2 ring-amberSoft">
           {name[0]?.toUpperCase()}
         </div>
 
         <div className="min-w-0">
-          <div className="truncate text-lg font-bold text-ink">
+          <div className="truncate text-lg font-bold text-fg">
             {name}
           </div>
 
@@ -84,7 +84,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Profile menu */}
-      <div className="overflow-hidden border-y-[2px] border-line bg-white">
+      <div className="overflow-hidden border-y border-line bg-surface">
         <Link href="/my-listings" className={tile}>
           <span aria-hidden="true">📋</span>
           <span>{t('myAdverts')}</span>
@@ -122,7 +122,7 @@ export default function ProfilePage() {
       <button
         type="button"
         onClick={logout}
-        className="mt-5 w-full rounded-xl border-[2px] border-red-300 bg-white py-3.5 font-bold text-red-700 transition-colors hover:bg-red-50"
+        className="mt-5 w-full rounded-xl border border-red-300 bg-surface py-3.5 font-bold text-red-700 transition-colors hover:bg-red-50"
       >
         {t('logout')}
       </button>
