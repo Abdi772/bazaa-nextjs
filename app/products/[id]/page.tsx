@@ -111,6 +111,38 @@ export default async function ProductPage({
       }
     ).user_id ?? null;
 
+  // Extra fields (read safely, so this works even if the
+  // Listing type does not list them yet)
+  const extra = listing as unknown as {
+    model?: string | null;
+    year?: number | null;
+    trim?: string | null;
+    model_number?: string | null;
+    bedrooms?: number | null;
+    bathrooms?: number | null;
+    size_sqm?: number | null;
+    furnished?: string | null;
+  };
+
+  const sub = listing.subcategory || '';
+
+  const brandLabel = [
+    'Accessories',
+    'Phone Accessories',
+    'Audio',
+    'Networking',
+    'Security & CCTV',
+  ].includes(sub)
+    ? 'Type'
+    : 'Brand';
+
+  const modelLabel =
+    sub === 'TV'
+      ? 'Size'
+      : sub === 'Refrigerators & Freezers'
+        ? 'Type'
+        : 'Model';
+
   return (
     <div className="mx-auto w-full max-w-3xl">
       {/* Top navigation / actions */}
@@ -202,11 +234,107 @@ export default async function ProductPage({
             {listing.brand && (
               <div className="rounded-bazaa bg-paper p-3">
                 <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
-                  Brand
+                  {brandLabel}
                 </div>
 
                 <div className="mt-1 truncate text-sm font-bold text-ink">
                   {listing.brand}
+                </div>
+              </div>
+            )}
+
+            {extra.model && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  {modelLabel}
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {extra.model}
+                </div>
+              </div>
+            )}
+
+            {extra.model_number && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  Model number
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {extra.model_number}
+                </div>
+              </div>
+            )}
+
+            {extra.year && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  Year
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {extra.year}
+                </div>
+              </div>
+            )}
+
+            {extra.trim && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  Trim
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {extra.trim}
+                </div>
+              </div>
+            )}
+
+            {extra.bedrooms != null && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  Bedrooms
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {extra.bedrooms}
+                </div>
+              </div>
+            )}
+
+            {extra.bathrooms != null && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  Bathrooms
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {extra.bathrooms}
+                </div>
+              </div>
+            )}
+
+            {extra.size_sqm != null && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  Size
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {extra.size_sqm} m²
+                </div>
+              </div>
+            )}
+
+            {extra.furnished && (
+              <div className="rounded-bazaa bg-paper p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-muted">
+                  Furnished
+                </div>
+
+                <div className="mt-1 truncate text-sm font-bold text-ink">
+                  {extra.furnished}
                 </div>
               </div>
             )}
@@ -506,9 +634,9 @@ export default async function ProductPage({
                 </div>
               </Link>
             ))}
-          </div>
+          </di>
         </section>
       )}
     </div>
   );
-       }
+}
