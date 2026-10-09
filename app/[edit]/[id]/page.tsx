@@ -160,7 +160,9 @@ export default function EditPage() {
       : baseBrands;
 
   // Vehicles also get Year and Trim
-  const isVehicle = [
+  const isVehicle =
+    category === 'Vehicles' ||
+    [
     'Cars',
     'Pickup Trucks',
     'Vans & Minivans',
@@ -192,6 +194,10 @@ export default function EditPage() {
       : subcategory === 'Refrigerators & Freezers'
         ? 'Type'
         : 'Model';
+
+  // Model number is shown for Electronics (phones, laptops, appliances...)
+  const showModelNumber =
+    category === 'Electronics' && modelLabel === 'Model';
 
   const modelList = modelsFor(subcategory, brand);
 
@@ -386,7 +392,7 @@ export default function EditPage() {
               ? customModel.trim()
               : model.trim()) || null,
           model_number:
-            (showManual ? modelNumber.trim() : '') || null,
+            (showModelNumber ? modelNumber.trim() : '') || null,
           model_custom:
             showManual &&
             (model !== 'Other' || !!customModel.trim()),
@@ -670,7 +676,7 @@ export default function EditPage() {
                   {brandLabel}
                 </label>
                 <select
-                  id="edit-brand"
+    id="edit-brand"
                   className={inputClass}
                   required
                   value={brand}
@@ -732,7 +738,7 @@ export default function EditPage() {
                       ))}
                     </select>
 
-                    {showManual && (
+                    {showManual && model === 'Other' && (
                       <div className="mt-2 rounded-bazaa border border-line bg-surfaceSoft p-3">
                         <p className="mb-2 text-sm font-semibold text-ink">
                           Can't find your {modelLabel.toLowerCase()}? Enter it here.
@@ -752,20 +758,6 @@ export default function EditPage() {
                         />
                           </>
                         )}
-                        {modelLabel === 'Model' && (
-                          <>
-                            <label className={`${labelClass} mt-3`}>
-                              Model number (optional)
-                            </label>
-                            <input
-                              className={inputClass}
-                              value={modelNumber}
-                              onChange={(e) => setModelNumber(e.target.value)}
-                              placeholder="e.g. SM-A576B"
-                        disabled={busy}
-                            />
-                          </>
-                        )}
                       </div>
                     )}
                   </>
@@ -780,6 +772,23 @@ export default function EditPage() {
                     disabled={busy}
                   />
                 )}
+              </div>
+            )}
+
+            {showModelNumber && (
+              <div>
+                <label htmlFor="edit-model-number" className={labelClass}>
+                  Model number
+                </label>
+                <input
+                  id="edit-model-number"
+                  className={inputClass}
+                  value={modelNumber}
+                  onChange={(e) => setModelNumber(e.target.value)}
+                  placeholder="e.g. SM-A576B (optional)"
+                  autoComplete="off"
+                  disabled={busy}
+                />
               </div>
             )}
 
@@ -981,4 +990,5 @@ export default function EditPage() {
 }
 
 
-                         
+
+                                                  
