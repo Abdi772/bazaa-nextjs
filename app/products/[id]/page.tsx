@@ -419,6 +419,42 @@ export default async function ProductPage({
         </div>
       </section>
 
+      {/* Specifications */}
+      {Array.isArray(listing.specs) &&
+        listing.specs.filter((row) => row?.label && row?.value).length >
+          0 && (
+          <section className="mb-4 rounded-card border-[2px] border-line bg-white p-5 shadow-card sm:p-6">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amberSoft text-lg">
+                📋
+              </div>
+
+              <h2 className="font-serif text-xl font-bold text-ink">
+                Specifications
+              </h2>
+            </div>
+
+            <div className="overflow-hidden rounded-bazaa border border-line">
+              {listing.specs
+                .filter((row) => row?.label && row?.value)
+                .map((row, i) => (
+                  <div
+                    key={`${row.label}-${i}`}
+                    className="flex items-start justify-between gap-4 border-b border-line bg-paper px-4 py-3 text-sm last:border-b-0"
+                  >
+                    <span className="font-semibold text-muted">
+                      {row.label}
+                    </span>
+
+                    <span className="text-right font-bold text-ink">
+                      {row.value}
+                    </span>
+                  </div>
+                ))}
+            </div>
+          </section>
+        )}
+
       {/* Seller */}
       {sellerId && (
         <Link
@@ -600,7 +636,7 @@ export default async function ProductPage({
               <Link
                 key={s.id}
                 href={`/products/${listingSlug(s)}`}
-                className="group overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card transition-all hover:-translate-y-0.5 hover:shadow-soft"
+                                className="group overflow-hidden rounded-card border-[2px] border-line bg-white shadow-card transition-all hover:-translate-y-0.5 hover:shadow-soft"
               >
                 <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b-[2px] border-line bg-paper">
                   {s.image_url ? (
