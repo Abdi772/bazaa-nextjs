@@ -634,7 +634,7 @@ export default async function ProductPage({
                 </div>
               </Link>
             ))}
-          </di>
+          </div>
         </section>
       )}
     </div>
