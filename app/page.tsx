@@ -24,6 +24,7 @@ import LanguageText from './LanguageText';
 import SearchInput from './SearchInput';
 import FavoriteButton from './FavoriteButton';
 import ModelRow from './ModelRow';
+import CategoryTiles from './CategoryTiles';
 
 export const revalidate = 60;
 
@@ -408,42 +409,15 @@ export default async function HomePage({
               </p>
             </div>
 
-            <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mb-10 md:grid-cols-6">
-              {Object.entries(
-                CATEGORY_CONFIG,
-              ).map(([name]) => (
-                <Link
-                  key={name}
-                  href={buildUrl(name)}
-                  className="group min-w-0 overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
-                >
-                  <div className="relative aspect-square overflow-hidden bg-panel">
-                    <Image
-                      src={`/categories/${name.toLowerCase()}.jpg`}
-                      alt={name}
-                      fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-
-                  <div className="p-2.5 sm:p-3">
-                    <div className="text-[13px] font-semibold leading-5 bazaa-text sm:text-sm">
-                      <LanguageText
-                        k={categoryTranslationKey(
-                          name,
-                        )}
-                      />
-                    </div>
-
-                    <div className="mt-0.5 text-[11px] text-muted sm:text-xs">
-                      {counts[name] || 0}{' '}
-                      <LanguageText k="listings" />
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <CategoryTiles
+              items={Object.keys(CATEGORY_CONFIG).map((name) => ({
+                name,
+                href: buildUrl(name),
+                count: counts[name] || 0,
+                labelKey: categoryTranslationKey(name),
+                icon: (CATEGORY_CONFIG[name] as { icon?: string })?.icon,
+              }))}
+            />
           </>
         )}
 
@@ -732,7 +706,7 @@ export default async function HomePage({
                         src={listing.image_url}
                         alt={listing.title}
                         fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                         sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
@@ -803,4 +777,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-      }
+}
