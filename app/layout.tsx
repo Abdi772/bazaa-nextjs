@@ -7,6 +7,7 @@ import AuthButton from './AuthButton';
 import BottomNav from './BottomNav';
 import BackButton from './BackButton';
 import ThemeButton from './ThemeButton';
+import TextSize from './TextSize';
 import SiteFooter from './SiteFooter';
 import { LanguageProvider } from './LanguageProvider';
 import { SITE_URL } from '@/lib/siteUrl';
@@ -23,7 +24,7 @@ const body = Plus_Jakarta_Sans({
   variable: '--font-body',
 });
 
-const themeScript = `(function(){try{var t=localStorage.getItem('bazaa-theme');if(t!=='dark'&&t!=='light'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.bazaaTheme=t;}catch(e){}})();`;
+const themeScript = `(function(){try{var t=localStorage.getItem('bazaa-theme');if(t!=='dark'&&t!=='light'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.bazaaTheme=t;var z=[87.5,100,112.5,125,137.5][Number(localStorage.getItem('bazaa-text-size'))];if(z){document.documentElement.style.fontSize=z+'%';}}catch(e){}})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -64,6 +65,7 @@ export default function RootLayout({
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+                <TextSize />
                 <ThemeButton />
                 <AuthButton />
               </div>
