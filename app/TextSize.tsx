@@ -1,1 +1,63 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+// Page size steps, as a percentage of the normal text size.
+// Tailwind sizes are rem-based, so the whole site scales together.
+const SIZES = [87.5, 100, 112.5, 125, 137.5];
+const DEFAULT_INDEX = 1;
+const STORAGE_KEY = 'bazaa-text-size';
+
+function applySize(index: number) {
+  document.documentElement.style.fontSize = `${SIZES[index]}%`;
+}
+
+export default function TextSize() {
+  const [index, setIndex] = useState(DEFAULT_INDEX);
+
+  // Load the saved size when the page opens
+  useEffect(() => {
+    try {
+      const saved = Number(localStorage.getItem(STORAGE_KEY));
+
+      if (
+        Number.isInteger(saved) &&
+        saved >= 0 &&
+        saved < SIZES.length
+      ) {
+        setIndex(saved);
+        applySize(saved);
+      }
+    } catch {
+      // storage not available: keep the default size
+    }
+  }, []);
+
+  // Each tap makes the page one step bigger, then back to the smallest
+  function next() {
+    const nextIndex = (index + 1) % SIZES.length;
+
+    setIndex(nextIndex);
+    applySize(nextIndex);
+
+    try {
+      localStorage.setItem(STORAGE_KEY, String(nextIndex));
+    } catch {
+      // ignore
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={next}
+      aria-label={`Change text size (now ${SIZES[index]}%)`}
+      title="Text size"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-[1.5px] border-white/20 bg-white/5 font-serif font-bold leading-none text-paper transition-colors hover:bg-white/10"
+    >
+      <span className="text-[11px]">A</span>
+      <span className="text-[17px]">A</span>
+    </button>
+  );
+}
 
