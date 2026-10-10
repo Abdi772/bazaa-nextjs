@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+ /** @type {import('tailwindcss').Config} */
 
 /* Theme-aware colors read their RGB channels from CSS variables
    (defined in app/globals.css), so every utility such as bg-surface,
@@ -23,6 +23,7 @@ module.exports = {
         amberDeep: '#B96F16',// hover state for amber buttons
         green: '#2F7A4F',
         danger: '#B94A48',
+        whatsapp: '#15803D', // WhatsApp buttons (white text: 5:1 contrast)
 
         /* ---- Theme-aware colors ---- */
         fg: v('fg'),                 // main text
