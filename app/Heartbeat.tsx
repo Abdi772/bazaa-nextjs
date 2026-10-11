@@ -14,10 +14,9 @@ export default function Heartbeat() {
           supabase.from('profiles')
             .upsert({ id, name, last_seen_at: new Date().toISOString() });
       };
-      ping();
-      timer = setInterval(ping, 60_000);
-    });
-    return () => clearInterval(timer);
-  }, []);
-  return null;
-}
+      const ping = async () => {
+  if (document.visibilityState !== 'visible') return;
+  const { error } = await supabase.from('profiles')
+    .upsert({ id, name, last_seen_at: new Date().toISOString() });
+  if (error) alert('Heartbeat error: ' + error.message);
+};
