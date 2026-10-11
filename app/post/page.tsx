@@ -1,4 +1,4 @@
-  'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -7,6 +7,7 @@ import type { User } from '@supabase/supabase-js';
 import { modelsFor } from '../../lib/models';
 import { cleanSpecs, DEFAULT_PHONE_SPECS, hasSpecs, type SpecRow } from '../../lib/specs';
 import SpecsEditor from '../SpecsEditor';
+import DescriptionFields from '../DescriptionFields';
 import { supabase } from '../../lib/supabaseClient';
 import {
   CATEGORY_CONFIG,
@@ -57,7 +58,7 @@ export default function PostPage() {
     ETHIOPIA_REGIONS[0],
   );
   const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
+  const [descriptions, setDescriptions] = useState<string[]>(['']);
   const [specs, setSpecs] = useState<SpecRow[]>(DEFAULT_PHONE_SPECS);
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -159,15 +160,15 @@ export default function PostPage() {
   const isVehicle =
     category === 'Vehicles' ||
     [
-    'Cars',
-    'Pickup Trucks',
-    'Vans & Minivans',
-    'Minibuses',
-    'Buses',
-    'Trucks',
-    'Motorcycles',
-    'Three-Wheelers',
-  ].includes(subcategory);
+      'Cars',
+      'Pickup Trucks',
+      'Vans & Minivans',
+      'Minibuses',
+      'Buses',
+      'Trucks',
+      'Motorcycles',
+      'Three-Wheelers',
+    ].includes(subcategory);
 
   // Model number is shown for Electronics (phones, laptops, appliances...)
   const showModelNumber =
@@ -348,7 +349,10 @@ export default function PostPage() {
           condition,
           region,
           location: location.trim(),
-          description: description.trim(),
+          description: descriptions
+            .map((d) => d.trim())
+            .filter(Boolean)
+            .join('\n\n'),
           specs: hasSpecs(subcategory) ? cleanSpecs(specs) : null,
           email: email.trim(),
           phone: phone.trim(),
@@ -576,7 +580,7 @@ export default function PostPage() {
                     );
                     setModel('');
                     setCustomModel('');
-      setModelNumber('');
+                    setModelNumber('');
                     setModelSearch('');
                   }}
                 >
@@ -665,7 +669,7 @@ export default function PostPage() {
                     placeholder="Model name (optional)"
                   />
                 )}
-               </div>
+              </div>
             )}
 
             {showModelNumber && (
@@ -680,7 +684,7 @@ export default function PostPage() {
                   id="listing-model-number"
                   className={inputClass}
                   value={modelNumber}
-                  onChange={(e) => setModelNumber(e.target.value)}
+                   onChange={(e) => setModelNumber(e.target.value)}
                   placeholder="e.g. SM-A576B (optional)"
                   autoComplete="off"
                 />
@@ -688,9 +692,9 @@ export default function PostPage() {
             )}
 
             {isHome && (
-                          <>
+              <>
                 <div>
-                                     <label htmlFor="listing-bedrooms" className={labelClass}>
+                  <label htmlFor="listing-bedrooms" className={labelClass}>
                     Bedrooms
                   </label>
                   <input
@@ -769,7 +773,6 @@ export default function PostPage() {
                     className={inputClass}
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
-                    
                   >
                     <option value="">Select year (optional)</option>
                     {yearOptions.map((y) => (
@@ -791,7 +794,6 @@ export default function PostPage() {
                     onChange={(e) => setTrim(e.target.value)}
                     placeholder="e.g. XLi, GLS, 4x4 (optional)"
                     autoComplete="off"
-                    
                   />
                 </div>
               </>
@@ -892,20 +894,13 @@ export default function PostPage() {
 
             <p className="mt-1 text-sm leading-5 text-muted">
               Give buyers the important details about
-              the item.
+              the item. You can add up to 3 descriptions.
             </p>
           </div>
 
-          <textarea
-            id="listing-description"
-            className={`${inputClass} min-h-[140px] resize-y`}
-            rows={5}
-            required
-            value={description}
-            onChange={(e) =>
-              setDescription(e.target.value)
-            }
-            placeholder="Condition, details, why you're selling..."
+          <DescriptionFields
+            values={descriptions}
+            onChange={setDescriptions}
           />
 
           {hasSpecs(subcategory) && (
@@ -913,7 +908,7 @@ export default function PostPage() {
           )}
         </section>
 
-               <section className="bazaa-card p-4 sm:p-6">
+        <section className="bazaa-card p-4 sm:p-6">
           <div className="mb-4 sm:mb-5">
             <h2 className="font-serif text-xl font-bold text-fg">
               Location
@@ -1065,6 +1060,3 @@ export default function PostPage() {
     </div>
   );
                 }
-
-
-                           
