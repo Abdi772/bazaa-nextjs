@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
@@ -8,11 +8,24 @@ const ICON: Record<string, string> = {
   negative: '😞',
 };
 
+const MAX_MB = 5;
+
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  });
+}
+
 export default function SellerFeedback({ sellerId }: { sellerId: string }) {
   const [me, setMe] = useState<string | null>(null);
   const [items, setItems] = useState<any[]>([]);
   const [rating, setRating] = useState('positive');
   const [body, setBody] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
   const [replyFor, setReplyFor] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [error, setError] = useState('');
@@ -69,17 +82,66 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
     load();
   }, [load]);
 
-  const counts: Record<string, number> = { positive: 0, neutral: 0, negative: 0 };
+  const counts: Record<string, number> = {
+    positive: 0,
+    neutral: 0,
+    negative: 0,
+  };
   items.forEach((i) => counts[i.rating]++);
   const alreadyReviewed = items.some((i) => i.author_id === me);
 
-  async function submit() {
+  function pickFile(e: React.ChangeEvent<HTMLInputElement>) {
     setError('');
-    const { error } = await supabase
-      .from('feedback')
-      .insert({ seller_id: sellerId, author_id: me, rating, body });
-    if (error) return setError('Could not save feedback.');
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith('image/')) return setError('Please choose a photo.');
+    if (f.size > MAX_MB * 1024 * 1024)
+      return setError(`Photo must be under ${MAX_MB} MB.`);
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
+  }
+
+  function clearFile() {
+    setFile(null);
+    setPreview(null);
+  }
+
+  async function submit() {
+    if (!me || sending) return;
+    if (!body.trim() && !file) return setError('Write something or add a photo.');
+    setError('');
+    setSending(true);
+
+    let image_url: string | null = null;
+
+    if (file) {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${me}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from('feedback-images')
+        .upload(path, file);
+      if (upErr) {
+        setSending(false);
+        return setError('Photo upload failed: ' + upErr.message);
+      }
+      image_url = supabase.storage
+        .from('feedback-images')
+        .getPublicUrl(path).data.publicUrl;
+    }
+
+    const { error: insErr } = await supabase.from('feedback').insert({
+      seller_id: sellerId,
+      author_id: me,
+      rating,
+      body: body.trim() || null,
+      image_url,
+    });
+
+    setSending(false);
+    if (insErr) return setError('Could not save feedback: ' + insErr.message);
+
     setBody('');
+    clearFile();
     load();
   }
 
@@ -144,20 +206,55 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
               </button>
             ))}
           </div>
+
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder="Write your feedback..."
             className="w-full rounded-lg border border-line bg-transparent p-2 text-sm"
           />
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="button"
-            onClick={submit}
-            className="mt-2 rounded-lg bg-amber px-4 py-2 text-sm font-bold text-ink"
-          >
-            Submit
-          </button>
+
+          {preview && (
+            <div className="relative mt-2 inline-block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={preview}
+                alt="Preview"
+                className="max-h-40 rounded-lg border border-line"
+              />
+              <button
+                type="button"
+                onClick={clearFile}
+                aria-label="Remove photo"
+                className="absolute right-1 top-1 rounded-full bg-black/70 px-2 text-sm font-bold text-white"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          <div className="mt-2 flex items-center gap-3">
+            <label className="cursor-pointer rounded-lg border border-line px-3 py-2 text-sm font-bold text-fg">
+              📷 Add photo
+              <input
+                type="file"
+                accept="image/*"
+                onChange={pickFile}
+                className="hidden"
+              />
+            </label>
+
+            <button
+              type="button"
+              onClick={submit}
+              disabled={sending}
+              className="rounded-lg bg-amber px-4 py-2 text-sm font-bold text-ink disabled:opacity-60"
+            >
+              {sending ? 'Sending...' : 'Submit'}
+            </button>
+          </div>
+
+          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
       )}
 
@@ -165,51 +262,74 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
         <p className="text-sm text-muted">No feedback yet.</p>
       )}
 
-      {items.map((f) => (
-        <div key={f.id} className="mb-4 border-b border-line pb-3">
-          <div className="font-bold text-fg">
-            {ICON[f.rating]} {f.author}
-          </div>
-          {f.body && <p className="text-sm text-fg">{f.body}</p>}
-          <div className="mt-1 flex gap-4 text-xs font-semibold text-muted">
-            <span>{new Date(f.created_at).toLocaleDateString()}</span>
-            <button type="button" onClick={() => toggleLike(f)}>
-              👍 {f.likes.length}
-            </button>
-            {me && (
-              <button type="button" onClick={() => setReplyFor(f.id)}>
-                Reply
-              </button>
-            )}
-          </div>
-
-          {f.replies.map((r: any) => (
-            <div
-              key={r.id}
-              className="ml-6 mt-2 rounded-lg bg-amberSoft p-2 text-sm"
-            >
-              <b>{r.author}</b>: {r.body}
+      {items.map((f) => {
+        const liked = me && f.likes.some((x: any) => x.user_id === me);
+        return (
+          <div key={f.id} className="mb-4 border-b border-line pb-3">
+            <div className="rounded-lg bg-panel p-3">
+              <div className="flex items-center justify-between font-bold text-fg">
+                <span>{f.author}</span>
+                <span>{ICON[f.rating]}</span>
+              </div>
+              {f.body && <p className="mt-1 text-sm text-fg">{f.body}</p>}
             </div>
-          ))}
 
-          {replyFor === f.id && (
-            <div className="ml-6 mt-2 flex gap-2">
-              <input
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                className="flex-1 rounded-lg border border-line bg-transparent px-2 text-sm"
+            {f.image_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={f.image_url}
+                alt="Feedback photo"
+                className="mt-2 max-h-72 rounded-lg border border-line"
               />
+            )}
+
+            <div className="mt-2 flex items-center gap-4 text-xs font-semibold text-muted">
+              <span>{fmtDate(f.created_at)}</span>
               <button
                 type="button"
-                onClick={() => sendReply(f.id)}
-                className="rounded-lg bg-amber px-3 text-sm font-bold text-ink"
+                onClick={() => toggleLike(f)}
+                className={liked ? 'text-green-600' : ''}
               >
-                Send
+                👍 {f.likes.length}
               </button>
+              {me && (
+                <button type="button" onClick={() => setReplyFor(f.id)}>
+                  Reply
+                </button>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+
+            {f.replies.map((r: any) => (
+              <div
+                key={r.id}
+                className="ml-6 mt-2 rounded-lg bg-amberSoft p-2 text-sm"
+              >
+                <b>{r.author}</b>: {r.body}
+                <div className="mt-1 text-xs text-muted">
+                  {fmtDate(r.created_at)}
+                </div>
+              </div>
+            ))}
+
+            {replyFor === f.id && (
+              <div className="ml-6 mt-2 flex gap-2">
+                <input
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  className="flex-1 rounded-lg border border-line bg-transparent px-2 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => sendReply(f.id)}
+                  className="rounded-lg bg-amber px-3 text-sm font-bold text-ink"
+                >
+                  Send
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </section>
   );
-}
+          }
