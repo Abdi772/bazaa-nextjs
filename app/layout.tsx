@@ -1,4 +1,4 @@
- import type { Metadata, Viewport } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { Fraunces, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
@@ -9,6 +9,7 @@ import BackButton from './BackButton';
 import ThemeButton from './ThemeButton';
 import TextSize from './TextSize';
 import SiteFooter from './SiteFooter';
+import Heartbeat from './Heartbeat';
 import { LanguageProvider } from './LanguageProvider';
 import { SITE_URL } from '@/lib/siteUrl';
 
@@ -57,6 +58,8 @@ export default function RootLayout({
       </head>
       <body className="bazaa-page min-h-screen antialiased">
         <LanguageProvider>
+          <Heartbeat />
+
           <header className="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper">
             <div className="mx-auto flex min-h-[64px] max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-5">
               <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
@@ -90,4 +93,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+           }
