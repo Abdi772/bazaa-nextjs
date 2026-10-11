@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -688,7 +688,7 @@ export default function PostPage() {
             )}
 
             {isHome && (
-              <>
+                          <>
                 <div>
                                      <label htmlFor="listing-bedrooms" className={labelClass}>
                     Bedrooms
@@ -1066,4 +1066,5 @@ export default function PostPage() {
   );
                 }
 
-             
+
+                           
