@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -668,7 +668,7 @@ export default function EditPage() {
                 onChange={(e) => setNegotiable(e.target.checked)}
                 className="h-5 w-5 accent-amber"
               />
-              <span className="text-sm font-semibold text-fg">
+                <span className="text-sm font-semibold text-fg">
                 Price is negotiable
               </span>
             </label>
@@ -1110,5 +1110,4 @@ export default function EditPage() {
 }
 
 
-
-          
+               
