@@ -19,6 +19,8 @@ import ChatButton from '../../ChatButton';
 import ContactButtons from '../../ContactButtons';
 import ListingActions from '../../ListingActions';
 import SellerRating from '../../SellerRating';
+import SellerStatus from '../../SellerStatus';
+import SellerFeedback from '../../SellerFeedback';
 import CollapsibleSpecs from '../../CollapsibleSpecs';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -473,8 +475,7 @@ export default async function ProductPage({
           </p>
         </div>
       </section>
-
-      {/* Specifications */}
+     {/* Specifications */}
       {Array.isArray(listing.specs) &&
         listing.specs.filter((row) => row?.label && row?.value).length >
           0 && (
@@ -512,6 +513,10 @@ export default async function ProductPage({
             </div>
 
             <SellerRating sellerId={sellerId} />
+
+            <div className="mt-1">
+              <SellerStatus sellerId={sellerId} />
+            </div>
           </div>
 
           <span
@@ -523,8 +528,11 @@ export default async function ProductPage({
         </Link>
       )}
 
+      {/* Seller feedback */}
+      {sellerId && <SellerFeedback sellerId={sellerId} />}
+
       {/* Contact / Chat */}
-      <section className="mb-5 overflow-hidden rounded-card border border-line bg-surface shadow-card">
+      <section className="mb-5 mt-4 overflow-hidden rounded-card border border-line bg-surface shadow-card">
         <div className="bg-ink px-5 py-4 text-paper sm:px-6">
           <div className="text-xs font-bold uppercase tracking-[0.16em] text-amber">
             Contact seller
@@ -667,7 +675,7 @@ export default async function ProductPage({
               <Link
                 key={s.id}
                 href={`/products/${listingSlug(s)}`}
-                                className="group overflow-hidden rounded-card border border-line bg-surface shadow-card transition-all hover:-translate-y-0.5 hover:shadow-soft"
+                className="group overflow-hidden rounded-card border border-line bg-surface shadow-card transition-all hover:-translate-y-0.5 hover:shadow-soft"
               >
                 <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bg-panel">
                   {s.image_url ? (
