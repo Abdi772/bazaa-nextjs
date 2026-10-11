@@ -209,7 +209,7 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
             </div>
           )}
         </div>
-      )}
+      ))}
     </section>
   );
 }
