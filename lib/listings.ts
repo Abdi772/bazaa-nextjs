@@ -1,4 +1,5 @@
  import { createClient } from '@supabase/supabase-js';
+import { CATEGORY_CONFIG } from './categories';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -55,6 +56,7 @@ export type ListingFilters = {
   maxPrice?: number;
   sort?: string;
   limit?: number;
+  offset?: number;
 };
 
 export async function getListings(
@@ -71,7 +73,8 @@ export async function getListings(
     .or('status.is.null,status.neq.sold')
     .order(byPrice ? 'price' : 'created_at', {
       ascending: filters.sort === 'price_asc',
-    });
+    })
+    .order('id', { ascending: false });
 
   if (filters.category) {
     q = q.eq('category', filters.category);
@@ -117,7 +120,8 @@ export async function getListings(
   }
 
   if (filters.limit) {
-    q = q.limit(filters.limit);
+    const from = filters.offset ?? 0;
+    q = q.range(from, from + filters.limit - 1);
   }
 
   const { data, error } = await q;
@@ -174,20 +178,24 @@ export async function getCategoryCounts(): Promise<
   Record<string, number>
 > {
   const db = serverClient();
+  const names = Object.keys(CATEGORY_CONFIG);
 
-  const { data, error } = await db
-    .from('listings')
-    .select('category')
-    .or('status.is.null,status.neq.sold');
-
-  if (error || !data) return {};
+  // One cheap COUNT per category (no rows are downloaded).
+  const results = await Promise.all(
+    names.map((name) =>
+      db
+        .from('listings')
+        .select('id', { count: 'exact', head: true })
+        .eq('category', name)
+        .or('status.is.null,status.neq.sold')
+    )
+  );
 
   const counts: Record<string, number> = {};
 
-  for (const row of data as { category: string }[]) {
-    counts[row.category] =
-      (counts[row.category] || 0) + 1;
-  }
+  names.forEach((name, i) => {
+    counts[name] = results[i].count ?? 0;
+  });
 
   return counts;
 }
@@ -274,4 +282,5 @@ export async function getBrandCounts(
   }
 
   return counts;
-   }
+}
+             
