@@ -1,4 +1,4 @@
-  'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -14,6 +14,7 @@ import {
 } from '../../../lib/categories';
 import { listingSlug } from '../../../lib/listings';
 import { compressImage } from '../../../lib/compressImage';
+import DescriptionFields from '../../DescriptionFields';
 
 const MAX_PHOTOS = 5;
 
@@ -53,7 +54,7 @@ export default function EditPage() {
   const [condition, setCondition] = useState(CONDITIONS[0]);
   const [region, setRegion] = useState(ETHIOPIA_REGIONS[0]);
   const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
+  const [descriptions, setDescriptions] = useState<string[]>(['']);
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
 
@@ -117,7 +118,20 @@ export default function EditPage() {
       setCondition(listing.condition ?? CONDITIONS[0]);
       setRegion(listing.region ?? ETHIOPIA_REGIONS[0]);
       setLocation(listing.location ?? '');
-      setDescription(listing.description ?? '');
+
+      // Split the saved description back into up to 3 boxes
+      const parts: string[] = (listing.description ?? '')
+        .split(/\n\s*\n/)
+        .map((p: string) => p.trim())
+        .filter(Boolean);
+
+      const boxes =
+        parts.length > 3
+          ? [parts[0], parts[1], parts.slice(2).join('\n\n')]
+          : parts;
+
+      setDescriptions(boxes.length ? boxes : ['']);
+
       setPhone(listing.phone ?? '');
       setEmail(listing.email ?? '');
 
@@ -173,15 +187,15 @@ export default function EditPage() {
   const isVehicle =
     category === 'Vehicles' ||
     [
-    'Cars',
-    'Pickup Trucks',
-    'Vans & Minivans',
-    'Minibuses',
-    'Buses',
-    'Trucks',
-    'Motorcycles',
-    'Three-Wheelers',
-  ].includes(subcategory);
+      'Cars',
+      'Pickup Trucks',
+      'Vans & Minivans',
+      'Minibuses',
+      'Buses',
+      'Trucks',
+      'Motorcycles',
+      'Three-Wheelers',
+    ].includes(subcategory);
 
   // Property fields
   const isHome =
@@ -197,14 +211,14 @@ export default function EditPage() {
   );
 
   const brandLabel = [
-      'Accessories',
-      'Phone Accessories',
-      'Audio',
-      'Networking',
-      'Security & CCTV',
-    ].includes(subcategory)
-      ? 'Type'
-      : 'Brand';
+    'Accessories',
+    'Phone Accessories',
+    'Audio',
+    'Networking',
+    'Security & CCTV',
+  ].includes(subcategory)
+    ? 'Type'
+    : 'Brand';
 
   const modelLabel =
     subcategory === 'TV'
@@ -236,7 +250,6 @@ export default function EditPage() {
 
   function onCustomModelChange(value: string) {
     setCustomModel(value);
-
   }
 
   // Show the manual box for "Other" and for ads whose model is not in the list
@@ -305,7 +318,10 @@ export default function EditPage() {
 
     const trimmedTitle = title.trim();
     const trimmedLocation = location.trim();
-    const trimmedDescription = description.trim();
+    const trimmedDescription = descriptions
+      .map((d) => d.trim())
+      .filter(Boolean)
+      .join('\n\n');
     const trimmedPhone = phone.trim();
     const trimmedEmail = email.trim();
     const numericPrice = Number(price);
@@ -320,7 +336,7 @@ export default function EditPage() {
       return;
     }
 
-        if (!subcategory && subcategories.length > 0) {
+    if (!subcategory && subcategories.length > 0) {
       setError('Please select a subcategory.');
       return;
     }
@@ -551,7 +567,7 @@ export default function EditPage() {
                   key={`${url}-${index}`}
                   className="relative overflow-hidden rounded-bazaa border border-line bg-panel"
                 >
-{/* eslint-disable-next-line @next/next/no-img-element */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
                     alt={`Listing photo ${index + 1}`}
@@ -655,7 +671,7 @@ export default function EditPage() {
                 placeholder="0"
                 disabled={busy}
               />
-            </div>
+          </div>
 
             <label
               htmlFor="edit-negotiable"
@@ -668,7 +684,7 @@ export default function EditPage() {
                 onChange={(e) => setNegotiable(e.target.checked)}
                 className="h-5 w-5 accent-amber"
               />
-                <span className="text-sm font-semibold text-fg">
+              <span className="text-sm font-semibold text-fg">
                 Price is negotiable
               </span>
             </label>
@@ -689,7 +705,7 @@ export default function EditPage() {
                     {name}
                   </option>
                 ))}
-        </select>
+              </select>
             </div>
 
             {subcategories.length > 0 && (
@@ -726,7 +742,7 @@ export default function EditPage() {
                   required
                   value={brand}
                   onChange={(e) => onBrandChange(e.target.value)}
-       disabled={busy}
+                  disabled={busy}
                 >
                   <option value="">Select {brandLabel.toLowerCase()}</option>
                   {brands.map((name) => (
@@ -764,7 +780,7 @@ export default function EditPage() {
                       onChange={(e) => {
                         setModel(e.target.value);
                         setCustomModel('');
-      setModelNumber('');
+                        setModelNumber('');
                       }}
                       disabled={busy}
                     >
@@ -788,8 +804,6 @@ export default function EditPage() {
                         <p className="mb-2 text-sm font-semibold text-fg">
                           Can't find your {modelLabel.toLowerCase()}? Enter it here.
                         </p>
-                        {model === 'Other' && (
-                          <>
                         <label className={labelClass}>
                           {manualLabel}
                         </label>
@@ -799,10 +813,8 @@ export default function EditPage() {
                           value={customModel}
                           onChange={(e) => onCustomModelChange(e.target.value)}
                           placeholder="Type it here"
-                        disabled={busy}
+                          disabled={busy}
                         />
-                          </>
-                        )}
                       </div>
                     )}
                   </>
@@ -906,7 +918,7 @@ export default function EditPage() {
                   min="0"
                   value={sizeSqm}
                   onChange={(e) => setSizeSqm(e.target.value)}
-                    disabled={busy}
+                  disabled={busy}
                   placeholder="e.g. 120 (optional)"
                 />
               </div>
@@ -971,6 +983,7 @@ export default function EditPage() {
             </div>
           </div>
         </section>
+
         <section className="bazaa-card p-4 sm:p-6">
           <h2 className="mb-4 text-base font-bold text-fg">Location</h2>
 
@@ -989,7 +1002,7 @@ export default function EditPage() {
                 {ETHIOPIA_REGIONS.map((value) => (
                   <option key={value} value={value}>
                     {value}
-                                     </option>
+                  </option>
                 ))}
               </select>
             </div>
@@ -1013,17 +1026,11 @@ export default function EditPage() {
         </section>
 
         <section className="bazaa-card p-4 sm:p-6">
-          <label htmlFor="edit-description" className={labelClass}>
-            Description
-          </label>
-          <textarea
-            id="edit-description"
-            className={`${inputClass} min-h-[140px] resize-y`}
-            required
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe the item, condition, and anything buyers should know."
-            disabled={busy}
+          <label className={labelClass}>Description</label>
+
+          <DescriptionFields
+            values={descriptions}
+            onChange={setDescriptions}
           />
         </section>
 
@@ -1107,7 +1114,4 @@ export default function EditPage() {
       </form>
     </div>
   );
-}
-
-
-               
+                }
