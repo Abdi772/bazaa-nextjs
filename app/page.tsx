@@ -17,6 +17,7 @@ import {
 } from '@/lib/categories';
 
 import { getBrandLogo } from '@/lib/brandLogos';
+import { cardLine } from '@/lib/cardLine';
 
 import CategorySidebar from './CategorySidebar';
 import FilterBar from './FilterBar';
@@ -352,8 +353,7 @@ export default async function HomePage({
   } else if (showAll) {
     backHref = buildUrl(category);
   }
-
-  return (
+ return (
     <div className="flex flex-col gap-5 md:flex-row md:gap-6">
       <div className="hidden md:block">
         <CategorySidebar
@@ -660,8 +660,7 @@ export default async function HomePage({
             }))}
           />
         )}
-
-        {showListings && (
+            {showListings && (
           <div className="mb-5">
             <FilterBar
               region={region}
@@ -682,7 +681,7 @@ export default async function HomePage({
                 ⌕
               </div>
 
-                 <h3 className="mb-1 text-sm font-semibold bazaa-text sm:text-base">
+              <h3 className="mb-1 text-sm font-semibold bazaa-text sm:text-base">
                 <LanguageText k="noListingsMatch" />
               </h3>
 
@@ -706,7 +705,7 @@ export default async function HomePage({
                         src={listing.image_url}
                         alt={listing.title}
                         fill
-                         sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
@@ -736,25 +735,19 @@ export default async function HomePage({
                       {listing.title}
                     </div>
 
-                    <div className="mt-1 flex min-w-0 flex-wrap gap-x-1.5 gap-y-0.5 text-[11px] leading-4 bazaa-muted-text sm:text-xs">
-                      {listing.brand && (
-                        <span className="max-w-full truncate">
-                          {listing.brand}
-                        </span>
-                      )}
-
-                      {listing.model && (
-                        <>
-                          {listing.brand && (
-                            <span>•</span>
-                          )}
-
-                          <span className="max-w-full truncate">
-                            {listing.model}
-                          </span>
-                        </>
-                      )}
-                    </div>
+                    {cardLine(
+                      listing.brand,
+                      listing.model,
+                      listing.title,
+                    ) && (
+                      <div className="mt-1 min-w-0 truncate text-[11px] leading-4 bazaa-muted-text sm:text-xs">
+                        {cardLine(
+                          listing.brand,
+                          listing.model,
+                          listing.title,
+                        )}
+                      </div>
+                    )}
 
                     <div className="mt-2 flex min-w-0 flex-wrap items-center gap-1.5">
                       {listing.condition && (
@@ -777,4 +770,4 @@ export default async function HomePage({
       </div>
     </div>
   );
-}
+}     
