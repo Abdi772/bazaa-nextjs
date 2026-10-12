@@ -1,7 +1,8 @@
-'use client';
+ 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { adjustedRating, MIN_REVIEWS } from '../lib/rating';
 
 type Review = {
   id: number;
@@ -54,7 +55,8 @@ export default function Reviews({ sellerId }: { sellerId: string }) {
 
   const mine = reviews.find((r) => r.reviewer_id === uid);
   const count = reviews.length;
-  const avg = count ? reviews.reduce((s, r) => s + r.rating, 0) / count : 0;
+  const sum = reviews.reduce((s, r) => s + r.rating, 0);
+  const avg = count ? adjustedRating(sum, count) : 0;
 
   function openForm() {
     setRating(mine?.rating ?? 0);
@@ -105,16 +107,18 @@ export default function Reviews({ sellerId }: { sellerId: string }) {
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="font-serif text-lg font-bold">Reviews</div>
-          {count > 0 ? (
+          {count >= MIN_REVIEWS ? (
             <div className="mt-1 flex items-center gap-2 text-sm">
               <span className="font-bold">{avg.toFixed(1)}</span>
               <Stars value={avg} />
-              <span className="text-muted">
-                ({count} {count === 1 ? 'review' : 'reviews'})
-              </span>
+              <span className="text-muted">({count} reviews)</span>
             </div>
           ) : (
-            <div className="mt-1 text-sm text-muted">No reviews yet</div>
+            <div className="mt-1 text-sm text-muted">
+              {count === 0
+                ? 'No reviews yet'
+                : `New seller · ${count} ${count === 1 ? 'review' : 'reviews'}. The rating shows after ${MIN_REVIEWS} reviews.`}
+            </div>
           )}
         </div>
 
@@ -199,7 +203,7 @@ export default function Reviews({ sellerId }: { sellerId: string }) {
               <div className="flex items-center justify-between text-xs text-muted">
                 <span>
                   <Stars value={r.rating} />{' '}
-                  <span className="ml-1">{r.reviewer_id === uid ? 'You' : 'Bazaa buyer'}</span>
+                  <span className="ml-1">{r.reviewer_id === uid ? 'You' : '✔ Verified chat'}</span>
                 </span>
                 <span>
                   {new Date(r.created_at).toLocaleDateString('en-US', {
