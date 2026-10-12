@@ -1,4 +1,4 @@
- import Link from 'next/link';
+  import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -8,6 +8,7 @@ import { CATEGORY_CONFIG } from '@/lib/categories';
 import LanguageText from '../../LanguageText';
 import SellerStatus from '../../SellerStatus';
 import SellerFeedback from '../../SellerFeedback';
+import Reviews from '../../Reviews';
 
 export const revalidate = 60;
 
@@ -89,6 +90,8 @@ export default async function SellerPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      <Reviews sellerId={params.id} />
 
       <SellerFeedback sellerId={params.id} />
 
