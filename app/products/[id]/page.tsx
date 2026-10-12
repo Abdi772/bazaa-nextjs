@@ -1,4 +1,4 @@
- import Link from 'next/link';
+  import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -21,6 +21,7 @@ import ListingActions from '../../ListingActions';
 import SellerRating from '../../SellerRating';
 import SellerStatus from '../../SellerStatus';
 import SellerFeedback from '../../SellerFeedback';
+import Reviews from '../../Reviews';
 import CollapsibleSpecs from '../../CollapsibleSpecs';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -529,6 +530,8 @@ export default async function ProductPage({
       )}
 
       {/* Seller feedback */}
+      {sellerId && <Reviews sellerId={sellerId} />}
+
       {sellerId && <SellerFeedback sellerId={sellerId} />}
 
       {/* Contact / Chat */}
@@ -643,7 +646,7 @@ export default async function ProductPage({
       </section>
 
       {/* Report */}
-      <div className="mb-7 text-center">
+        <div className="mb-7 text-center">
         <ReportButton
           listingId={listing.id}
           title={listing.title}
