@@ -1,4 +1,4 @@
- import Link from 'next/link';
+  import Link from 'next/link';
 import Image from 'next/image';
  
 import {
@@ -26,6 +26,7 @@ import LanguageText from './LanguageText';
 import SearchInput from './SearchInput';
 import FavoriteButton from './FavoriteButton';
 import ModelRow from './ModelRow';
+import { adjustedRating, MIN_REVIEWS } from '../lib/rating';
 import CategoryTiles from './CategoryTiles';
 
 export const revalidate = 60;
@@ -325,28 +326,28 @@ export default async function HomePage({
     ),
   );
 
-  const feedbackStats: Record<string, { pos: number; total: number }> = {};
+  const ratingStats: Record<string, { sum: number; total: number }> = {};
 
   if (sellerIds.length > 0) {
-    const { data: fbRows } = await supabase
-      .from('feedback')
+    const { data: rvRows } = await supabase
+      .from('reviews')
       .select('seller_id, rating')
       .in('seller_id', sellerIds);
 
-    (fbRows ?? []).forEach((r) => {
-      if (!feedbackStats[r.seller_id]) {
-        feedbackStats[r.seller_id] = { pos: 0, total: 0 };
+    (rvRows ?? []).forEach((r) => {
+      if (!ratingStats[r.seller_id]) {
+        ratingStats[r.seller_id] = { sum: 0, total: 0 };
       }
-      feedbackStats[r.seller_id].total += 1;
-      if (r.rating === 'positive') feedbackStats[r.seller_id].pos += 1;
+      ratingStats[r.seller_id].total += 1;
+      ratingStats[r.seller_id].sum += Number(r.rating) || 0;
     });
   }
 
   const ratingOf = (listing: unknown) => {
     const uid = (listing as { user_id?: string | null }).user_id;
-    const s = uid ? feedbackStats[uid] : undefined;
+    const s = uid ? ratingStats[uid] : undefined;
     if (!s || s.total === 0) return null;
-    return { pct: Math.round((s.pos / s.total) * 100), total: s.total };
+    return { avg: adjustedRating(s.sum, s.total), total: s.total };
   };
 
   const typeOptions =
@@ -715,7 +716,7 @@ export default async function HomePage({
                 ⌕
               </div>
 
-              <h3 className="mb-1 text-sm font-semibold bazaa-text sm:text-base">
+                          <h3 className="mb-1 text-sm font-semibold bazaa-text sm:text-base">
                 <LanguageText k="noListingsMatch" />
               </h3>
 
@@ -796,23 +797,18 @@ export default async function HomePage({
                         </span>
                       )}
                     </div>
-                    {ratingOf(listing) ? (
-                      <div
-                        className={`mt-1.5 text-[11px] font-semibold leading-4 sm:text-xs ${
-                          ratingOf(listing)!.pct >= 70
-                            ? 'text-green-600'
-                            : 'text-red-600'
-                        }`}
-                      >
-                        👍 {ratingOf(listing)!.pct}% ·{' '}
-                        {ratingOf(listing)!.total}{' '}
-                        {ratingOf(listing)!.total === 1
-                          ? 'review'
-                          : 'reviews'}
+                    {ratingOf(listing) &&
+                    ratingOf(listing)!.total >= MIN_REVIEWS ? (
+                      <div className="mt-1.5 text-[11px] font-semibold leading-4 text-fg sm:text-xs">
+                        <span className="text-amberText">★</span>{' '}
+                        {ratingOf(listing)!.avg.toFixed(1)}{' '}
+                        <span className="font-normal bazaa-muted-text">
+                          ({ratingOf(listing)!.total})
+                        </span>
                       </div>
                     ) : (
                       <div className="mt-1.5 text-[11px] leading-4 bazaa-muted-text sm:text-xs">
-                        No reviews yet
+                        New seller
                       </div>
                     )}
                   </div>
