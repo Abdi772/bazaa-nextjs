@@ -1,4 +1,4 @@
-import Link from 'next/link';
+ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -6,7 +6,8 @@ import { supabase } from '../../../lib/supabaseClient';
 import { listingSlug } from '@/lib/listings';
 import { CATEGORY_CONFIG } from '@/lib/categories';
 import LanguageText from '../../LanguageText';
-import Reviews from '../../Reviews';
+import SellerStatus from '../../SellerStatus';
+import SellerFeedback from '../../SellerFeedback';
 
 export const revalidate = 60;
 
@@ -32,15 +33,23 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export default async function SellerPage({ params }: Props) {
   if (!UUID.test(params.id)) notFound();
 
-  const { data } = await supabase
-    .from('listings')
-    .select('id, title, price, image_url, location, category, created_at')
-    .eq('user_id', params.id)
-    .or('status.is.null,status.neq.sold')
-    .order('created_at', { ascending: false });
+  const [{ data }, { data: profile }] = await Promise.all([
+    supabase
+      .from('listings')
+      .select('id, title, price, image_url, location, category, created_at')
+      .eq('user_id', params.id)
+      .or('status.is.null,status.neq.sold')
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('profiles')
+      .select('name')
+      .eq('id', params.id)
+      .maybeSingle(),
+  ]);
 
   const items = (data ?? []) as Row[];
-  const initial = 'S';
+  const sellerName = profile?.name ?? null;
+  const initial = sellerName ? sellerName.charAt(0).toUpperCase() : 'S';
   const since =
     items.length > 0
       ? new Date(items[items.length - 1].created_at).toLocaleDateString('en-US', {
@@ -61,8 +70,13 @@ export default async function SellerPage({ params }: Props) {
         </div>
         <div>
           <div className="font-serif text-xl font-bold">
-            <LanguageText k="seller" />
+            {sellerName ?? <LanguageText k="seller" />}
           </div>
+
+          <div className="mt-0.5">
+            <SellerStatus sellerId={params.id} />
+          </div>
+
           <div className="text-sm text-muted">
             {items.length}{' '}
             <LanguageText k={items.length === 1 ? 'listing' : 'listings'} />
@@ -76,7 +90,7 @@ export default async function SellerPage({ params }: Props) {
         </div>
       </div>
 
-      <Reviews sellerId={params.id} />
+      <SellerFeedback sellerId={params.id} />
 
       {items.length === 0 ? (
         <div className="text-center py-16 text-muted">
@@ -88,7 +102,7 @@ export default async function SellerPage({ params }: Props) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {items.map((l) => (
             <Link
               key={l.id}
@@ -121,4 +135,4 @@ export default async function SellerPage({ params }: Props) {
       )}
     </div>
   );
-                }
+}
