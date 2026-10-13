@@ -1,4 +1,4 @@
-  import Link from 'next/link';
+ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -21,6 +21,7 @@ import ListingActions from '../../ListingActions';
 import SellerRating from '../../SellerRating';
 import SellerStatus from '../../SellerStatus';
 import SellerFeedback from '../../SellerFeedback';
+import ShareButtons from '../../ShareButtons';
 import Reviews from '../../Reviews';
 import CollapsibleSpecs from '../../CollapsibleSpecs';
 import { supabase } from '@/lib/supabaseClient';
@@ -476,7 +477,8 @@ export default async function ProductPage({
           </p>
         </div>
       </section>
-     {/* Specifications */}
+
+      {/* Specifications */}
       {Array.isArray(listing.specs) &&
         listing.specs.filter((row) => row?.label && row?.value).length >
           0 && (
@@ -594,6 +596,9 @@ export default async function ProductPage({
         </div>
       </section>
 
+      {/* Share */}
+      <ShareButtons title={listing.title} price={Number(listing.price)} />
+
       {/* Safety */}
       <section className="mb-6 overflow-hidden rounded-card border border-amber/30 bg-amberSoft">
         <div className="flex items-center gap-3 border-b border-amber/20 px-4 py-4">
@@ -639,14 +644,14 @@ export default async function ProductPage({
             </span>
             <span>
               Be cautious of requests to move the
-              conversation off this site.
+            conversation off this site.
             </span>
           </li>
         </ul>
       </section>
 
       {/* Report */}
-        <div className="mb-7 text-center">
+      <div className="mb-7 text-center">
         <ReportButton
           listingId={listing.id}
           title={listing.title}
@@ -717,4 +722,4 @@ export default async function ProductPage({
       )}
     </div>
   );
-}
+                }
