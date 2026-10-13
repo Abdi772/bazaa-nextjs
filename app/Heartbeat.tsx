@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 import { useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
@@ -22,11 +22,16 @@ export default function Heartbeat() {
         .eq('id', userId);
     };
 
-    const ensureProfile = async (id: string, email?: string | null) => {
+    const ensureProfile = async (
+      id: string,
+      email?: string | null,
+      meta?: Record<string, unknown> | null,
+    ) => {
+      const metaName = String(meta?.full_name ?? meta?.name ?? '').trim();
       await supabase.from('profiles').upsert(
         {
           id,
-          name: email?.split('@')[0] ?? 'User',
+          name: metaName || (email?.split('@')[0] ?? 'User'),
           last_seen_at: new Date().toISOString(),
         },
         { onConflict: 'id', ignoreDuplicates: true },
@@ -40,10 +45,16 @@ export default function Heartbeat() {
       touch();
     };
 
-    const setUser = (user: { id: string; email?: string | null } | null) => {
+    const setUser = (
+      user: {
+        id: string;
+        email?: string | null;
+        user_metadata?: Record<string, unknown> | null;
+      } | null,
+    ) => {
       const changed = (user?.id ?? null) !== userId;
       userId = user?.id ?? null;
-      if (userId && changed) ensureProfile(userId, user?.email);
+      if (userId && changed) ensureProfile(userId, user?.email, user?.user_metadata);
     };
 
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
@@ -67,4 +78,4 @@ export default function Heartbeat() {
   }, []);
 
   return null;
-                    }
+}
