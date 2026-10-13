@@ -1,6 +1,6 @@
-  import Link from 'next/link';
+ import Link from 'next/link';
 import Image from 'next/image';
- 
+
 import {
   getListings,
   getCategoryCounts,
@@ -26,6 +26,7 @@ import LanguageText from './LanguageText';
 import SearchInput from './SearchInput';
 import FavoriteButton from './FavoriteButton';
 import ModelRow from './ModelRow';
+import OnlineDot from './OnlineDot';
 import { adjustedRating, MIN_REVIEWS } from '../lib/rating';
 import CategoryTiles from './CategoryTiles';
 
@@ -308,6 +309,20 @@ export default async function HomePage({
     return { avg: adjustedRating(s.sum, s.total), total: s.total };
   };
 
+  // When each seller was last online (one query for the whole page)
+  const lastSeenMap: Record<string, string> = {};
+
+  if (sellerIds.length > 0) {
+    const { data: seenRows } = await supabase
+      .from('profiles')
+      .select('id, last_seen_at')
+      .in('id', sellerIds);
+
+    (seenRows ?? []).forEach((r) => {
+      if (r.last_seen_at) lastSeenMap[r.id as string] = r.last_seen_at as string;
+    });
+  }
+
   const typeOptions =
     categoryConfig && subNames.length > 1
       ? subNames.map((name) => ({
@@ -346,7 +361,8 @@ export default async function HomePage({
   } else if (showAll) {
     backHref = buildUrl(category);
   }
- return (
+
+  return (
     <div className="flex flex-col gap-5 md:flex-row md:gap-6">
       <div className="hidden md:block">
         <CategorySidebar
@@ -653,7 +669,8 @@ export default async function HomePage({
             }))}
           />
         )}
-            {showListings && (
+
+        {showListings && (
           <div className="mb-5">
             <FilterBar
               region={region}
@@ -667,14 +684,14 @@ export default async function HomePage({
           </div>
         )}
 
-        {showListings &&
+         {showListings &&
           (listings.length === 0 ? (
             <div className="rounded-card border border-dashed border-line bazaa-surface px-5 py-14 text-center sm:px-6 sm:py-16">
               <div className="mb-3 text-3xl">
                 ⌕
               </div>
 
-                          <h3 className="mb-1 text-sm font-semibold bazaa-text sm:text-base">
+              <h3 className="mb-1 text-sm font-semibold bazaa-text sm:text-base">
                 <LanguageText k="noListingsMatch" />
               </h3>
 
@@ -684,123 +701,133 @@ export default async function HomePage({
             </div>
           ) : (
             <>
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4">
-              {listings.map((listing) => (
-                <Link
-                  key={listing.id}
-                  href={`/products/${listingSlug(
-                    listing,
-                  )}`}
-                  className="group min-w-0 overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
-                >
-                  <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bazaa-image-bg">
-                    {listing.image_url ? (
-                      <Image
-                        src={listing.image_url}
-                        alt={listing.title}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4">
+                {listings.map((listing) => (
+                  <Link
+                    key={listing.id}
+                    href={`/products/${listingSlug(
+                      listing,
+                    )}`}
+                    className="group min-w-0 overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+                  >
+                    <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-line bazaa-image-bg">
+                      {listing.image_url ? (
+                        <Image
+                          src={listing.image_url}
+                          alt={listing.title}
+                          fill
+                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      ) : (
+                        <span className="text-3xl sm:text-4xl">
+                          {CATEGORY_CONFIG[
+                            listing.category
+                          ]?.icon || '📦'}
+                        </span>
+                      )}
+
+                      <OnlineDot
+                        lastSeen={
+                          lastSeenMap[
+                            (listing as unknown as { user_id?: string | null })
+                              .user_id ?? ''
+                          ]
+                        }
                       />
-                    ) : (
-                      <span className="text-3xl sm:text-4xl">
-                        {CATEGORY_CONFIG[
-                          listing.category
-                        ]?.icon || '📦'}
-                      </span>
-                    )}
 
-                    <div className="absolute right-2 top-2 z-10 sm:right-2.5 sm:top-2.5">
-                      <FavoriteButton
-                        listingId={listing.id}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="p-2.5 sm:p-3.5">
-                    <div className="font-serif text-base font-bold leading-5 bazaa-price sm:text-lg">
-                      ETB{' '}
-                      {Number(
-                        listing.price,
-                      ).toLocaleString()}
+                      <div className="absolute right-2 top-2 z-10 sm:right-2.5 sm:top-2.5">
+                        <FavoriteButton
+                          listingId={listing.id}
+                        />
+                      </div>
                     </div>
 
-                    <div className="mt-1 line-clamp-2 min-h-[2.5rem] text-[13px] font-semibold leading-5 bazaa-text sm:text-sm">
-                      {listing.title}
-                    </div>
+                    <div className="p-2.5 sm:p-3.5">
+                      <div className="font-serif text-base font-bold leading-5 bazaa-price sm:text-lg">
+                        ETB{' '}
+                        {Number(
+                          listing.price,
+                        ).toLocaleString()}
+                      </div>
 
-                    {cardLine(
-                      listing.brand,
-                      listing.model,
-                      listing.title,
-                    ) && (
-                      <div className="mt-1 min-w-0 truncate text-[11px] leading-4 bazaa-muted-text sm:text-xs">
-                        {cardLine(
-                          listing.brand,
-                          listing.model,
-                          listing.title,
+                      <div className="mt-1 line-clamp-2 min-h-[2.5rem] text-[13px] font-semibold leading-5 bazaa-text sm:text-sm">
+                        {listing.title}
+                      </div>
+
+                      {cardLine(
+                        listing.brand,
+                        listing.model,
+                        listing.title,
+                      ) && (
+                        <div className="mt-1 min-w-0 truncate text-[11px] leading-4 bazaa-muted-text sm:text-xs">
+                          {cardLine(
+                            listing.brand,
+                            listing.model,
+                            listing.title,
+                          )}
+                        </div>
+                      )}
+
+                      <div className="mt-2 flex min-w-0 flex-wrap items-center gap-1.5">
+                        {listing.condition && (
+                          <span className="max-w-full truncate rounded-full bazaa-soft-bg px-2 py-1 text-[10px] font-semibold leading-4 bazaa-price sm:text-[11px]">
+                            {listing.condition}
+                          </span>
+                        )}
+
+                        {listing.location && (
+                          <span className="min-w-0 max-w-full truncate text-[11px] leading-4 bazaa-muted-text sm:text-xs">
+                            {listing.location}
+                          </span>
                         )}
                       </div>
-                    )}
 
-                    <div className="mt-2 flex min-w-0 flex-wrap items-center gap-1.5">
-                      {listing.condition && (
-                        <span className="max-w-full truncate rounded-full bazaa-soft-bg px-2 py-1 text-[10px] font-semibold leading-4 bazaa-price sm:text-[11px]">
-                          {listing.condition}
-                        </span>
-                      )}
-
-                      {listing.location && (
-                        <span className="min-w-0 max-w-full truncate text-[11px] leading-4 bazaa-muted-text sm:text-xs">
-                          {listing.location}
-                        </span>
+                      {ratingOf(listing) &&
+                      ratingOf(listing)!.total >= MIN_REVIEWS ? (
+                        <div className="mt-1.5 text-[11px] font-semibold leading-4 text-fg sm:text-xs">
+                          <span className="text-amberText">★</span>{' '}
+                          {ratingOf(listing)!.avg.toFixed(1)}{' '}
+                          <span className="font-normal bazaa-muted-text">
+                            ({ratingOf(listing)!.total})
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="mt-1.5 text-[11px] leading-4 bazaa-muted-text sm:text-xs">
+                          New seller
+                        </div>
                       )}
                     </div>
-                    {ratingOf(listing) &&
-                    ratingOf(listing)!.total >= MIN_REVIEWS ? (
-                      <div className="mt-1.5 text-[11px] font-semibold leading-4 text-fg sm:text-xs">
-                        <span className="text-amberText">★</span>{' '}
-                        {ratingOf(listing)!.avg.toFixed(1)}{' '}
-                        <span className="font-normal bazaa-muted-text">
-                          ({ratingOf(listing)!.total})
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="mt-1.5 text-[11px] leading-4 bazaa-muted-text sm:text-xs">
-                        New seller
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-
-            {(hasMore || page > 1) && (
-              <div className="mt-5 flex items-center justify-center gap-3">
-                {page > 1 && (
-                  <Link
-                    href={prevPageHref}
-                    className="inline-flex min-h-[48px] items-center justify-center rounded-card border border-line px-5 text-sm font-bold bazaa-surface"
-                  >
-                    ← Previous
                   </Link>
-                )}
-                <span className="text-sm bazaa-muted-text">
-                  Page {page}
-                </span>
-                {hasMore && (
-                  <Link
-                    href={nextPageHref}
-                    className="inline-flex min-h-[48px] items-center justify-center rounded-card border border-line px-5 text-sm font-bold bazaa-surface"
-                  >
-                    Next →
-                  </Link>
-                )}
+                ))}
               </div>
-            )}
+
+              {(hasMore || page > 1) && (
+                <div className="mt-5 flex items-center justify-center gap-3">
+                  {page > 1 && (
+                    <Link
+                      href={prevPageHref}
+                      className="inline-flex min-h-[48px] items-center justify-center rounded-card border border-line px-5 text-sm font-bold bazaa-surface"
+                    >
+                      ← Previous
+                    </Link>
+                  )}
+                  <span className="text-sm bazaa-muted-text">
+                    Page {page}
+                  </span>
+                  {hasMore && (
+                    <Link
+                      href={nextPageHref}
+                      className="inline-flex min-h-[48px] items-center justify-center rounded-card border border-line px-5 text-sm font-bold bazaa-surface"
+                    >
+                      Next →
+                    </Link>
+                  )}
+                </div>
+              )}
             </>
           ))}
       </div>
     </div>
   );
-}     
+                      }
