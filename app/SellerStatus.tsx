@@ -1,20 +1,42 @@
-'use client';
+ 'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
-function lastSeen(iso: string | null) {
-  if (!iso) return 'Offline';
-  const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
-  if (mins < 2) return 'Online';
-  if (mins < 60) return `Last seen ${mins} min ago`;
-  const h = Math.floor(mins / 60);
-  if (h < 24) return `Last seen ${h} hour${h > 1 ? 's' : ''} ago`;
-  const d = Math.floor(h / 24);
-  return `Last seen ${d} day${d > 1 ? 's' : ''} ago`;
+const ONLINE_WINDOW_MIN = 3;
+
+function plural(n: number, word: string) {
+  return `${n} ${word}${n === 1 ? '' : 's'}`;
+}
+
+// Telegram style: "online" or "last seen 5 minutes ago"
+function statusText(iso: string | null, now: number) {
+  if (!iso) return 'last seen a long time ago';
+
+  const mins = Math.floor((now - new Date(iso).getTime()) / 60000);
+
+  if (mins < ONLINE_WINDOW_MIN) return 'online';
+  if (mins < 60) return `last seen ${plural(mins, 'minute')} ago`;
+
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `last seen ${plural(hours, 'hour')} ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days === 1) return 'last seen yesterday';
+  if (days < 7) return `last seen ${plural(days, 'day')} ago`;
+
+  const weeks = Math.floor(days / 7);
+  if (days < 30) return `last seen ${plural(weeks, 'week')} ago`;
+
+  const months = Math.floor(days / 30);
+  if (months < 12) return `last seen ${plural(months, 'month')} ago`;
+
+  return 'last seen a long time ago';
 }
 
 export default function SellerStatus({ sellerId }: { sellerId: string }) {
-  const [text, setText] = useState('');
+  const [iso, setIso] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     const load = () =>
@@ -23,13 +45,36 @@ export default function SellerStatus({ sellerId }: { sellerId: string }) {
         .select('last_seen_at')
         .eq('id', sellerId)
         .maybeSingle()
-        .then(({ data }) => setText(lastSeen(data?.last_seen_at ?? null)));
+        .then(({ data }) => {
+          setIso((data?.last_seen_at as string | null) ?? null);
+          setLoaded(true);
+        });
+
     load();
-    const t = setInterval(load, 60_000);
-    return () => clearInterval(t);
+
+    const fetchTimer = setInterval(load, 30_000); // get the newest time
+    const tickTimer = setInterval(() => setNow(Date.now()), 15_000); // update the "ago" text
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        setNow(Date.now());
+        load();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      clearInterval(fetchTimer);
+      clearInterval(tickTimer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [sellerId]);
 
-  const online = text === 'Online';
+  if (!loaded) return null;
+
+  const text = statusText(iso, now);
+  const online = text === 'online';
+
   return (
     <span
       className={`text-sm font-semibold ${
@@ -40,4 +85,4 @@ export default function SellerStatus({ sellerId }: { sellerId: string }) {
       {text}
     </span>
   );
-}
+                              }
