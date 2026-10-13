@@ -309,20 +309,6 @@ export default async function HomePage({
     return { avg: adjustedRating(s.sum, s.total), total: s.total };
   };
 
-  // When each seller was last online (one query for the whole page)
-  const lastSeenMap: Record<string, string> = {};
-
-  if (sellerIds.length > 0) {
-    const { data: seenRows } = await supabase
-      .from('profiles')
-      .select('id, last_seen_at')
-      .in('id', sellerIds);
-
-    (seenRows ?? []).forEach((r) => {
-      if (r.last_seen_at) lastSeenMap[r.id as string] = r.last_seen_at as string;
-    });
-  }
-
   const typeOptions =
     categoryConfig && subNames.length > 1
       ? subNames.map((name) => ({
@@ -728,11 +714,9 @@ export default async function HomePage({
                       )}
 
                       <OnlineDot
-                        lastSeen={
-                          lastSeenMap[
-                            (listing as unknown as { user_id?: string | null })
-                              .user_id ?? ''
-                          ]
+                        sellerId={
+                          (listing as unknown as { user_id?: string | null })
+                            .user_id
                         }
                       />
 
