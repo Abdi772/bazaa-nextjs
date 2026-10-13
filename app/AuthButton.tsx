@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -11,6 +11,8 @@ export default function AuthButton() {
   const [open, setOpen] = useState(false);
   const [mode, setMode] =
     useState<'login' | 'signup'>('login');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -56,6 +58,8 @@ useEffect(() => {
 
   function close() {
     setOpen(false);
+    setFirstName('');
+    setLastName('');
     setEmail('');
     setPassword('');
     setError('');
@@ -66,6 +70,15 @@ useEffect(() => {
     setMode(m);
     setError('');
     setNotice('');
+  }
+
+  async function handleGoogle() {
+    setError('');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) setError(error.message);
   }
 
   async function handleSubmit(
@@ -90,6 +103,14 @@ useEffect(() => {
         close();
       }
     } else {
+      const fn = firstName.trim();
+      const ln = lastName.trim();
+      if (!fn || !ln) {
+        setError('Please enter your first and last name.');
+        setBusy(false);
+        return;
+      }
+
       const { data, error } =
         await supabase.auth.signUp({
           email,
@@ -97,6 +118,11 @@ useEffect(() => {
           options: {
             emailRedirectTo:
               window.location.origin,
+            data: {
+              first_name: fn,
+              last_name: ln,
+              full_name: fn + ' ' + ln,
+            },
           },
         });
 
@@ -279,6 +305,52 @@ useEffect(() => {
               onSubmit={handleSubmit}
               className="space-y-3.5"
             >
+              {mode === 'signup' && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label
+                      htmlFor="auth-first-name"
+                      className="mb-1.5 block text-sm font-bold text-fg"
+                    >
+                      First name
+                    </label>
+
+                    <input
+                      id="auth-first-name"
+                      type="text"
+                      required
+                      autoComplete="given-name"
+                      value={firstName}
+                      onChange={(e) =>
+                        setFirstName(e.target.value)
+                      }
+                      className="bazaa-input min-h-[48px] font-semibold"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="auth-last-name"
+                      className="mb-1.5 block text-sm font-bold text-fg"
+                    >
+                      Last name
+                    </label>
+
+                    <input
+                      id="auth-last-name"
+                      type="text"
+                      required
+                      autoComplete="family-name"
+                      value={lastName}
+                      onChange={(e) =>
+                        setLastName(e.target.value)
+                      }
+                      className="bazaa-input min-h-[48px] font-semibold"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label
                   htmlFor="auth-email"
@@ -341,6 +413,21 @@ useEffect(() => {
               </button>
             </form>
 
+            {/* Google */}
+            <div className="my-3 flex items-center gap-3 text-xs font-bold text-muted">
+              <span className="h-px flex-1 bg-line" />
+              or
+              <span className="h-px flex-1 bg-line" />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGoogle}
+              className="min-h-[50px] w-full rounded-bazaa border border-line bg-surface px-3 py-2 text-sm font-bold text-fg transition-colors hover:bg-panel"
+            >
+              Continue with Google
+            </button>
+
             {/* Cancel */}
             <button
               type="button"
@@ -354,4 +441,4 @@ useEffect(() => {
       )}
     </>
   );
-         }
+     }
