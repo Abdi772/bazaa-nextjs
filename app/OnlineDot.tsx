@@ -1,15 +1,71 @@
-'use client';
+ 'use client';
 import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
 
 const ONLINE_WINDOW_MS = 3 * 60 * 1000;
 
-export default function OnlineDot({ lastSeen }: { lastSeen?: string | null }) {
+// Cards on the same page ask together, so only ONE query is sent.
+type Resolver = (iso: string | null) => void;
+const waiting = new Map<string, Resolver[]>();
+let scheduled = false;
+
+async function flush() {
+  scheduled = false;
+  const batch = new Map(waiting);
+  waiting.clear();
+
+  const ids = Array.from(batch.keys());
+  const { data } = await supabase
+    .from('profiles')
+    .select('id, last_seen_at')
+    .in('id', ids);
+
+  const seen: Record<string, string | null> = {};
+  (data ?? []).forEach((r) => {
+    seen[r.id as string] = (r.last_seen_at as string | null) ?? null;
+  });
+
+  batch.forEach((resolvers, id) => {
+    resolvers.forEach((resolve) => resolve(seen[id] ?? null));
+  });
+}
+
+function requestLastSeen(id: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    const list = waiting.get(id) ?? [];
+    list.push(resolve);
+    waiting.set(id, list);
+
+    if (!scheduled) {
+      scheduled = true;
+      setTimeout(flush, 30);
+    }
+  });
+}
+
+export default function OnlineDot({ sellerId }: { sellerId?: string | null }) {
   const [online, setOnline] = useState(false);
 
   useEffect(() => {
-    if (!lastSeen) return;
-    setOnline(Date.now() - new Date(lastSeen).getTime() < ONLINE_WINDOW_MS);
-  }, [lastSeen]);
+    if (!sellerId) return;
+    let alive = true;
+
+    const check = () =>
+      requestLastSeen(sellerId).then((iso) => {
+        if (!alive) return;
+        setOnline(
+          !!iso && Date.now() - new Date(iso).getTime() < ONLINE_WINDOW_MS,
+        );
+      });
+
+    check();
+    const timer = setInterval(check, 60_000);
+
+    return () => {
+      alive = false;
+      clearInterval(timer);
+    };
+  }, [sellerId]);
 
   if (!online) return null;
 
