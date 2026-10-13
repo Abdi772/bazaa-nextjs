@@ -2,16 +2,25 @@
 import { useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
-// Marks the signed-in user as "online" without hammering the database.
+// Marks the signed-in user as "online".
 // - Creates the profile row once (never overwrites an existing name).
-// - Then only updates last_seen_at, at most every 3 minutes, and only
-//   while the tab is visible.
-const PING_EVERY_MS = 3 * 60 * 1000;
+// - Saves last_seen_at right away, then at most once a minute,
+//   and only while the page is visible.
+const PING_EVERY_MS = 60 * 1000;
 
 export default function Heartbeat() {
   useEffect(() => {
     let userId: string | null = null;
     let lastPing = 0;
+
+    const touch = async () => {
+      if (!userId) return;
+      lastPing = Date.now();
+      await supabase
+        .from('profiles')
+        .update({ last_seen_at: new Date().toISOString() })
+        .eq('id', userId);
+    };
 
     const ensureProfile = async (id: string, email?: string | null) => {
       await supabase.from('profiles').upsert(
@@ -22,17 +31,13 @@ export default function Heartbeat() {
         },
         { onConflict: 'id', ignoreDuplicates: true },
       );
-      lastPing = Date.now();
+      await touch();
     };
 
-    const ping = async () => {
+    const ping = () => {
       if (!userId || document.visibilityState !== 'visible') return;
-      if (Date.now() - lastPing < PING_EVERY_MS) return;
-      lastPing = Date.now();
-      await supabase
-        .from('profiles')
-        .update({ last_seen_at: new Date().toISOString() })
-        .eq('id', userId);
+      if (Date.now() - lastPing < PING_EVERY_MS - 5000) return;
+      touch();
     };
 
     const setUser = (user: { id: string; email?: string | null } | null) => {
@@ -62,4 +67,4 @@ export default function Heartbeat() {
   }, []);
 
   return null;
-}
+                    }
