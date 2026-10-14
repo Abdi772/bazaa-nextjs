@@ -134,6 +134,15 @@ export default function ResetPasswordPage() {
               This reset link is invalid or has expired. Go back, tap
               "Forgot password?" again, and use the newest email.
             </p>
+            <p className="mt-2 break-words text-xs text-muted">
+              {typeof window !== 'undefined'
+                ? decodeURIComponent(
+                    new URLSearchParams(window.location.hash.slice(1)).get(
+                      'error_description'
+                    ) ?? ''
+                  ).replace(/\+/g, ' ')
+                : ''}
+            </p>
             <Link
               href="/"
               className="bazaa-primary mt-4 min-h-[48px] w-full border border-amberDeep font-bold"
