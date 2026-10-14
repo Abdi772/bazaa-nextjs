@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -19,6 +19,7 @@ export default function ProfilePage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [ready, setReady] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
   const [avatarBusy, setAvatarBusy] = useState(false);
   const [avatarMsg, setAvatarMsg] = useState('');
 
@@ -37,11 +38,12 @@ export default function ProfilePage() {
 
         const { data: prof } = await supabase
           .from('profiles')
-          .select('avatar_url')
+          .select('avatar_url, name')
           .eq('id', data.user.id)
           .maybeSingle();
 
         setAvatarUrl((prof?.avatar_url as string | null) ?? null);
+        setProfileName((prof?.name as string | null) ?? null);
       }
 
       setReady(true);
@@ -129,7 +131,11 @@ export default function ProfilePage() {
     );
   }
 
-  const name = user.email?.split('@')[0] ?? 'Me';
+  const name =
+    profileName?.trim() ||
+    (user.user_metadata?.full_name as string | undefined)?.trim() ||
+    user.email?.split('@')[0] ||
+    'Me';
 
   return (
     <div className="mx-auto max-w-xl">
@@ -218,4 +224,4 @@ export default function ProfilePage() {
       </button>
     </div>
   );
-}
+               }
