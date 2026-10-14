@@ -176,15 +176,15 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
       <h2 className="mb-3 text-lg font-bold text-fg">Feedback</h2>
 
       <div className="mb-4 flex justify-around text-center text-sm font-bold">
-        <div className="text-green-600">
+        <div className="text-greenText">
           😊 {counts.positive}
           <div>Positive</div>
         </div>
-        <div className="text-amber-600">
+        <div className="text-amberText">
           😐 {counts.neutral}
           <div>Neutral</div>
         </div>
-        <div className="text-red-600">
+        <div className="text-dangerText">
           😞 {counts.negative}
           <div>Negative</div>
         </div>
@@ -254,7 +254,7 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
             </button>
           </div>
 
-          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-2 text-sm text-dangerText">{error}</p>}
         </div>
       )}
 
@@ -288,7 +288,7 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
               <button
                 type="button"
                 onClick={() => toggleLike(f)}
-                className={liked ? 'text-green-600' : ''}
+                className={liked ? 'text-greenText' : ''}
               >
                 👍 {f.likes.length}
               </button>
@@ -332,4 +332,4 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
       })}
     </section>
   );
-          }
+     }
