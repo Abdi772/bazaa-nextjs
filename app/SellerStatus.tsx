@@ -78,11 +78,11 @@ export default function SellerStatus({ sellerId }: { sellerId: string }) {
   return (
     <span
       className={`text-sm font-semibold ${
-        online ? 'text-green-600' : 'text-muted'
+        online ? 'text-greenText' : 'text-muted'
       }`}
     >
       {online ? '● ' : ''}
       {text}
     </span>
   );
-                              }
+}
