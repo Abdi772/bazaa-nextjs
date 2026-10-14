@@ -1,4 +1,4 @@
-  'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -18,7 +18,8 @@ export default function AuthButton() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
-useEffect(() => {
+
+  useEffect(() => {
     const openLogin = () => {
       setMode('login');
       setOpen(true);
@@ -26,7 +27,7 @@ useEffect(() => {
     window.addEventListener('bazaa:open-login', openLogin);
     return () => window.removeEventListener('bazaa:open-login', openLogin);
   }, []);
- 
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
@@ -79,6 +80,33 @@ useEffect(() => {
       options: { redirectTo: window.location.origin },
     });
     if (error) setError(error.message);
+  }
+
+  async function handleForgot() {
+    setError('');
+    setNotice('');
+
+    const value = email.trim();
+    if (!value) {
+      setError('Type your email above first, then tap "Forgot password?".');
+      return;
+    }
+
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(value, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setBusy(false);
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setNotice(
+        'If an account exists for ' +
+          value +
+          ', we sent a link to reset your password. Check your inbox and spam folder.'
+      );
+    }
   }
 
   async function handleSubmit(
@@ -400,6 +428,17 @@ useEffect(() => {
                 />
               </div>
 
+              {mode === 'login' && (
+                <button
+                  type="button"
+                  onClick={handleForgot}
+                  disabled={busy}
+                  className="-mt-1 min-h-[40px] text-sm font-bold text-amberText underline disabled:opacity-60"
+                >
+                  Forgot password?
+                </button>
+              )}
+
               <button
                 type="submit"
                 disabled={busy}
@@ -441,4 +480,4 @@ useEffect(() => {
       )}
     </>
   );
-     }
+                  }
