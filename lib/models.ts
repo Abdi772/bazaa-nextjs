@@ -10,9 +10,9 @@ export function modelsFor(
   if (!subcategory) return [];
 
   const independentOfBrand =
-    subcategory === 'TV' || subcategory === 'Freezer';
+    subcategory === 'TV' || subcategory === 'Refrigerators & Freezers';
 
   if (!brand && !independentOfBrand) return [];
 
   return getModels(subcategory, brand);
-}
+} 
