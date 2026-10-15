@@ -1,4 +1,4 @@
- import { createClient } from '@supabase/supabase-js';
+  import { createClient } from '@supabase/supabase-js';
 import { CATEGORY_CONFIG } from './categories';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -115,7 +115,7 @@ export async function getListings(
 
   if (safe) {
     q = q.or(
-      `title.ilike.%${safe}%,description.ilike.%${safe}%`
+      `title.ilike.%${safe}%,description.ilike.%${safe}%,brand.ilike.%${safe}%,model.ilike.%${safe}%`
     );
   }
 
