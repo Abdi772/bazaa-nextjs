@@ -1,10 +1,11 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 import LanguageText from './LanguageText';
+import { categoryImages } from '../lib/categories';
 
 export type CategoryTile = {
   name: string;
@@ -25,11 +26,12 @@ function TileImage({
   tile: CategoryTile;
   sizes: string;
 }) {
-  const [failed, setFailed] = useState(false);
+  const [index, setIndex] = useState(0);
+  const srcs = categoryImages(tile.name);
 
-  // If the picture file is missing, show the category icon instead
+  // If no picture file exists, show the category icon instead
   // of a broken image.
-  if (failed) {
+  if (index >= srcs.length) {
     return (
       <span className="flex h-full w-full items-center justify-center text-3xl">
         {tile.icon || '📦'}
@@ -39,12 +41,13 @@ function TileImage({
 
   return (
     <Image
-      src={`/categories/${tile.name.toLowerCase()}.jpg`}
+      key={srcs[index]}
+      src={srcs[index]}
       alt={tile.name}
       fill
       sizes={sizes}
       className="object-cover transition-transform duration-300 group-hover:scale-105"
-      onError={() => setFailed(true)}
+      onError={() => setIndex((i) => i + 1)}
     />
   );
 }
@@ -171,4 +174,4 @@ export default function CategoryTiles({
       )}
     </>
   );
-              }
+  }
