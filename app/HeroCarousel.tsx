@@ -267,5 +267,4 @@ export default function HeroCarousel() {
       </div>
     </div>
   );
-                      }
-                
+}
