@@ -6,6 +6,9 @@ import { useLanguage } from './LanguageProvider';
 
 const SLIDE_MS = 6500;
 
+// Where each picture is anchored when the hero is narrower than the photo.
+const POSITIONS = ['center', 'center', 'center top', 'center', 'center'];
+
 // Text colors, one per slide. All are bright enough on the dark hero.
 const ACCENTS = [
   '#f0b452', // amber
@@ -35,7 +38,7 @@ export default function HeroCarousel() {
   const titleClass =
     'mb-1.5 font-sans text-[22px] font-extrabold leading-[1.1] tracking-[-0.025em] sm:text-[32px]';
   const textClass =
-    'mb-2.5 text-[13px] leading-5 text-paper/75 sm:text-[15px] sm:leading-6';
+    'mb-2.5 text-[13px] leading-5 text-paper/90 sm:text-[15px] sm:leading-6';
 
   const slides = [
     {
@@ -160,6 +163,43 @@ export default function HeroCarousel() {
         if (Math.abs(dx) > 45) go(index + (dx < 0 ? 1 : -1));
       }}
     >
+      {/* Full-hero pictures. These sit behind everything in the hero card
+          (including the search box), so the hero section must be
+          "relative isolate". They cross-fade as the slides change. */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10">
+        {slides.map((s, i) => {
+          const active = i === index;
+          return (
+            <div
+              key={s.id}
+              className={`absolute inset-0 overflow-hidden transition-opacity duration-1000 ease-out ${
+                active ? 'opacity-100' : 'opacity-0'
+              }`}
+              style={{ background: FALLBACKS[i] }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/hero/slide-${i + 1}.jpg`}
+                alt=""
+                loading={i === 0 ? 'eager' : 'lazy'}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+                className={`h-full w-full object-cover ${
+                  active && !reduceMotion ? 'bazaa-zoom' : ''
+                }`}
+                style={{
+                  objectPosition: POSITIONS[i],
+                  animationDuration: `${SLIDE_MS + 1500}ms`,
+                }}
+              />
+            </div>
+          );
+        })}
+        {/* Dark shade so the text and search box stay easy to read. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#14132a] from-35% via-[#14132a]/80 via-65% to-[#14132a]/10" />
+      </div>
+
       {/* All slides share one grid cell, so the box is as tall as the
           tallest slide and the search box below never jumps. */}
       <div className="grid" aria-roledescription="carousel">
@@ -170,75 +210,37 @@ export default function HeroCarousel() {
             <div
               key={s.id}
               aria-hidden={!active}
-              className={`[grid-area:1/1] transition-all duration-700 ease-out ${
+              className={`[grid-area:1/1] pt-28 transition-all duration-700 ease-out sm:pt-32 ${
                 active
                   ? 'visible translate-x-0 opacity-100'
                   : 'pointer-events-none invisible translate-x-6 opacity-0'
               }`}
             >
-              <div className="grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] sm:gap-5">
-                {/* Picture is shown in full (never cropped). A blurred copy
-                    of the same picture fills the empty sides. */}
+              <div className="min-w-0">
                 <div
-                  className="relative flex h-[150px] items-center justify-center overflow-hidden rounded-2xl sm:h-[190px]"
-                  style={{ background: FALLBACKS[i] }}
+                  className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-black/35 px-2.5 py-1 text-[11px] font-semibold backdrop-blur-sm sm:text-xs"
+                  style={{ color }}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/hero/slide-${i + 1}.jpg`}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                    className={`absolute -left-6 -top-6 h-[calc(100%+3rem)] w-[calc(100%+3rem)] max-w-none object-cover opacity-70 blur-xl ${
-                      active && !reduceMotion ? 'bazaa-zoom' : ''
-                    }`}
-                    style={{ animationDuration: `${SLIDE_MS + 1500}ms` }}
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: color }}
                   />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/hero/slide-${i + 1}.jpg`}
-                    alt=""
-                    width={1200}
-                    height={900}
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                    className={`relative h-[86%] w-auto max-w-[92%] rounded-xl object-contain shadow-soft ${
-                      active && !reduceMotion ? 'bazaa-float' : ''
-                    }`}
-                  />
+                  {s.eyebrow}
                 </div>
 
-                <div className="min-w-0">
-                  <div
-                    className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-paper/10 px-2.5 py-1 text-[11px] font-semibold sm:text-xs"
-                    style={{ color }}
-                  >
-                    <span
-                      className="h-1.5 w-1.5 rounded-full"
-                      style={{ backgroundColor: color }}
-                    />
-                    {s.eyebrow}
+                {s.isMain ? (
+                  <h1 className={titleClass} style={{ color }}>
+                    {s.title}
+                  </h1>
+                ) : (
+                  <div className={titleClass} style={{ color }}>
+                    {s.title}
                   </div>
+                )}
 
-                  {s.isMain ? (
-                    <h1 className={titleClass} style={{ color }}>
-                      {s.title}
-                    </h1>
-                  ) : (
-                    <div className={titleClass} style={{ color }}>
-                      {s.title}
-                    </div>
-                  )}
+                {s.text ? <p className={textClass}>{s.text}</p> : null}
 
-                  {s.text ? <p className={textClass}>{s.text}</p> : null}
-
-                  {s.extra(active, color)}
-                </div>
+                {s.extra(active, color)}
               </div>
             </div>
           );
@@ -267,4 +269,5 @@ export default function HeroCarousel() {
       </div>
     </div>
   );
-                 }
+               }
+                 
