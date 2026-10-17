@@ -177,26 +177,8 @@ export default function HeroCarousel() {
               }`}
             >
               <div className="grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] sm:gap-5">
-                {/* Picture is shown in full (never cropped). A blurred copy
-                    of the same picture fills the empty sides. */}
-                <div
-                  className="relative flex h-[150px] items-center justify-center overflow-hidden rounded-2xl sm:h-[190px]"
-                  style={{ background: FALLBACKS[i] }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/hero/slide-${i + 1}.jpg`}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                    className={`absolute -left-6 -top-6 h-[calc(100%+3rem)] w-[calc(100%+3rem)] max-w-none object-cover opacity-70 blur-xl ${
-                      active && !reduceMotion ? 'bazaa-zoom' : ''
-                    }`}
-                    style={{ animationDuration: `${SLIDE_MS + 1500}ms` }}
-                  />
+                {/* Picture is shown in full, sharp, with no blur or crop. */}
+                <div className="flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`/hero/slide-${i + 1}.jpg`}
@@ -207,9 +189,10 @@ export default function HeroCarousel() {
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}
-                    className={`relative h-[86%] w-auto max-w-[92%] rounded-xl object-contain shadow-soft ${
+                    className={`h-[150px] w-auto max-w-full rounded-2xl object-contain shadow-soft sm:h-[190px] ${
                       active && !reduceMotion ? 'bazaa-float' : ''
                     }`}
+                    style={{ background: FALLBACKS[i] }}
                   />
                 </div>
 
@@ -267,4 +250,4 @@ export default function HeroCarousel() {
       </div>
     </div>
   );
-}
+     }
