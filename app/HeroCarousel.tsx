@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -33,8 +33,9 @@ export default function HeroCarousel() {
   const touchStartX = useRef<number | null>(null);
 
   const titleClass =
-    'mb-2 font-serif text-[26px] font-bold leading-[1.15] tracking-tight sm:text-4xl';
-  const textClass = 'mb-3 text-sm leading-6 text-paper/80 sm:text-base';
+    'mb-1.5 font-sans text-[22px] font-extrabold leading-[1.1] tracking-[-0.025em] sm:text-[32px]';
+  const textClass =
+    'mb-2.5 text-[13px] leading-5 text-paper/75 sm:text-[15px] sm:leading-6';
 
   const slides = [
     {
@@ -144,7 +145,7 @@ export default function HeroCarousel() {
 
   return (
     <div
-      className="mb-5 sm:mb-6"
+      className="mb-3 sm:mb-4"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -175,54 +176,76 @@ export default function HeroCarousel() {
                   : 'pointer-events-none invisible translate-x-6 opacity-0'
               }`}
             >
-              {/* Big picture, 4:3. It slowly zooms in while the slide plays. */}
-              <div
-                className="relative mb-4 aspect-[4/3] w-full overflow-hidden rounded-2xl"
-                style={{ background: FALLBACKS[i] }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/hero/slide-${i + 1}.jpg`}
-                  alt=""
-                  width={1200}
-                  height={900}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                  className={`absolute inset-0 h-full w-full object-cover ${
-                    active && !reduceMotion ? 'bazaa-zoom' : ''
-                  }`}
-                  style={{ animationDuration: `${SLIDE_MS + 1500}ms` }}
-                />
-              </div>
-
-              <div
-                className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] sm:text-xs"
-                style={{ color }}
-              >
-                {s.eyebrow}
-              </div>
-
-              {s.isMain ? (
-                <h1 className={titleClass} style={{ color }}>
-                  {s.title}
-                </h1>
-              ) : (
-                <div className={titleClass} style={{ color }}>
-                  {s.title}
+              <div className="grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] sm:gap-5">
+                {/* Picture is shown in full (never cropped). A blurred copy
+                    of the same picture fills the empty sides. */}
+                <div
+                  className="relative flex h-[150px] items-center justify-center overflow-hidden rounded-2xl sm:h-[190px]"
+                  style={{ background: FALLBACKS[i] }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/hero/slide-${i + 1}.jpg`}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                    className={`absolute -left-6 -top-6 h-[calc(100%+3rem)] w-[calc(100%+3rem)] max-w-none object-cover opacity-70 blur-xl ${
+                      active && !reduceMotion ? 'bazaa-zoom' : ''
+                    }`}
+                    style={{ animationDuration: `${SLIDE_MS + 1500}ms` }}
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/hero/slide-${i + 1}.jpg`}
+                    alt=""
+                    width={1200}
+                    height={900}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                    className={`relative h-[86%] w-auto max-w-[92%] rounded-xl object-contain shadow-soft ${
+                      active && !reduceMotion ? 'bazaa-float' : ''
+                    }`}
+                  />
                 </div>
-              )}
 
-              {s.text ? <p className={textClass}>{s.text}</p> : null}
+                <div className="min-w-0">
+                  <div
+                    className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-paper/10 px-2.5 py-1 text-[11px] font-semibold sm:text-xs"
+                    style={{ color }}
+                  >
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: color }}
+                    />
+                    {s.eyebrow}
+                  </div>
 
-              {s.extra(active, color)}
+                  {s.isMain ? (
+                    <h1 className={titleClass} style={{ color }}>
+                      {s.title}
+                    </h1>
+                  ) : (
+                    <div className={titleClass} style={{ color }}>
+                      {s.title}
+                    </div>
+                  )}
+
+                  {s.text ? <p className={textClass}>{s.text}</p> : null}
+
+                  {s.extra(active, color)}
+                </div>
+              </div>
             </div>
           );
         })}
       </div>
 
-      <div className="mt-4 flex items-center gap-1" role="tablist">
+      <div className="mt-2.5 flex items-center gap-1" role="tablist">
         {slides.map((s, i) => (
           <button
             key={s.id}
@@ -244,4 +267,5 @@ export default function HeroCarousel() {
       </div>
     </div>
   );
-}
+                      }
+                
