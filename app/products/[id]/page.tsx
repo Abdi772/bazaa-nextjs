@@ -1,4 +1,4 @@
- import Link from 'next/link';
+  import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -22,6 +22,7 @@ import FavoriteButton from '../../FavoriteButton';
 import ChatButton from '../../ChatButton';
 import ContactButtons from '../../ContactButtons';
 import Avatar from '../../Avatar';
+import VerifiedBadge from '../../VerifiedBadge';
 import ListingActions from '../../ListingActions';
 import SellerRating from '../../SellerRating';
 import SellerStatus from '../../SellerStatus';
@@ -134,16 +135,18 @@ export default async function ProductPage({
   let sellerSince: string | null = null;
   let sellerName: string | null = null;
   let sellerAvatar: string | null = null;
+  let sellerVerified = false;
 
   if (sellerId) {
     const { data: profileRow } = await supabase
       .from('profiles')
-      .select('name, avatar_url')
+      .select('name, avatar_url, verified')
       .eq('id', sellerId)
       .maybeSingle();
 
     sellerName = (profileRow?.name as string | null)?.trim() || null;
     sellerAvatar = (profileRow?.avatar_url as string | null) || null;
+    sellerVerified = !!profileRow?.verified;
 
     const { data: sellerRows } = await supabase
       .from('listings')
@@ -513,8 +516,9 @@ export default async function ProductPage({
               Seller
             </div>
 
-            <div className="mt-1 text-base font-bold text-fg">
+            <div className="mt-1 flex items-center gap-1.5 text-base font-bold text-fg">
               {sellerName || 'View seller'}
+              {sellerVerified && <VerifiedBadge />}
             </div>
 
             <div className="mt-0.5 text-xs text-muted">
@@ -640,7 +644,8 @@ export default async function ProductPage({
         <section className="mb-8">
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
-              <div className="text-xs font-bold uppercase tracking-[0.16em] text-amberText">
+              <div className="text-xs font-bold uppercas
+             tracking-[0.16em] text-amberText">
                 You may also like
               </div>
 
@@ -698,4 +703,5 @@ export default async function ProductPage({
       )}
     </div>
   );
-                }
+      }
+           
