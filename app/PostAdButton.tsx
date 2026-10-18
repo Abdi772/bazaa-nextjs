@@ -3,26 +3,33 @@
 import Link from 'next/link';
 import { useLanguage } from './LanguageProvider';
 
-const LABEL: Record<string, string> = {
+const LONG: Record<string, string> = {
   English: 'Post an ad',
   Amharic: 'ማስታወቂያ ይለጥፉ',
   Oromo: 'Beeksisa maxxansi',
 };
 
-// A clear "Post an ad" button for the header. It shows from tablet size up.
-// On small phones the bottom bar already has a Sell button.
+// Shorter words for small phone screens, so the header still fits.
+const SHORT: Record<string, string> = {
+  English: 'Post ad',
+  Amharic: 'ይለጥፉ',
+  Oromo: 'Maxxansi',
+};
+
+// A clear "Post an ad" button for the header, on phones and bigger screens.
 export default function PostAdButton() {
   const { language } = useLanguage();
 
   return (
     <Link
       href="/post"
-      className="hidden min-h-[44px] items-center gap-1.5 rounded-full border border-amber px-4 text-sm font-bold text-amber transition-colors hover:bg-amber hover:text-ink sm:inline-flex"
+      className="inline-flex min-h-[44px] shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-amber px-3 text-sm font-bold text-amber transition-colors hover:bg-amber hover:text-ink sm:gap-1.5 sm:px-4"
     >
       <span aria-hidden="true" className="text-lg leading-none">
         +
       </span>
-      {LABEL[language] ?? LABEL.English}
+      <span className="sm:hidden">{SHORT[language] ?? SHORT.English}</span>
+      <span className="hidden sm:inline">{LONG[language] ?? LONG.English}</span>
     </Link>
   );
-        }
+}
