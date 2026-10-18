@@ -30,6 +30,28 @@ const ALL_LABEL: Record<string, string> = {
   Oromo: 'Ramaddii hunda',
 };
 
+const POST_LABEL: Record<string, string> = {
+  English: 'Post ad',
+  Amharic: 'ማስታወቂያ ይለጥፉ',
+  Oromo: 'Beeksisa maxxansi',
+};
+
+function PlusIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
 function openAllCategories() {
   window.dispatchEvent(new Event('bazaa-open-categories'));
 }
@@ -91,6 +113,7 @@ export default function CategoryTiles({
   const [view, setView] = useState<View>('large');
   const { language } = useLanguage();
   const allLabel = ALL_LABEL[language] ?? ALL_LABEL.English;
+  const postLabel = POST_LABEL[language] ?? POST_LABEL.English;
   const main = items.slice(0, MAIN_COUNT);
 
   // Load the saved choice
@@ -158,11 +181,28 @@ export default function CategoryTiles({
 
       {compact ? (
         <div className="mb-8 flex snap-x gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:mb-10 md:grid md:grid-cols-8 md:gap-x-2 md:overflow-visible [&::-webkit-scrollbar]:hidden">
-          {main.map((tile) => (
+          <Link
+            href="/post"
+            className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
+          >
+            <div className="flex aspect-square w-full items-center justify-center rounded-bazaa bg-amber">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-amber">
+                <PlusIcon className="h-5 w-5" />
+              </span>
+            </div>
+
+            <div className="mt-1.5 line-clamp-2 text-[11px] font-bold leading-4 bazaa-text">
+              {postLabel}
+            </div>
+          </Link>
+
+          {main.map((tile, i) => (
             <Link
               key={tile.name}
               href={tile.href}
-              className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
+              className={`group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0 ${
+                i >= 6 ? 'md:hidden' : ''
+              }`}
             >
               <div className="relative aspect-square w-full overflow-hidden rounded-bazaa bg-panel">
                 <TileImage
@@ -193,12 +233,29 @@ export default function CategoryTiles({
         </div>
       ) : (
         <div className="mb-8 flex snap-x gap-3 overflow-x-auto pb-1 [scrollbar-width:none] md:mb-10 md:grid md:grid-cols-6 md:overflow-visible [&::-webkit-scrollbar]:hidden">
+          <Link
+            href="/post"
+            className="group flex w-[132px] shrink-0 snap-start flex-col overflow-hidden rounded-card border border-amber bg-amber shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0"
+          >
+            <div className="flex aspect-square w-full items-center justify-center">
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-amber shadow-card">
+                <PlusIcon className="h-8 w-8" />
+              </span>
+            </div>
+
+            <div className="p-2.5 sm:p-3">
+              <div className="text-[13px] font-bold leading-5 text-ink sm:text-sm">
+                {postLabel}
+              </div>
+            </div>
+          </Link>
+
           {main.map((tile, i) => (
             <Link
               key={tile.name}
               href={tile.href}
               className={`group w-[132px] shrink-0 snap-start overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0 ${
-                i >= 5 ? 'md:hidden' : ''
+                i >= 4 ? 'md:hidden' : ''
               }`}
             >
               <div className="relative aspect-square overflow-hidden bg-panel">
@@ -244,4 +301,4 @@ export default function CategoryTiles({
       )}
     </>
   );
-}
+     }
