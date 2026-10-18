@@ -1,9 +1,10 @@
-import type { Metadata, Viewport } from 'next';
+ import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { Fraunces, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 
 import AuthButton from './AuthButton';
+import PostAdButton from './PostAdButton';
 import BottomNav from './BottomNav';
 import BackButton from './BackButton';
 import ThemeButton from './ThemeButton';
@@ -77,6 +78,7 @@ export default function RootLayout({
               <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
                 <TextSize />
                 <ThemeButton />
+                <PostAdButton />
                 <AuthButton />
               </div>
             </div>
@@ -93,4 +95,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-           }
+}
