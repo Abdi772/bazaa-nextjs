@@ -1,8 +1,10 @@
- 'use client';
+  'use client';
 
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from './LanguageProvider';
+import { supabase } from '../lib/supabaseClient';
 
 const ICON = {
   fill: 'none',
@@ -15,6 +17,87 @@ const ICON = {
 export default function BottomNav() {
   const pathname = usePathname();
   const { t } = useLanguage();
+
+  // ---- Unread messages badge on the Messages tab ----
+  const [unread, setUnread] = useState(0);
+  const userIdRef = useRef<string | null>(null);
+
+  const refreshUnread = useCallback(async () => {
+    const uid = userIdRef.current;
+
+    if (!uid) {
+      setUnread(0);
+      return;
+    }
+
+    // Messages from other people that have not been read yet.
+    // (Same rule the inbox page uses; the database only returns
+    // messages from the user's own conversations.)
+    const { count } = await supabase
+      .from('messages')
+      .select('id', { count: 'exact', head: true })
+      .is('read_at', null)
+      .neq('sender_id', uid);
+
+    setUnread(count ?? 0);
+  }, []);
+
+  // Start/stop listening when the user logs in or out, and update
+  // the badge live whenever a message is sent or read.
+  useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+
+    async function start(userId: string | null) {
+      userIdRef.current = userId;
+
+      if (channel) {
+        supabase.removeChannel(channel);
+        channel = null;
+      }
+
+      if (!userId) {
+        setUnread(0);
+        return;
+      }
+
+      await refreshUnread();
+      if (cancelled) return;
+
+      channel = supabase
+        .channel(`nav-unread-${userId}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'messages' },
+          () => {
+            refreshUnread();
+          },
+        )
+        .subscribe();
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!cancelled) start(data.session?.user.id ?? null);
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        start(session?.user.id ?? null);
+      },
+    );
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+      if (channel) supabase.removeChannel(channel);
+    };
+  }, [refreshUnread]);
+
+  // Also re-check when the person moves between pages
+  // (for example after reading a chat).
+  useEffect(() => {
+    refreshUnread();
+  }, [pathname, refreshUnread]);
 
   const items = [
     {
@@ -134,7 +217,7 @@ export default function BottomNav() {
             >
               <span
                 className={[
-                  'flex h-9 w-11 shrink-0',
+                  'relative flex h-9 w-11 shrink-0',
                   'items-center justify-center',
                   'rounded-full',
                   'transition-all duration-150',
@@ -144,6 +227,18 @@ export default function BottomNav() {
                 ].join(' ')}
               >
                 {item.icon}
+
+                {item.href === '/messages' && unread > 0 && (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white ring-2 ring-surface"
+                    >
+                      {unread > 9 ? '9+' : unread}
+                    </span>
+                    <span className="sr-only">{unread} unread</span>
+                  </>
+                )}
               </span>
 
               <span
@@ -162,4 +257,4 @@ export default function BottomNav() {
       </div>
     </nav>
   );
-}
+               }
