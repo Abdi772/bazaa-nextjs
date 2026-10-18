@@ -1,4 +1,4 @@
- // Spec table rows (label + value) shown in the description.
+  // Spec table rows (label + value) shown in the description.
 // Each subcategory below gets its own starter rows when the seller picks it.
 // To add the table to another subcategory, add a line to SPEC_PRESETS.
 
@@ -13,14 +13,13 @@ export const SPEC_PRESETS: Record<string, SpecRow[]> = {
   Computers: rows('Processor', 'RAM', 'Storage', 'Screen size', 'Battery health'),
   Monitors: rows('Screen size', 'Resolution', 'Refresh rate'),
   Cameras: rows(
-    'Camera type',
     'Megapixels',
     'Shutter count',
     'Lens or kit included',
     'Battery and charger included',
     'Memory card included',
   ),
-  TV: rows('TV type (LED, QLED, OLED)', 'Resolution (HD, Full HD, 4K)', 'Smart TV', 'Remote and stand included'),
+  TV: rows('Resolution (HD, Full HD, 4K)', 'Smart TV', 'Remote and stand included'),
   Gaming: rows('Storage', 'Controllers included', 'Games included'),
   'Photo & Video': rows('Compatible with (mount or brand)', 'Power or size', 'What is in the box'),
   'Solar & Power': rows('Power (W or kVA)', 'Voltage', 'Capacity (Ah or kWh)', 'Warranty'),
