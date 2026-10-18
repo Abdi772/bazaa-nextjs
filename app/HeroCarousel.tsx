@@ -196,8 +196,8 @@ export default function HeroCarousel() {
             </div>
           );
         })}
-        {/* Dark shade so the text and search box stay easy to read. */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#14132a] from-35% via-[#14132a]/80 via-65% to-[#14132a]/10" />
+        {/* Light shade so the text and search box stay easy to read. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       </div>
 
       {/* All slides share one grid cell, so the box is as tall as the
@@ -210,13 +210,13 @@ export default function HeroCarousel() {
             <div
               key={s.id}
               aria-hidden={!active}
-              className={`[grid-area:1/1] pt-28 transition-all duration-700 ease-out sm:pt-32 ${
+              className={`[grid-area:1/1] pt-28 transition-all ease-out sm:pt-32 ${
                 active
-                  ? 'visible translate-x-0 opacity-100'
-                  : 'pointer-events-none invisible translate-x-6 opacity-0'
+                  ? 'visible translate-x-0 opacity-100 delay-300 duration-500'
+                  : 'pointer-events-none invisible translate-x-4 opacity-0 duration-300'
               }`}
             >
-              <div className="min-w-0">
+              <div className="min-w-0 [text-shadow:0_1px_10px_rgba(0,0,0,0.65)]">
                 <div
                   className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-black/35 px-2.5 py-1 text-[11px] font-semibold backdrop-blur-sm sm:text-xs"
                   style={{ color }}
@@ -269,5 +269,4 @@ export default function HeroCarousel() {
       </div>
     </div>
   );
-               }
-                 
+        }
