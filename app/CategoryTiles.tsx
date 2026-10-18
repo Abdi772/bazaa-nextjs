@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -110,7 +110,7 @@ export default function CategoryTiles({
 }: {
   items: CategoryTile[];
 }) {
-  const [view, setView] = useState<View>('large');
+  const [view, setView] = useState<View>('compact');
   const { language } = useLanguage();
   const allLabel = ALL_LABEL[language] ?? ALL_LABEL.English;
   const postLabel = POST_LABEL[language] ?? POST_LABEL.English;
@@ -301,4 +301,4 @@ export default function CategoryTiles({
       )}
     </>
   );
-     }
+                 }
