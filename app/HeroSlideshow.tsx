@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -8,7 +8,11 @@ const SLIDE_MS = 5000;
 const GOLD = '#F5B041';
 
 // One big picture at a time. The pictures cross-fade and zoom in slowly.
-export default function HeroSlideshow() {
+export default function HeroSlideshow({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -55,7 +59,7 @@ export default function HeroSlideshow() {
 
   return (
     <div
-      className="relative aspect-[16/11] w-full overflow-hidden rounded-2xl border border-white/10 bg-ink shadow-soft sm:aspect-[4/3]"
+      className="relative aspect-[2/1] w-full overflow-hidden rounded-none border-0 border-white/10 bg-ink sm:rounded-2xl sm:border shadow-soft sm:aspect-[4/3]"
       aria-roledescription="carousel"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -88,6 +92,9 @@ export default function HeroSlideshow() {
           />
         );
       })}
+
+      {/* Anything passed in (the small feature chips on phones) */}
+      {children}
 
       {/* Soft shade at the bottom so the dots stay readable */}
       <div
