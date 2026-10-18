@@ -1,4 +1,4 @@
-  import { createClient } from '@supabase/supabase-js';
+   import { createClient } from '@supabase/supabase-js';
 import { CATEGORY_CONFIG } from './categories';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -108,14 +108,19 @@ export async function getListings(
     q = q.lte('price', filters.maxPrice);
   }
 
-  // Remove characters that could break the search filter
-  const safe = (filters.query ?? '')
-    .replace(/[,()%*\\]/g, ' ')
-    .trim();
+  // Search: every word must match somewhere (title, description, brand,
+  // model, subcategory or category), in any order. So "14 iphone" finds
+  // "iPhone 14 Pro Max". Characters that could break the filter are
+  // removed, and we stop at 5 words.
+  const words = (filters.query ?? '')
+    .replace(/[,()%*\\_]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 5);
 
-  if (safe) {
+  for (const w of words) {
     q = q.or(
-      `title.ilike.%${safe}%,description.ilike.%${safe}%,brand.ilike.%${safe}%,model.ilike.%${safe}%`
+      `title.ilike.%${w}%,description.ilike.%${w}%,brand.ilike.%${w}%,model.ilike.%${w}%,subcategory.ilike.%${w}%,category.ilike.%${w}%`
     );
   }
 
@@ -283,4 +288,4 @@ export async function getBrandCounts(
 
   return counts;
 }
-             
+
