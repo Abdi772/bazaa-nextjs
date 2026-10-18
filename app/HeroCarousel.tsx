@@ -7,7 +7,18 @@ import { useLanguage } from './LanguageProvider';
 const SLIDE_MS = 6500;
 
 // Where each picture is anchored when the hero is narrower than the photo.
-const POSITIONS = ['center', 'center', 'center top', 'center', 'center'];
+const POSITIONS = [
+  'center',
+  'center',
+  'center top',
+  'center',
+  'center',
+  'center top',
+  'center',
+  'center',
+  'center',
+  'center',
+];
 
 // Text colors, one per slide. All are bright enough on the dark hero.
 const ACCENTS = [
@@ -16,6 +27,11 @@ const ACCENTS = [
   '#6ec3f4', // sky blue
   '#ff8a7a', // coral
   '#b9a4f5', // lilac
+  '#f59ac2', // pink
+  '#62d6c8', // teal
+  '#b6e35a', // lime
+  '#ffb08a', // peach
+  '#9fb4ff', // periwinkle
 ];
 
 // Shown behind each picture. If a picture file is missing, this soft
@@ -26,10 +42,43 @@ const FALLBACKS = [
   'linear-gradient(135deg, #1f4a66 0%, #2a2540 100%)',
   'linear-gradient(135deg, #6a3328 0%, #2a2540 100%)',
   'linear-gradient(135deg, #3f3470 0%, #2a2540 100%)',
+  'linear-gradient(135deg, #6a2a4a 0%, #2a2540 100%)',
+  'linear-gradient(135deg, #1f5a55 0%, #2a2540 100%)',
+  'linear-gradient(135deg, #4a5a1f 0%, #2a2540 100%)',
+  'linear-gradient(135deg, #6a4028 0%, #2a2540 100%)',
+  'linear-gradient(135deg, #2f3a70 0%, #2a2540 100%)',
 ];
 
+type Copy = { eyebrow: string; title: string; text: string };
+
+// Text for slides 6 to 10, in the three site languages.
+const MORE: Record<string, Copy[]> = {
+  English: [
+    { eyebrow: 'Fashion', title: 'Traditional and modern styles, all in one place.', text: 'Find clothes, shoes and accessories from sellers near you.' },
+    { eyebrow: 'Local crafts', title: 'Handmade goods from your own market.', text: 'Support local makers and find one-of-a-kind items.' },
+    { eyebrow: 'Clothing', title: 'Find your next outfit for less.', text: 'Shirts, trousers, shoes and watches from people nearby.' },
+    { eyebrow: 'Beauty & care', title: 'Everyday essentials, close to home.', text: 'Skincare, perfume and personal care from sellers near you.' },
+    { eyebrow: 'Sell clothes', title: 'Clear out your wardrobe and earn extra.', text: 'List clothes you no longer wear in minutes.' },
+  ],
+  Amharic: [
+    { eyebrow: 'ፋሽን', title: 'ባህላዊና ዘመናዊ ልብሶች በአንድ ቦታ።', text: 'ከአቅራቢያዎ ካሉ ሻጮች ልብስ፣ ጫማና ጌጣጌጥ ያግኙ።' },
+    { eyebrow: 'የአገር ውስጥ ሥራዎች', title: 'ከገበያዎ የእጅ ሥራ ምርቶች።', text: 'የአገር ውስጥ ባለሙያዎችን ይደግፉ፤ ልዩ ዕቃዎችን ያግኙ።' },
+    { eyebrow: 'ልብስ', title: 'ቀጣዩን ልብስዎን በአነስተኛ ዋጋ ያግኙ።', text: 'ሸሚዞች፣ ሱሪዎች፣ ጫማዎችና ሰዓቶች ከአቅራቢያዎ ካሉ ሰዎች።' },
+    { eyebrow: 'ውበትና እንክብካቤ', title: 'ዕለታዊ አስፈላጊ ዕቃዎች ከቤትዎ አጠገብ።', text: 'የቆዳ እንክብካቤ፣ ሽቶና የግል እንክብካቤ ምርቶች ከአቅራቢያ ሻጮች።' },
+    { eyebrow: 'ልብስ ይሽጡ', title: 'ቁምሳጥንዎን አጽድተው ተጨማሪ ገቢ ያግኙ።', text: 'የማይለብሷቸውን ልብሶች በደቂቃዎች ውስጥ ይለጥፉ።' },
+  ],
+  Oromo: [
+    { eyebrow: 'Fashinii', title: 'Uffata aadaa fi ammayyaa iddoo tokkotti.', text: 'Uffata, kophee fi miidhagsitoota daldaltoota naannoo keessan jiran irraa argadhaa.' },
+    { eyebrow: 'Hojii harkaa naannoo', title: 'Meeshaalee harkaan hojjetaman gabaa keessan irraa.', text: 'Hojjettoota naannoo deeggaraa; meeshaalee adda ta’an argadhaa.' },
+    { eyebrow: 'Uffata', title: 'Uffata keessan itti aanu gatii xiqqaadhaan argadhaa.', text: 'Shaamisa, surree, kophee fi sa’aatii namoota naannoo keessan jiran irraa.' },
+    { eyebrow: 'Miidhagina fi eegumsa', title: 'Meeshaalee guyyaa guyyaa mana keessanitti dhiyoo.', text: 'Wantoota dhugaa gogaa, urgaa fi eegumsa dhuunfaa daldaltoota naannoo irraa.' },
+    { eyebrow: 'Uffata gurguri', title: 'Kuusaa uffata keessan qulqulleessaa, galii dabalataa argadhaa.', text: 'Uffata hin uffanne daqiiqaa muraasa keessatti baasaa.' },
+  ],
+};
+
 export default function HeroCarousel() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const more = MORE[language] ?? MORE.English;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -113,6 +162,13 @@ export default function HeroCarousel() {
       text: t('heroWhyText'),
       extra: (_active: boolean, _color: string) => null,
     },
+    ...more.map((m, k) => ({
+      id: `more-${k}`,
+      eyebrow: m.eyebrow,
+      title: m.title,
+      text: m.text,
+      extra: (_active: boolean, _color: string) => null,
+    })),
   ];
 
   // Respect "reduce motion" settings: no auto-advance, no zoom.
@@ -196,7 +252,7 @@ export default function HeroCarousel() {
             </div>
           );
         })}
-        {/* Light shade so the text and search box stay easy to read. */}
+        {/* Dark shade so the text and search box stay easy to read. */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       </div>
 
@@ -269,4 +325,5 @@ export default function HeroCarousel() {
       </div>
     </div>
   );
-        }
+           }
+       
