@@ -1,4 +1,4 @@
-  'use client';
+   'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -201,6 +201,11 @@ export default function ProfilePage() {
           <span>{t('postListing')}</span>
         </Link>
 
+        <Link href="/verify" className={tile}>
+          <span aria-hidden="true">✅</span>
+          <span>Get verified</span>
+        </Link>
+
         <Link href="/settings" className={tile}>
           <span aria-hidden="true">⚙️</span>
           <span>{t('settings')}</span>
@@ -224,4 +229,4 @@ export default function ProfilePage() {
       </button>
     </div>
   );
-               }
+}
