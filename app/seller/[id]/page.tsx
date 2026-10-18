@@ -1,4 +1,4 @@
-  import Link from 'next/link';
+   import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -8,6 +8,7 @@ import { CATEGORY_CONFIG } from '@/lib/categories';
 import LanguageText from '../../LanguageText';
 import SellerStatus from '../../SellerStatus';
 import Avatar from '../../Avatar';
+import VerifiedBadge from '../../VerifiedBadge';
 import SellerFeedback from '../../SellerFeedback';
 import Reviews from '../../Reviews';
 
@@ -44,7 +45,7 @@ export default async function SellerPage({ params }: Props) {
       .order('created_at', { ascending: false }),
     supabase
       .from('profiles')
-      .select('name, avatar_url')
+      .select('name, avatar_url, verified')
       .eq('id', params.id)
       .maybeSingle(),
   ]);
@@ -52,6 +53,7 @@ export default async function SellerPage({ params }: Props) {
   const items = (data ?? []) as Row[];
   const sellerName = profile?.name ?? null;
   const sellerAvatar = (profile?.avatar_url as string | null) ?? null;
+  const sellerVerified = !!profile?.verified;
   const since =
     items.length > 0
       ? new Date(items[items.length - 1].created_at).toLocaleDateString('en-US', {
@@ -69,8 +71,9 @@ export default async function SellerPage({ params }: Props) {
       <div className="flex items-center gap-3 my-4">
         <Avatar name={sellerName ?? 'S'} url={sellerAvatar} className="h-14 w-14 text-xl" />
         <div>
-          <div className="font-serif text-xl font-bold">
+          <div className="flex items-center gap-1.5 font-serif text-xl font-bold">
             {sellerName ?? <LanguageText k="seller" />}
+            {sellerVerified && <VerifiedBadge className="h-5 w-5" />}
           </div>
 
           <div className="mt-0.5">
