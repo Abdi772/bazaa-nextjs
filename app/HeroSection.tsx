@@ -1,15 +1,22 @@
  'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from './LanguageProvider';
 import HeroSlideshow from './HeroSlideshow';
 
 const GOLD = '#F5B041';
 
 // Small gold icons for the four feature items.
-function Icon({ name }: { name: 'shield' | 'pin' | 'bolt' | 'chat' }) {
+function Icon({
+  name,
+  size = 20,
+}: {
+  name: 'shield' | 'pin' | 'bolt' | 'chat';
+  size?: number;
+}) {
   const common = {
-    width: 20,
-    height: 20,
+    width: size,
+    height: size,
     viewBox: '0 0 24 24',
     fill: 'none',
     stroke: GOLD,
@@ -60,6 +67,14 @@ const FEATURES: {
 export default function HeroSection() {
   const { t } = useLanguage();
 
+  // Phones: only a Search button shows until it is tapped, then the
+  // typing box opens (bigger screens always show the box).
+  const [searchOpen, setSearchOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (searchOpen) inputRef.current?.focus();
+  }, [searchOpen]);
+
   // "Buy and sell anything, right in your area." -> two lines:
   // the first part in white, the rest in gold (works for all 3 languages).
   const headline = t('buyAndSell');
@@ -69,23 +84,38 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative isolate mb-7 overflow-hidden rounded-card px-4 py-5 text-paper shadow-soft sm:px-8 sm:py-9 lg:px-12"
+      className="relative isolate mb-5 overflow-hidden rounded-card px-4 py-4 text-paper shadow-soft sm:px-8 sm:py-9 lg:px-12"
       style={{
         background:
           'radial-gradient(700px 380px at 82% 38%, rgba(245,176,65,0.12), transparent 62%), linear-gradient(135deg, #0E111F 0%, #151829 55%, #1B1A2E 100%)',
       }}
     >
-      <div className="grid items-center gap-4 md:grid-cols-[1.05fr_1fr] md:gap-8">
+      <div className="grid items-center gap-3 md:grid-cols-[1.05fr_1fr] md:gap-8">
         {/* Your 10 pictures, one at a time: on top on phones,
             on the right on bigger screens */}
-        <div className="order-first md:order-last">
-          <HeroSlideshow />
+        <div className="order-first -mx-4 -mt-4 sm:mx-0 sm:mt-0 md:order-last">
+          <HeroSlideshow>
+            {/* Phones only: the four small chips on top of the picture */}
+            <div className="pointer-events-none absolute inset-x-0 top-2 grid grid-cols-2 justify-items-start gap-x-2 gap-y-1 px-2 sm:hidden">
+              {FEATURES.map((f) => (
+                <div
+                  key={f.title}
+                  className="flex max-w-full items-center gap-1.5 rounded-full bg-black/50 px-2 py-0.5 backdrop-blur-sm"
+                >
+                  <Icon name={f.icon} size={13} />
+                  <span className="truncate text-[11px] font-semibold leading-4 text-white">
+                    {t(f.title)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </HeroSlideshow>
         </div>
 
         {/* Text */}
         <div className="min-w-0">
           <div
-            className="mb-3 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold sm:text-sm"
+            className="mb-2 hidden items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold sm:inline-flex sm:text-sm"
             style={{
               color: GOLD,
               borderColor: 'rgba(245,176,65,0.4)',
@@ -110,12 +140,12 @@ export default function HeroSection() {
             {t('heroPill')}
           </div>
 
-          <h1 className="mb-2 font-serif text-[40px] font-bold leading-[1.05] tracking-tight sm:text-6xl">
+          <h1 className="sr-only mb-1.5 font-serif text-[34px] font-bold leading-[1.05] tracking-tight sm:not-sr-only sm:text-6xl">
             <span className="text-white">Bazaa </span>
             <span style={{ color: GOLD }}>Marketplace</span>
           </h1>
 
-          <p className="mb-4 text-2xl font-semibold leading-snug text-white sm:mb-2 sm:text-3xl">
+          <p className="sr-only mb-3 text-xl font-semibold leading-snug text-white sm:not-sr-only sm:mb-2 sm:text-3xl">
             {first}
             {second ? (
               <>
@@ -129,10 +159,36 @@ export default function HeroSection() {
             {t('findWhatYouNeed')}
           </p>
 
+          {!searchOpen && (
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full px-5 text-base font-bold text-ink sm:hidden"
+              style={{ background: GOLD }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+              {t('search')}
+            </button>
+          )}
+
           <form
             action="/"
             method="get"
-            className="flex items-center gap-2 rounded-full border bg-white/5 p-1.5 pl-4 backdrop-blur-sm"
+            className={`${
+              searchOpen ? 'flex' : 'hidden sm:flex'
+            } items-center gap-2 rounded-full border bg-white/5 p-1.5 pl-4 backdrop-blur-sm`}
             style={{ borderColor: 'rgba(245,176,65,0.55)' }}
           >
             <svg
@@ -151,6 +207,7 @@ export default function HeroSection() {
             </svg>
 
             <input
+              ref={inputRef}
               type="search"
               name="q"
               placeholder={t('searchPlaceholder')}
@@ -170,11 +227,11 @@ export default function HeroSection() {
       </div>
 
       {/* Four feature items. Titles only on small phones to save height. */}
-      <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-white/10 pt-5 lg:grid-cols-4">
+      <div className="mt-4 hidden grid-cols-2 gap-x-4 gap-y-3 border-t border-white/10 pt-4 sm:grid lg:grid-cols-4">
         {FEATURES.map((f) => (
           <div key={f.title} className="flex items-center gap-3">
             <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-11 sm:w-11"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full sm:h-11 sm:w-11"
               style={{ background: 'rgba(245,176,65,0.12)' }}
             >
               <Icon name={f.icon} />
@@ -192,4 +249,4 @@ export default function HeroSection() {
       </div>
     </section>
   );
-}
+   }
