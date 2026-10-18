@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { useLanguage } from './LanguageProvider';
@@ -8,6 +8,13 @@ import { useLanguage } from './LanguageProvider';
 export default function CategoryMenu({ children }: { children: ReactNode }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
+
+  // The "All categories" tile on the home page opens this panel too.
+  useEffect(() => {
+    const openIt = () => setOpen(true);
+    window.addEventListener('bazaa-open-categories', openIt);
+    return () => window.removeEventListener('bazaa-open-categories', openIt);
+  }, []);
 
   // Close with the Escape key, and stop the page behind from scrolling.
   useEffect(() => {
@@ -31,7 +38,7 @@ export default function CategoryMenu({ children }: { children: ReactNode }) {
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="mb-4 inline-flex items-center gap-2.5 rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold shadow-card hover:shadow-soft"
+        className="mb-4 hidden items-center gap-2.5 rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold shadow-card hover:shadow-soft md:inline-flex"
       >
         <svg
           width="20"
@@ -94,4 +101,4 @@ export default function CategoryMenu({ children }: { children: ReactNode }) {
       )}
     </>
   );
-            }
+}
