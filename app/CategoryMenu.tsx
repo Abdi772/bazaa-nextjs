@@ -1,11 +1,12 @@
- 'use client';
+  'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { useLanguage } from './LanguageProvider';
+import CategoryTwoPane from './CategoryTwoPane';
 
 // A menu button (three horizontal lines). Tapping it opens the category
 // list as a panel over the page, instead of keeping it in a side column.
-export default function CategoryMenu({ children }: { children: ReactNode }) {
+export default function CategoryMenu(_props: { children?: ReactNode }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
 
@@ -64,7 +65,7 @@ export default function CategoryMenu({ children }: { children: ReactNode }) {
           />
 
           <div
-            className="absolute inset-y-0 left-0 flex w-[min(320px,88vw)] flex-col bg-surface shadow-soft"
+            className="absolute inset-y-0 left-0 flex w-full flex-col bg-surface shadow-soft md:w-[640px]"
             // Tapping any link in the list closes the panel.
             onClick={(e) => {
               if ((e.target as HTMLElement).closest('a')) setOpen(false);
@@ -95,7 +96,7 @@ export default function CategoryMenu({ children }: { children: ReactNode }) {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-3">{children}</div>
+            <CategoryTwoPane />
           </div>
         </div>
       )}
