@@ -1,4 +1,4 @@
-
+ 
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -36,7 +36,7 @@ export default function ThemeButton() {
           : 'Switch to light theme'
       }
       title="Change website theme"
-      className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-sm font-semibold text-paper transition-colors hover:bg-white/20 disabled:opacity-60"
+      className="inline-flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 text-sm font-semibold text-paper transition-colors hover:bg-white/20 disabled:opacity-60 sm:w-auto sm:px-3"
     >
       <span aria-hidden="true">
         {theme === 'light' ? '🌙' : '☀️'}
