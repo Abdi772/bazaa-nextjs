@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 // Permanently deletes the signed-in user's account and data.
@@ -68,6 +68,14 @@ export async function POST(req: Request) {
 
   // 3. Remove the avatar.
   await admin.storage.from('avatars').remove([`${uid}/avatar.jpg`]);
+
+  // 3b. Remove any verification documents (ID photos).
+  const { data: docs } = await admin.storage.from('verification-docs').list(uid);
+  if (docs && docs.length > 0) {
+    await admin.storage
+      .from('verification-docs')
+      .remove(docs.map((d) => `${uid}/${d.name}`));
+  }
 
   // 4. Remove the user's rows. Each step is best effort: tables that
   //    already cascade from auth.users simply have nothing left to delete.
