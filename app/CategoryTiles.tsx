@@ -1,10 +1,11 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 import LanguageText from './LanguageText';
+import { useLanguage } from './LanguageProvider';
 import { categoryImages } from '../lib/categories';
 
 export type CategoryTile = {
@@ -18,6 +19,36 @@ export type CategoryTile = {
 type View = 'large' | 'compact';
 
 const STORAGE_KEY = 'bazaa-category-view';
+
+// Only this many main categories are shown, in one row.
+// The last tile ("All categories") opens the full list.
+const MAIN_COUNT = 7;
+
+const ALL_LABEL: Record<string, string> = {
+  English: 'All categories',
+  Amharic: 'ሁሉም ምድቦች',
+  Oromo: 'Ramaddii hunda',
+};
+
+function openAllCategories() {
+  window.dispatchEvent(new Event('bazaa-open-categories'));
+}
+
+function GridIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="8" height="8" rx="2" />
+      <rect x="13" y="3" width="8" height="8" rx="2" />
+      <rect x="3" y="13" width="8" height="8" rx="2" />
+      <rect x="13" y="13" width="8" height="8" rx="2" />
+    </svg>
+  );
+}
 
 function TileImage({
   tile,
@@ -58,6 +89,9 @@ export default function CategoryTiles({
   items: CategoryTile[];
 }) {
   const [view, setView] = useState<View>('large');
+  const { language } = useLanguage();
+  const allLabel = ALL_LABEL[language] ?? ALL_LABEL.English;
+  const main = items.slice(0, MAIN_COUNT);
 
   // Load the saved choice
   useEffect(() => {
@@ -123,12 +157,12 @@ export default function CategoryTiles({
       </div>
 
       {compact ? (
-        <div className="mb-8 grid grid-cols-4 gap-x-2 gap-y-4 md:mb-10 md:grid-cols-8">
-          {items.map((tile) => (
+        <div className="mb-8 flex snap-x gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:mb-10 md:grid md:grid-cols-8 md:gap-x-2 md:overflow-visible [&::-webkit-scrollbar]:hidden">
+          {main.map((tile) => (
             <Link
               key={tile.name}
               href={tile.href}
-              className="group flex min-w-0 flex-col items-center text-center"
+              className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
             >
               <div className="relative aspect-square w-full overflow-hidden rounded-bazaa bg-panel">
                 <TileImage
@@ -142,19 +176,35 @@ export default function CategoryTiles({
               </div>
             </Link>
           ))}
+
+          <button
+            type="button"
+            onClick={openAllCategories}
+            className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
+          >
+            <div className="flex aspect-square w-full items-center justify-center rounded-bazaa bg-amberSoft text-amber">
+              <GridIcon className="h-8 w-8" />
+            </div>
+
+            <div className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-4 bazaa-text">
+              {allLabel}
+            </div>
+          </button>
         </div>
       ) : (
-        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mb-10 md:grid-cols-6">
-          {items.map((tile) => (
+        <div className="mb-8 flex snap-x gap-3 overflow-x-auto pb-1 [scrollbar-width:none] md:mb-10 md:grid md:grid-cols-6 md:overflow-visible [&::-webkit-scrollbar]:hidden">
+          {main.map((tile, i) => (
             <Link
               key={tile.name}
               href={tile.href}
-              className="group min-w-0 overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+              className={`group w-[132px] shrink-0 snap-start overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0 ${
+                i >= 5 ? 'md:hidden' : ''
+              }`}
             >
               <div className="relative aspect-square overflow-hidden bg-panel">
                 <TileImage
                   tile={tile}
-                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
+                  sizes="(max-width: 768px) 132px, 16vw"
                 />
               </div>
 
@@ -170,8 +220,28 @@ export default function CategoryTiles({
               </div>
             </Link>
           ))}
+
+          <button
+            type="button"
+            onClick={openAllCategories}
+            className="group flex w-[132px] shrink-0 snap-start flex-col overflow-hidden rounded-card border border-line bazaa-surface text-left shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0"
+          >
+            <div className="flex aspect-square w-full items-center justify-center bg-amberSoft text-amber">
+              <GridIcon className="h-12 w-12" />
+            </div>
+
+            <div className="p-2.5 sm:p-3">
+              <div className="text-[13px] font-semibold leading-5 bazaa-text sm:text-sm">
+                {allLabel}
+              </div>
+
+              <div className="mt-0.5 text-[11px] text-muted sm:text-xs">
+                {items.length}
+              </div>
+            </div>
+          </button>
         </div>
       )}
     </>
   );
-              }
+}
