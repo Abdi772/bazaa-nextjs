@@ -1,6 +1,7 @@
-'use client';
+ 'use client';
 
 import { useLanguage } from './LanguageProvider';
+import HeroSlideshow from './HeroSlideshow';
 
 const GOLD = '#F5B041';
 
@@ -56,10 +57,6 @@ const FEATURES: {
   { icon: 'chat', title: 'heroFeat4Title', text: 'heroFeat4Text' },
 ];
 
-// Fade the picture's edges so it melts into the dark hero background.
-const FADE =
-  'radial-gradient(ellipse 72% 72% at 50% 50%, #000 55%, transparent 100%)';
-
 export default function HeroSection() {
   const { t } = useLanguage();
 
@@ -79,22 +76,10 @@ export default function HeroSection() {
       }}
     >
       <div className="grid items-center gap-4 md:grid-cols-[1.05fr_1fr] md:gap-8">
-        {/* Picture: on top on phones, on the right on bigger screens */}
+        {/* Your 10 pictures, one at a time: on top on phones,
+            on the right on bigger screens */}
         <div className="order-first md:order-last">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/hero/showcase.jpg"
-            alt=""
-            width={812}
-            height={610}
-            loading="eager"
-            decoding="async"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-            className="mx-auto h-40 w-full max-w-[520px] object-contain sm:h-64 md:h-auto"
-            style={{ WebkitMaskImage: FADE, maskImage: FADE }}
-          />
+          <HeroSlideshow />
         </div>
 
         {/* Text */}
@@ -207,4 +192,4 @@ export default function HeroSection() {
       </div>
     </section>
   );
-          }
+}
