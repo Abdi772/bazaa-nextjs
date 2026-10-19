@@ -1,4 +1,4 @@
- import type { Metadata, Viewport } from 'next';
+  import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { Fraunces, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
@@ -30,7 +30,7 @@ const themeScript = `(function(){try{var t=localStorage.getItem('bazaa-theme');i
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#1B1A2E',
+  themeColor: '#19182B',
 };
 
 export const metadata: Metadata = {
@@ -60,7 +60,7 @@ export default function RootLayout({
         <LanguageProvider>
           <Heartbeat />
 
-          <header className="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper">
+          <header className="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper shadow-[0_1px_0_rgba(255,255,255,0.04)]">
             <div className="mx-auto flex min-h-[64px] max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-5">
               <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
                 <BackButton />
