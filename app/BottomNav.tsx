@@ -1,4 +1,4 @@
-   'use client';
+    'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -210,8 +210,9 @@ export default function BottomNav() {
                 'transition-all duration-150',
                 'active:scale-[0.98]',
                 'active:bg-amberSoft/60',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber/60',
                 active
-                  ? 'font-bold text-amberText'
+                  ? 'font-semibold text-amberText'
                   : 'font-medium text-muted hover:text-fg',
               ].join(' ')}
             >
@@ -257,4 +258,4 @@ export default function BottomNav() {
       </div>
     </nav>
   );
-        }
+           }
