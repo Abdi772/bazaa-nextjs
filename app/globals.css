@@ -1,4 +1,4 @@
-@tailwind base;
+ @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -10,25 +10,25 @@
 
 :root {
   /* Page + surfaces */
-  --rgb-page: 243 239 231;
+  --rgb-page: 247 245 240;
   --rgb-surface: 255 255 255;
-  --rgb-surface-soft: 250 247 240;
-  --rgb-panel: 243 239 231;
+  --rgb-surface-soft: 251 249 244;
+  --rgb-panel: 242 239 232;
 
   /* Text */
-  --rgb-fg: 27 26 46;
-  --rgb-muted: 110 106 99;
-  --rgb-muted-light: 117 112 104;
+  --rgb-fg: 34 34 56;
+  --rgb-muted: 108 108 120;
+  --rgb-muted-light: 119 119 131;
 
   /* Borders */
-  --rgb-line: 221 214 201;
+  --rgb-line: 232 228 220;
 
   /* Solid chips / avatars */
-  --rgb-inverse: 27 26 46;
-  --rgb-on-inverse: 243 239 231;
+  --rgb-inverse: 25 24 43;
+  --rgb-on-inverse: 247 245 240;
 
   /* Soft tints + readable text versions */
-  --rgb-amber-soft: 255 240 213;
+  --rgb-amber-soft: 253 241 220;
   --rgb-amber-text: 154 90 14;
   --rgb-green-soft: 234 245 238;
   --rgb-green-text: 38 100 65;
@@ -36,14 +36,14 @@
   --rgb-danger-text: 166 61 59;
 
   /* Brand */
-  --bazaa-primary: #D8891F;
-  --bazaa-primary-hover: #B96F16;
-  --bazaa-on-primary: #1B1A2E;
-  --bazaa-focus: #D8891F;
+  --bazaa-primary: #D99024;
+  --bazaa-primary-hover: #BD7418;
+  --bazaa-on-primary: #19182B;
+  --bazaa-focus: #D99024;
 
-  --bazaa-shadow-sm: 0 1px 2px rgba(27, 26, 46, 0.05), 0 2px 8px rgba(27, 26, 46, 0.04);
-  --bazaa-shadow-md: 0 4px 14px rgba(27, 26, 46, 0.09);
-  --bazaa-shadow-lg: 0 12px 30px rgba(27, 26, 46, 0.14);
+  --bazaa-shadow-sm: 0 1px 2px rgba(25, 24, 43, 0.04), 0 2px 8px rgba(25, 24, 43, 0.03);
+  --bazaa-shadow-md: 0 6px 18px rgba(25, 24, 43, 0.07);
+  --bazaa-shadow-lg: 0 14px 32px rgba(25, 24, 43, 0.10);
   --bazaa-price: #9A5A0E;
 
   /* Handy aliases used by component classes below */
@@ -129,7 +129,7 @@ body {
 
 ::selection {
   background: var(--bazaa-primary);
-  color: #1B1A2E;
+  color: #19182B;
 }
 
 h1,
@@ -191,7 +191,7 @@ hr {
 @layer components {
 
   .bazaa-card {
-    border-radius: 18px;
+    border-radius: 20px;
     background: var(--bazaa-surface);
     border: 1px solid var(--bazaa-border);
     box-shadow: var(--bazaa-shadow-sm);
@@ -217,12 +217,10 @@ hr {
 
   /* Dark navy text on amber: 6:1 contrast (white on amber was 2.8:1) */
   .bazaa-primary {
-    background: linear-gradient(180deg, var(--bazaa-primary) 0%, var(--bazaa-primary-hover) 100%);
+    background: var(--bazaa-primary);
     color: var(--bazaa-on-primary);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow:
-      0 6px 16px rgba(185, 111, 22, 0.26),
-      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    border: 1px solid transparent;
+    box-shadow: 0 2px 8px rgba(189, 116, 24, 0.22);
   }
 
   .bazaa-secondary {
@@ -260,7 +258,7 @@ hr {
   .bazaa-input:focus {
     border-color: var(--bazaa-primary);
     outline: none;
-    box-shadow: 0 0 0 4px rgb(216 137 31 / 0.2);
+    box-shadow: 0 0 0 4px rgb(217 144 36 / 0.2);
   }
 
   /* ---------- Text ---------- */
@@ -282,11 +280,9 @@ hr {
 
 @media (hover: hover) {
   .bazaa-primary:hover {
-    filter: brightness(1.06);
+    background: var(--bazaa-primary-hover);
     transform: translateY(-1px);
-    box-shadow:
-      0 10px 22px rgba(185, 111, 22, 0.32),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 6px 16px rgba(189, 116, 24, 0.28);
   }
 
   .bazaa-secondary:hover {
@@ -360,8 +356,8 @@ hr {
 
 .bazaa-hero {
   background:
-    radial-gradient(120% 140% at 100% 0%, rgba(216, 137, 31, 0.28) 0%, rgba(216, 137, 31, 0) 55%),
-    linear-gradient(135deg, #1b1a2e 0%, #26243d 100%);
+    radial-gradient(120% 140% at 100% 0%, rgba(217, 144, 36, 0.22) 0%, rgba(217, 144, 36, 0) 55%),
+    linear-gradient(135deg, #19182b 0%, #232239 100%);
 }
 
 
@@ -390,4 +386,4 @@ hr {
 
 @media (prefers-reduced-motion: reduce) {
   .bazaa-zoom { animation: none; }
-}
+   }
