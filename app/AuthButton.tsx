@@ -1,9 +1,10 @@
- 'use client';
+  'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
+import PasswordInput from './PasswordInput';
 
 export default function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
@@ -409,9 +410,8 @@ export default function AuthButton() {
                   Password
                 </label>
 
-                <input
+                <PasswordInput
                   id="auth-password"
-                  type="password"
                   required
                   minLength={6}
                   autoComplete={
@@ -480,4 +480,4 @@ export default function AuthButton() {
       )}
     </>
   );
-                  }
+}
