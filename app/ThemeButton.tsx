@@ -1,4 +1,4 @@
- 
+  
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -36,11 +36,29 @@ export default function ThemeButton() {
           : 'Switch to light theme'
       }
       title="Change website theme"
-      className="inline-flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 text-sm font-semibold text-paper transition-colors hover:bg-white/20 disabled:opacity-60 sm:w-auto sm:px-3"
+      className="inline-flex h-11 w-11 shrink-0 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 text-sm font-semibold text-paper transition-colors hover:border-amber/60 hover:bg-white/10 disabled:opacity-60 sm:w-auto sm:px-4"
     >
-      <span aria-hidden="true">
-        {theme === 'light' ? '🌙' : '☀️'}
-      </span>
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="shrink-0"
+      >
+        {theme === 'light' ? (
+          <path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z" />
+        ) : (
+          <>
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </>
+        )}
+      </svg>
       <span className="hidden sm:inline">
         {theme === 'light' ? 'Dark mode' : 'Light mode'}
       </span>
