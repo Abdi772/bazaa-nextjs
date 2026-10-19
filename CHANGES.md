@@ -1,4 +1,4 @@
- # Changes in this version
+  # Changes in this version
 
 - manifest.ts: app icons now point to /categories/icon-192.png and icon-512.png (they were 404).
 - .gitignore and .env.example added.
@@ -18,4 +18,12 @@
 - Edit page: shows an error if the contact details were not saved.
 - ContactButtons: emoji icons replaced with SVG icons.
 - Removed tsconfig.tsbuildinfo from the project.
+
+## Polish pass (October 19, 2026)
+
+- Hero slideshow and listing thumbnails (my-listings, messages) now use next/image: faster loads, no layout jump.
+- Wider desktop layout (max-w-6xl) and 5 columns of listings on extra-large screens.
+- SEO: Twitter cards, canonical URL, Product structured data (JSON-LD) on listing pages, default share image (app/opengraph-image.tsx).
+- New footer with brand, tagline and dynamic year.
+- Removed tsconfig.tsbuildinfo.
 - 
