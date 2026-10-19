@@ -1,4 +1,4 @@
-  'use client';
+   'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -182,21 +182,21 @@ export default function AuthButton() {
       <div className="flex items-center gap-1.5 text-xs sm:gap-2 sm:text-sm">
         <Link
           href="/post"
-          className="hidden min-h-[42px] items-center justify-center rounded-bazaa border border-amber bg-amber px-3 py-2 font-bold text-ink transition-colors hover:bg-amberDeep md:inline-flex"
+          className="hidden min-h-[44px] items-center justify-center rounded-full border border-amber bg-amber px-4 py-2 font-bold text-ink transition-colors hover:bg-amberDeep md:inline-flex"
         >
           + Post listing
         </Link>
 
         <Link
           href="/saved"
-          className="hidden min-h-[42px] items-center justify-center rounded-bazaa border border-white/30 bg-white/5 px-3 py-2 font-bold text-paper transition-colors hover:bg-white/10 md:inline-flex"
+          className="hidden min-h-[44px] items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2 font-bold text-paper transition-colors hover:bg-white/10 md:inline-flex"
         >
           ♥ Saved
         </Link>
 
         <Link
           href="/profile"
-          className="flex min-h-[42px] items-center justify-center rounded-bazaa border border-white/30 bg-white/5 px-3 py-2 font-bold text-paper transition-colors hover:border-amber hover:bg-white/10"
+          className="flex min-h-[44px] items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2 font-bold text-paper transition-colors hover:border-amber hover:bg-white/10"
         >
           <span className="sm:hidden">
             Profile
@@ -210,7 +210,7 @@ export default function AuthButton() {
         {isAdmin && (
           <Link
             href="/admin"
-            className="hidden min-h-[42px] items-center justify-center rounded-bazaa border border-amber/60 px-3 py-2 font-bold text-paper transition-colors hover:border-amber hover:bg-white/10 sm:inline-flex"
+            className="hidden min-h-[44px] items-center justify-center rounded-full border border-amber/60 px-4 py-2 font-bold text-paper transition-colors hover:border-amber hover:bg-white/10 sm:inline-flex"
           >
             Admin
           </Link>
@@ -221,7 +221,7 @@ export default function AuthButton() {
           onClick={() =>
             supabase.auth.signOut()
           }
-          className="hidden min-h-[42px] items-center justify-center rounded-bazaa border border-white/30 px-3 py-2 font-bold text-paper transition-colors hover:bg-white/10 sm:inline-flex"
+          className="hidden min-h-[44px] items-center justify-center rounded-full border border-white/15 px-4 py-2 font-bold text-paper transition-colors hover:bg-white/10 sm:inline-flex"
         >
           Log out
         </button>
@@ -234,7 +234,7 @@ export default function AuthButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="min-h-[44px] rounded-bazaa border border-amber bg-amber px-3 py-2 text-xs font-bold text-ink transition-colors hover:bg-amberDeep sm:px-3.5 sm:text-sm"
+        className="min-h-[44px] rounded-full border border-amber bg-amber px-4 py-2 text-xs font-bold text-ink transition-colors hover:bg-amberDeep sm:px-5 sm:text-sm"
       >
         <span className="sm:hidden">
           Log in
@@ -480,4 +480,4 @@ export default function AuthButton() {
       )}
     </>
   );
-}
+                }
