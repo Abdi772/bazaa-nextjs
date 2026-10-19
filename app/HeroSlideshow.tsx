@@ -1,11 +1,11 @@
- 'use client';
+  'use client';
 
 import { useEffect, useRef, useState } from 'react';
 
 // Your pictures: public/hero/slide-1.jpg ... slide-10.jpg
 const COUNT = 10;
 const SLIDE_MS = 5000;
-const GOLD = '#F5B041';
+const GOLD = '#D99024';
 
 // One big picture at a time. The pictures cross-fade and zoom in slowly.
 export default function HeroSlideshow({
