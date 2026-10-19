@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+ /** @type {import('tailwindcss').Config} */
 
 /* Theme-aware colors read their RGB channels from CSS variables
    (defined in app/globals.css), so every utility such as bg-surface,
@@ -16,12 +16,12 @@ module.exports = {
     extend: {
       colors: {
         /* ---- Fixed brand colors (same in light and dark) ---- */
-        ink: '#1B1A2E',      // deep navy: header, hero, dark panels
-        paper: '#F3EFE7',    // warm cream: text on dark panels
+        ink: '#19182B',      // deep navy: header, hero, dark panels
+        paper: '#F7F5F0',    // warm cream: text on dark panels
         white: '#FFFFFF',
-        amber: '#D8891F',    // primary brand
-        amberDeep: '#B96F16',// hover state for amber buttons
-        green: '#2F7A4F',
+        amber: '#D99024',    // primary brand
+        amberDeep: '#BD7418',// hover state for amber buttons
+        green: '#218653',
         danger: '#B94A48',
         whatsapp: '#15803D', // WhatsApp buttons (white text: 5:1 contrast)
 
@@ -51,7 +51,7 @@ module.exports = {
 
       borderRadius: {
         bazaa: '14px',
-        card: '16px',
+        card: '20px',
       },
 
       boxShadow: {
