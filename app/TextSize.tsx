@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 
@@ -53,7 +53,7 @@ export default function TextSize() {
       onClick={next}
       aria-label={`Change text size (now ${SIZES[index]}%)`}
       title="Text size"
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-[1.5px] border-white/20 bg-white/5 font-serif font-bold leading-none text-paper transition-colors hover:bg-white/10"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 font-serif font-bold leading-none text-paper transition-colors hover:border-amber/60 hover:bg-white/10"
     >
       <span className="text-[11px]">A</span>
       <span className="text-[17px]">A</span>
