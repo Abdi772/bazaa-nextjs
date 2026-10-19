@@ -1,4 +1,4 @@
-  'use client';
+   'use client';
 
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -84,6 +84,7 @@ export default function HeroSlideshow({
             fill
             sizes="(max-width: 768px) 100vw, 560px"
             priority={pos === 0}
+            unoptimized
             aria-hidden={!active}
             onError={() => setMissing((m) => (m.includes(n) ? m : [...m, n]))}
             className={`object-cover transition-all duration-1000 ease-out ${
