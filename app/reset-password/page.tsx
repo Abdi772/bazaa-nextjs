@@ -1,9 +1,10 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
+import PasswordInput from '../PasswordInput';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -89,9 +90,8 @@ export default function ResetPasswordPage() {
               >
                 New password
               </label>
-              <input
+              <PasswordInput
                 id="new-password"
-                type="password"
                 required
                 minLength={6}
                 autoComplete="new-password"
@@ -108,9 +108,8 @@ export default function ResetPasswordPage() {
               >
                 Confirm password
               </label>
-              <input
+              <PasswordInput
                 id="confirm-password"
-                type="password"
                 required
                 minLength={6}
                 autoComplete="new-password"
