@@ -222,9 +222,13 @@ export default function BottomNav() {
                   'items-center justify-center',
                   'rounded-full',
                   'transition-all duration-150',
-                  active
-                    ? 'bg-amberSoft ring-1 ring-amber/25'
-                    : 'bg-transparent',
+                  item.href === '/post'
+                    ? active
+                      ? 'bg-amber text-ink ring-2 ring-amber/40'
+                      : 'bg-amber text-ink'
+                    : active
+                      ? 'bg-amberSoft ring-1 ring-amber/25'
+                      : 'bg-transparent',
                 ].join(' ')}
               >
                 {item.icon}
@@ -258,4 +262,4 @@ export default function BottomNav() {
       </div>
     </nav>
   );
-           }
+}
