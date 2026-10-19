@@ -1,6 +1,6 @@
-  import type { Metadata, Viewport } from 'next';
+   import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
-import { Fraunces, Plus_Jakarta_Sans } from 'next/font/google';
+import { Fraunces, Plus_Jakarta_Sans, Noto_Sans_Ethiopic } from 'next/font/google';
 import './globals.css';
 
 import AuthButton from './AuthButton';
@@ -23,6 +23,15 @@ const body = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-body',
+});
+
+// Amharic (Ge'ez) fallback. preload:false means phones only download it
+// when a page actually contains Ethiopic characters.
+const ethiopic = Noto_Sans_Ethiopic({
+  subsets: ['ethiopic'],
+  display: 'swap',
+  variable: '--font-ethiopic',
+  preload: false,
 });
 
 const themeScript = `(function(){try{var t=localStorage.getItem('bazaa-theme');if(t!=='dark'&&t!=='light'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.bazaaTheme=t;var z=[87.5,100,112.5,125,137.5][Number(localStorage.getItem('bazaa-text-size'))];if(z){document.documentElement.style.fontSize=z+'%';}}catch(e){}})();`;
@@ -52,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${display.variable} ${body.variable} ${ethiopic.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
