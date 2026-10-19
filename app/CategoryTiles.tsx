@@ -1,6 +1,6 @@
   'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -21,7 +21,7 @@ type View = 'large' | 'compact';
 const STORAGE_KEY = 'bazaa-category-view';
 
 // Only this many main categories are shown, in one row.
-// The last tile ("All categories") opens the full list.
+// The last tile ("All categories") shows the rest of them in the same row.
 const MAIN_COUNT = 7;
 
 const ALL_LABEL: Record<string, string> = {
@@ -52,8 +52,26 @@ function PlusIcon({ className }: { className?: string }) {
   );
 }
 
-function openAllCategories() {
-  window.dispatchEvent(new Event('bazaa-open-categories'));
+const SHOW_LESS_LABEL: Record<string, string> = {
+  English: 'Show less',
+  Amharic: 'አሳንስ',
+  Oromo: 'Xiqqeessi',
+};
+
+function CloseIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
 }
 
 function GridIcon({ className }: { className?: string }) {
@@ -115,6 +133,34 @@ export default function CategoryTiles({
   const allLabel = ALL_LABEL[language] ?? ALL_LABEL.English;
   const postLabel = POST_LABEL[language] ?? POST_LABEL.English;
   const main = items.slice(0, MAIN_COUNT);
+  const rest = items.slice(MAIN_COUNT);
+  const showLessLabel = SHOW_LESS_LABEL[language] ?? SHOW_LESS_LABEL.English;
+
+  // "All categories" shows the remaining categories in the same row.
+  const [expanded, setExpanded] = useState(false);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const firstRender = useRef(true);
+
+  // Slide the row so the newly shown tiles are in view (and back again).
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    const row = rowRef.current;
+    if (!row) return;
+    if (expanded) {
+      const el = row.querySelector<HTMLElement>('[data-rest-first]');
+      if (el) {
+        row.scrollTo({
+          left: el.offsetLeft - row.offsetLeft - 8,
+          behavior: 'smooth',
+        });
+      }
+    } else {
+      row.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+  }, [expanded]);
 
   // Load the saved choice
   useEffect(() => {
@@ -180,7 +226,7 @@ export default function CategoryTiles({
       </div>
 
       {compact ? (
-        <div className="mb-8 flex snap-x gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:mb-10 md:grid md:grid-cols-8 md:gap-x-2 md:overflow-visible [&::-webkit-scrollbar]:hidden">
+        <div ref={rowRef} className="mb-8 flex snap-x gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:mb-10 md:grid md:grid-cols-8 md:gap-x-2 md:overflow-visible [&::-webkit-scrollbar]:hidden">
           <Link
             href="/post"
             className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
@@ -201,7 +247,7 @@ export default function CategoryTiles({
               key={tile.name}
               href={tile.href}
               className={`group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0 ${
-                i >= 6 ? 'md:hidden' : ''
+                i >= 6 && !expanded ? 'md:hidden' : ''
               }`}
             >
               <div className="relative aspect-square w-full overflow-hidden rounded-bazaa bg-panel">
@@ -217,22 +263,48 @@ export default function CategoryTiles({
             </Link>
           ))}
 
+          {expanded &&
+            rest.map((tile, i) => (
+              <Link
+                key={tile.name}
+                href={tile.href}
+                data-rest-first={i === 0 ? '' : undefined}
+                className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
+              >
+                <div className="relative aspect-square w-full overflow-hidden rounded-bazaa bg-panel">
+                  <TileImage
+                    tile={tile}
+                    sizes="(max-width: 768px) 25vw, 10vw"
+                  />
+                </div>
+
+                <div className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-4 bazaa-text">
+                  <LanguageText k={tile.labelKey} />
+                </div>
+              </Link>
+            ))}
+
           <button
             type="button"
-            onClick={openAllCategories}
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
             className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
           >
             <div className="flex aspect-square w-full items-center justify-center rounded-bazaa bg-amberSoft text-amber">
-              <GridIcon className="h-8 w-8" />
+              {expanded ? (
+                <CloseIcon className="h-7 w-7" />
+              ) : (
+                <GridIcon className="h-8 w-8" />
+              )}
             </div>
 
             <div className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-4 bazaa-text">
-              {allLabel}
+              {expanded ? showLessLabel : allLabel}
             </div>
           </button>
         </div>
       ) : (
-        <div className="mb-8 flex snap-x gap-3 overflow-x-auto pb-1 [scrollbar-width:none] md:mb-10 md:grid md:grid-cols-6 md:overflow-visible [&::-webkit-scrollbar]:hidden">
+        <div ref={rowRef} className="mb-8 flex snap-x gap-3 overflow-x-auto pb-1 [scrollbar-width:none] md:mb-10 md:grid md:grid-cols-6 md:overflow-visible [&::-webkit-scrollbar]:hidden">
           <Link
             href="/post"
             className="group flex w-[132px] shrink-0 snap-start flex-col overflow-hidden rounded-card border border-amber bg-amber shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0"
@@ -255,7 +327,7 @@ export default function CategoryTiles({
               key={tile.name}
               href={tile.href}
               className={`group w-[132px] shrink-0 snap-start overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0 ${
-                i >= 4 ? 'md:hidden' : ''
+                i >= 4 && !expanded ? 'md:hidden' : ''
               }`}
             >
               <div className="relative aspect-square overflow-hidden bg-panel">
@@ -278,18 +350,51 @@ export default function CategoryTiles({
             </Link>
           ))}
 
+          {expanded &&
+            rest.map((tile, i) => (
+              <Link
+                key={tile.name}
+                href={tile.href}
+                data-rest-first={i === 0 ? '' : undefined}
+                className="group w-[132px] shrink-0 snap-start overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0"
+              >
+                <div className="relative aspect-square overflow-hidden bg-panel">
+                  <TileImage
+                    tile={tile}
+                    sizes="(max-width: 768px) 132px, 16vw"
+                  />
+                </div>
+
+                <div className="p-2.5 sm:p-3">
+                  <div className="text-[13px] font-semibold leading-5 bazaa-text sm:text-sm">
+                    <LanguageText k={tile.labelKey} />
+                  </div>
+
+                  <div className="mt-0.5 text-[11px] text-muted sm:text-xs">
+                    {tile.count}{' '}
+                    <LanguageText k="listings" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+
           <button
             type="button"
-            onClick={openAllCategories}
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
             className="group flex w-[132px] shrink-0 snap-start flex-col overflow-hidden rounded-card border border-line bazaa-surface text-left shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0"
           >
             <div className="flex aspect-square w-full items-center justify-center bg-amberSoft text-amber">
-              <GridIcon className="h-12 w-12" />
+              {expanded ? (
+                <CloseIcon className="h-10 w-10" />
+              ) : (
+                <GridIcon className="h-12 w-12" />
+              )}
             </div>
 
             <div className="p-2.5 sm:p-3">
               <div className="text-[13px] font-semibold leading-5 bazaa-text sm:text-sm">
-                {allLabel}
+                {expanded ? showLessLabel : allLabel}
               </div>
 
               <div className="mt-0.5 text-[11px] text-muted sm:text-xs">
@@ -301,4 +406,4 @@ export default function CategoryTiles({
       )}
     </>
   );
-                 }
+                }
