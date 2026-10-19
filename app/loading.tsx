@@ -1,9 +1,10 @@
 export default function Loading() {
   return (
     <div aria-busy="true" aria-label="Loading" className="animate-pulse">
+      <div className="mb-5 h-40 rounded-card bg-ink/90 sm:h-56" />
       <div className="mb-6 h-8 w-48 rounded-bazaa bazaa-image-bg" />
 
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 xl:grid-cols-5">
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
