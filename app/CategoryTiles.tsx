@@ -1,4 +1,4 @@
-  'use client';
+   'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -188,7 +188,7 @@ export default function CategoryTiles({
   const compact = view === 'compact';
 
   const toggleClass = (active: boolean) =>
-    `flex h-9 min-w-[40px] items-center justify-center rounded-full px-3 text-xs font-bold transition-colors ${
+    `flex h-11 min-w-[44px] items-center justify-center rounded-full px-3.5 text-xs font-bold transition-colors ${
       active
         ? 'bg-amber text-ink'
         : 'text-muted hover:bg-amberSoft'
@@ -199,7 +199,7 @@ export default function CategoryTiles({
       {/* Size control */}
       <div className="mb-3 flex justify-end">
         <div
-          className="flex items-center gap-1 rounded-full border border-line bg-surface p-1"
+          className="flex items-center gap-1 rounded-full border border-line bg-surface p-1 shadow-card"
           role="group"
           aria-label="Category size"
         >
@@ -231,13 +231,13 @@ export default function CategoryTiles({
             href="/post"
             className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
           >
-            <div className="flex aspect-square w-full items-center justify-center rounded-bazaa bg-amber">
+            <div className="flex aspect-square w-full items-center justify-center rounded-[18px] bg-amber shadow-card">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-amber">
                 <PlusIcon className="h-5 w-5" />
               </span>
             </div>
 
-            <div className="mt-1.5 line-clamp-2 text-[11px] font-bold leading-4 bazaa-text">
+            <div className="mt-1.5 line-clamp-2 text-xs font-bold leading-4 bazaa-text">
               {postLabel}
             </div>
           </Link>
@@ -250,14 +250,14 @@ export default function CategoryTiles({
                 i >= 6 && !expanded ? 'md:hidden' : ''
               }`}
             >
-              <div className="relative aspect-square w-full overflow-hidden rounded-bazaa bg-panel">
+              <div className="relative aspect-square w-full overflow-hidden rounded-[18px] border border-line bg-panel shadow-card transition-colors group-hover:border-amber/50">
                 <TileImage
                   tile={tile}
                   sizes="(max-width: 768px) 25vw, 10vw"
                 />
               </div>
 
-              <div className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-4 bazaa-text">
+              <div className="mt-1.5 line-clamp-2 text-xs font-semibold leading-4 bazaa-text">
                 <LanguageText k={tile.labelKey} />
               </div>
             </Link>
@@ -271,14 +271,14 @@ export default function CategoryTiles({
                 data-rest-first={i === 0 ? '' : undefined}
                 className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
               >
-                <div className="relative aspect-square w-full overflow-hidden rounded-bazaa bg-panel">
+                <div className="relative aspect-square w-full overflow-hidden rounded-[18px] border border-line bg-panel shadow-card transition-colors group-hover:border-amber/50">
                   <TileImage
                     tile={tile}
                     sizes="(max-width: 768px) 25vw, 10vw"
                   />
                 </div>
 
-                <div className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-4 bazaa-text">
+                <div className="mt-1.5 line-clamp-2 text-xs font-semibold leading-4 bazaa-text">
                   <LanguageText k={tile.labelKey} />
                 </div>
               </Link>
@@ -290,7 +290,7 @@ export default function CategoryTiles({
             aria-expanded={expanded}
             className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
           >
-            <div className="flex aspect-square w-full items-center justify-center rounded-bazaa bg-amberSoft text-amber">
+            <div className="flex aspect-square w-full items-center justify-center rounded-[18px] border border-line bg-amberSoft text-amberText shadow-card">
               {expanded ? (
                 <CloseIcon className="h-7 w-7" />
               ) : (
@@ -298,7 +298,7 @@ export default function CategoryTiles({
               )}
             </div>
 
-            <div className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-4 bazaa-text">
+            <div className="mt-1.5 line-clamp-2 text-xs font-semibold leading-4 bazaa-text">
               {expanded ? showLessLabel : allLabel}
             </div>
           </button>
@@ -326,7 +326,7 @@ export default function CategoryTiles({
             <Link
               key={tile.name}
               href={tile.href}
-              className={`group w-[132px] shrink-0 snap-start overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0 ${
+              className={`group w-[132px] shrink-0 snap-start overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber/50 hover:shadow-soft md:w-auto md:min-w-0 ${
                 i >= 4 && !expanded ? 'md:hidden' : ''
               }`}
             >
@@ -356,7 +356,7 @@ export default function CategoryTiles({
                 key={tile.name}
                 href={tile.href}
                 data-rest-first={i === 0 ? '' : undefined}
-                className="group w-[132px] shrink-0 snap-start overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0"
+                className="group w-[132px] shrink-0 snap-start overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber/50 hover:shadow-soft md:w-auto md:min-w-0"
               >
                 <div className="relative aspect-square overflow-hidden bg-panel">
                   <TileImage
@@ -382,9 +382,9 @@ export default function CategoryTiles({
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className="group flex w-[132px] shrink-0 snap-start flex-col overflow-hidden rounded-card border border-line bazaa-surface text-left shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft md:w-auto md:min-w-0"
+            className="group flex w-[132px] shrink-0 snap-start flex-col overflow-hidden rounded-card border border-line bazaa-surface text-left shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber/50 hover:shadow-soft md:w-auto md:min-w-0"
           >
-            <div className="flex aspect-square w-full items-center justify-center bg-amberSoft text-amber">
+            <div className="flex aspect-square w-full items-center justify-center bg-amberSoft text-amberText">
               {expanded ? (
                 <CloseIcon className="h-10 w-10" />
               ) : (
@@ -406,4 +406,4 @@ export default function CategoryTiles({
       )}
     </>
   );
-                }
+}
