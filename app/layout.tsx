@@ -1,4 +1,4 @@
-   import type { Metadata, Viewport } from 'next';
+    import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { Fraunces, Plus_Jakarta_Sans, Noto_Sans_Ethiopic } from 'next/font/google';
 import './globals.css';
@@ -39,6 +39,7 @@ const themeScript = `(function(){try{var t=localStorage.getItem('bazaa-theme');i
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover',
   themeColor: '#19182B',
 };
 
