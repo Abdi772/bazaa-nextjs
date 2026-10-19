@@ -1,4 +1,4 @@
-import { ImageResponse } from 'next/og';
+ import { ImageResponse } from 'next/og';
 
 export const alt = 'Bazaa — Buy & Sell Marketplace';
 export const size = { width: 1200, height: 630 };
@@ -16,10 +16,21 @@ export default function OpengraphImage() {
           justifyContent: 'center',
           padding: '80px',
           color: '#F7F5F0',
-          background:
-            'radial-gradient(900px 500px at 85% 30%, rgba(217,144,36,0.22), transparent 60%), linear-gradient(135deg, #19182B 0%, #1F1E35 100%)',
+          position: 'relative',
+          background: 'linear-gradient(135deg, #19182B 0%, #1F1E35 100%)',
         }}
       >
+        <div
+          style={{
+            position: 'absolute',
+            right: -120,
+            top: -120,
+            width: 520,
+            height: 520,
+            borderRadius: 260,
+            background: 'rgba(217,144,36,0.18)',
+          }}
+        />
         <div style={{ display: 'flex', fontSize: 120, fontWeight: 700 }}>
           Baz<span style={{ color: '#D99024' }}>aa</span>
         </div>
