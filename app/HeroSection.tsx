@@ -1,4 +1,4 @@
-  'use client';
+   'use client';
 
 import { useLanguage } from './LanguageProvider';
 import HeroSlideshow from './HeroSlideshow';
@@ -141,8 +141,7 @@ export default function HeroSection() {
 
             <button
               type="submit"
-              className="min-h-[44px] shrink-0 rounded-full px-5 text-sm font-bold text-ink transition-colors hover:bg-amberDeep sm:px-7 sm:text-base"
-              style={{ background: GOLD }}
+              className="min-h-[44px] shrink-0 rounded-full bg-amber px-5 text-sm font-bold text-ink transition-colors hover:bg-amberDeep sm:px-7 sm:text-base"
             >
               {t('search')}
             </button>
