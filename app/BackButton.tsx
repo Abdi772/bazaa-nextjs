@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -27,13 +27,12 @@ export default function BackButton() {
         mr-1 flex h-11 w-11 shrink-0
         items-center justify-center
         rounded-full
-        border border-white/10
+        border border-white/15
         bg-white/5
         text-paper
         transition-all duration-200
-        hover:border-amber/50
+        hover:border-amber/60
         hover:bg-white/10
-        hover:text-amber
         active:scale-95
         focus-visible:outline-2
         focus-visible:outline-offset-2
