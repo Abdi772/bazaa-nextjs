@@ -1,4 +1,4 @@
-   'use client';
+    'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -231,7 +231,7 @@ export default function CategoryTiles({
             href="/post"
             className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
           >
-            <div className="flex aspect-square w-full items-center justify-center rounded-[18px] bg-amber shadow-card">
+            <div className="flex aspect-square w-full items-center justify-center rounded-bazaa bg-amber shadow-card">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-amber">
                 <PlusIcon className="h-5 w-5" />
               </span>
@@ -250,7 +250,7 @@ export default function CategoryTiles({
                 i >= 6 && !expanded ? 'md:hidden' : ''
               }`}
             >
-              <div className="relative aspect-square w-full overflow-hidden rounded-[18px] border border-line bg-panel shadow-card transition-colors group-hover:border-amber/50">
+              <div className="relative aspect-square w-full overflow-hidden rounded-bazaa border border-line bg-panel shadow-card transition-colors group-hover:border-amber/50">
                 <TileImage
                   tile={tile}
                   sizes="(max-width: 768px) 25vw, 10vw"
@@ -271,7 +271,7 @@ export default function CategoryTiles({
                 data-rest-first={i === 0 ? '' : undefined}
                 className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
               >
-                <div className="relative aspect-square w-full overflow-hidden rounded-[18px] border border-line bg-panel shadow-card transition-colors group-hover:border-amber/50">
+                <div className="relative aspect-square w-full overflow-hidden rounded-bazaa border border-line bg-panel shadow-card transition-colors group-hover:border-amber/50">
                   <TileImage
                     tile={tile}
                     sizes="(max-width: 768px) 25vw, 10vw"
@@ -290,7 +290,7 @@ export default function CategoryTiles({
             aria-expanded={expanded}
             className="group flex w-[76px] shrink-0 snap-start flex-col items-center text-center md:w-auto md:min-w-0"
           >
-            <div className="flex aspect-square w-full items-center justify-center rounded-[18px] border border-line bg-amberSoft text-amberText shadow-card">
+            <div className="flex aspect-square w-full items-center justify-center rounded-bazaa border border-line bg-amberSoft text-amberText shadow-card">
               {expanded ? (
                 <CloseIcon className="h-7 w-7" />
               ) : (
