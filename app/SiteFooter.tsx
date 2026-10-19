@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import Link from 'next/link';
 import { useLanguage } from './LanguageProvider';
@@ -20,7 +20,7 @@ export default function SiteFooter() {
         className="bazaa-muted-text flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-line pt-4 text-sm font-semibold"
       >
         {links.map((l) => (
-          <Link key={l.href} href={l.href} className="underline hover:opacity-70">
+          <Link key={l.href} href={l.href} className="underline decoration-line underline-offset-4 transition-colors hover:text-fg hover:decoration-amber">
             {l.label}
           </Link>
         ))}
