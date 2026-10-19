@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -25,12 +25,19 @@ type VerificationRequest = {
   shopUrl: string | null;
 };
 
+type Dialog =
+  | { kind: 'remove'; listingId: number }
+  | { kind: 'reject'; request: VerificationRequest }
+  | null;
+
 export default function AdminPage() {
   const [state, setState] = useState<'loading' | 'denied' | 'ok'>('loading');
   const [reports, setReports] = useState<Report[]>([]);
   const [requests, setRequests] = useState<VerificationRequest[]>([]);
   const [reviewing, setReviewing] = useState<number | null>(null);
   const [error, setError] = useState('');
+  const [dialog, setDialog] = useState<Dialog>(null);
+  const [rejectReason, setRejectReason] = useState('');
 
   const loadReports = useCallback(async () => {
     const { data, error } = await supabase
@@ -120,19 +127,16 @@ export default function AdminPage() {
   }
 
   async function removeListing(listingId: number) {
-    if (!confirm('Remove this listing permanently?')) return;
     const { error } = await supabase.from('listings').delete().eq('id', listingId);
     if (error) return setError('Could not remove: ' + error.message);
     loadReports();
   }
 
-  async function reviewRequest(r: VerificationRequest, approve: boolean) {
-    let reason: string | null = null;
-    if (!approve) {
-      const typed = prompt('Why is this request rejected? The seller will see this.');
-      if (typed === null) return;
-      reason = typed.trim() || 'Your documents could not be verified.';
-    }
+  async function reviewRequest(
+    r: VerificationRequest,
+    approve: boolean,
+    reason: string | null = null,
+  ) {
     setReviewing(r.id);
     setError('');
     const { error } = await supabase.rpc('review_verification', {
@@ -206,7 +210,10 @@ export default function AdminPage() {
               </button>
               <button
                 disabled={reviewing === r.id}
-                onClick={() => reviewRequest(r, false)}
+                onClick={() => {
+                  setRejectReason('');
+                  setDialog({ kind: 'reject', request: r });
+                }}
                 className="border border-red-300 text-red-700 rounded-md px-3 py-1.5 disabled:opacity-50"
               >
                 Reject
@@ -241,7 +248,9 @@ export default function AdminPage() {
               </button>
               {r.listing_id && (
                 <button
-                  onClick={() => removeListing(r.listing_id as number)}
+                  onClick={() =>
+                    setDialog({ kind: 'remove', listingId: r.listing_id as number })
+                  }
                   className="border border-red-300 text-red-700 rounded-md px-3 py-1.5"
                 >
                   Remove listing
@@ -251,7 +260,73 @@ export default function AdminPage() {
           </div>
         ))}
       </div>
+
+      {dialog && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setDialog(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-card border border-line bg-surface p-5 shadow-soft"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {dialog.kind === 'remove' ? (
+              <>
+                <h3 className="font-serif text-xl font-bold">Remove this listing?</h3>
+                <p className="mt-2 text-sm text-muted">
+                  This deletes the listing permanently. It cannot be undone.
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 className="font-serif text-xl font-bold">Reject this request?</h3>
+                <p className="mt-2 text-sm text-muted">
+                  The seller will see this reason.
+                </p>
+                <textarea
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  rows={3}
+                  placeholder="Your documents could not be verified."
+                  className="mt-3 w-full rounded-bazaa border border-line bg-surface p-3 text-sm"
+                />
+              </>
+            )}
+            <div className="mt-4 flex justify-end gap-2 text-sm">
+              <button
+                type="button"
+                onClick={() => setDialog(null)}
+                className="rounded-md border border-line px-4 py-2"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const d = dialog;
+                  setDialog(null);
+                  if (d.kind === 'remove') {
+                    removeListing(d.listingId);
+                  } else {
+                    reviewRequest(
+                      d.request,
+                      false,
+                      rejectReason.trim() || 'Your documents could not be verified.',
+                    );
+                  }
+                }}
+                className="rounded-md bg-red-700 px-4 py-2 font-bold text-white"
+              >
+                {dialog.kind === 'remove' ? 'Remove' : 'Reject'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
- 
+
+       
