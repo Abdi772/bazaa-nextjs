@@ -1,4 +1,4 @@
- /** @type {import('tailwindcss').Config} */
+  /** @type {import('tailwindcss').Config} */
 
 /* Theme-aware colors read their RGB channels from CSS variables
    (defined in app/globals.css), so every utility such as bg-surface,
@@ -45,8 +45,8 @@ module.exports = {
       },
 
       fontFamily: {
-        serif: ['var(--font-display)', 'Georgia', 'Times New Roman', 'serif'],
-        sans: ['var(--font-body)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-display)', 'var(--font-ethiopic)', 'Georgia', 'Times New Roman', 'serif'],
+        sans: ['var(--font-body)', 'var(--font-ethiopic)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
 
       borderRadius: {
