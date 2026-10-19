@@ -1,4 +1,4 @@
-  'use client';
+   'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -185,7 +185,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 shadow-[0_-4px_16px_rgba(27,26,46,0.06)] backdrop-blur-md md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 shadow-[0_-4px_16px_rgba(25,24,43,0.06)] backdrop-blur-md md:hidden"
       style={{
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
@@ -206,7 +206,7 @@ export default function BottomNav() {
                 'flex min-h-[68px] flex-1 flex-col',
                 'items-center justify-center',
                 'gap-0.5 px-0.5 py-2',
-                'text-[11px] leading-4',
+                'text-xs leading-4',
                 'transition-all duration-150',
                 'active:scale-[0.98]',
                 'active:bg-amberSoft/60',
@@ -222,7 +222,7 @@ export default function BottomNav() {
                   'rounded-full',
                   'transition-all duration-150',
                   active
-                    ? 'bg-amberSoft'
+                    ? 'bg-amberSoft ring-1 ring-amber/25'
                     : 'bg-transparent',
                 ].join(' ')}
               >
@@ -257,4 +257,4 @@ export default function BottomNav() {
       </div>
     </nav>
   );
-               }
+        }
