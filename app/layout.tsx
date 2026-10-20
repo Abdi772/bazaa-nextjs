@@ -96,6 +96,7 @@ export default function RootLayout({
                     width={40}
                     height={40}
                     priority
+                    unoptimized
                     className="h-9 w-9 shrink-0 rounded-full sm:h-10 sm:w-10"
                   />
                   <span>
