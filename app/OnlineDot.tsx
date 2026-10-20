@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
@@ -70,7 +70,7 @@ export default function OnlineDot({ sellerId }: { sellerId?: string | null }) {
   if (!online) return null;
 
   return (
-    <span className="absolute left-2 top-2 z-10 flex items-center gap-1.5 rounded-full bg-whatsapp px-2.5 py-1 text-[10px] font-bold text-white shadow-md sm:left-2.5 sm:top-2.5">
+    <span className="flex items-center gap-1.5 rounded-full bg-whatsapp px-2.5 py-1 text-[10px] font-bold text-white shadow-md">
       <span className="relative flex h-2 w-2">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
         <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
