@@ -1,4 +1,4 @@
- import Link from 'next/link';
+  import Link from 'next/link';
 import Image from 'next/image';
 
 import {
@@ -739,15 +739,29 @@ export default async function HomePage({
                     )}`}
                     className="group flex min-w-0 flex-col overflow-hidden rounded-card border border-line bazaa-surface shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-amber/50 hover:shadow-soft"
                   >
-                    <div className="relative flex aspect-[4/3] w-full shrink-0 items-center justify-center overflow-hidden bazaa-image-bg">
+                    <div className="relative flex aspect-square w-full shrink-0 items-center justify-center overflow-hidden bazaa-image-bg">
                       {listing.image_url ? (
-                        <Image
-                          src={listing.image_url}
-                          alt={listing.title}
-                          fill
-                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-                          className="object-contain p-1 transition-transform duration-300 group-hover:scale-[1.03]"
-                        />
+                        <>
+                          {/* Soft blurred copy of the photo fills any empty
+                              side space, so the picture reaches the card
+                              edges without cropping the product. */}
+                          <Image
+                            src={listing.image_url}
+                            alt=""
+                            aria-hidden="true"
+                            fill
+                            sizes="48px"
+                            quality={30}
+                            className="scale-125 object-cover opacity-70 blur-xl"
+                          />
+                          <Image
+                            src={listing.image_url}
+                            alt={listing.title}
+                            fill
+                            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                            className="object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+                          />
+                        </>
                       ) : (
                         <span className="text-3xl sm:text-4xl">
                           {CATEGORY_CONFIG[
@@ -885,4 +899,5 @@ export default async function HomePage({
     </div>
   );
                       }
-                      
+
+ 
