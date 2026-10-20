@@ -1,5 +1,6 @@
-   'use client';
+    'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from './LanguageProvider';
 import HeroSlideshow from './HeroSlideshow';
 
@@ -66,6 +67,14 @@ const FEATURES: {
 export default function HeroSection() {
   const { t } = useLanguage();
 
+  // Phones: only a Search button shows until it is tapped, then the
+  // typing box opens (bigger screens always show the box).
+  const [searchOpen, setSearchOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (searchOpen) inputRef.current?.focus();
+  }, [searchOpen]);
+
   // "Buy and sell anything, right in your area." -> two lines:
   // the first part in white, the rest in gold (works for all 3 languages).
   const headline = t('buyAndSell');
@@ -85,7 +94,22 @@ export default function HeroSection() {
         {/* Your 10 pictures, one at a time: on top on phones,
             on the right on bigger screens */}
         <div className="order-first -mx-4 -mt-4 sm:mx-0 sm:mt-0 md:order-last">
-          <HeroSlideshow />
+          <HeroSlideshow>
+            {/* Phones only: the four small chips on top of the picture */}
+            <div className="pointer-events-none absolute inset-x-0 top-2 grid grid-cols-2 justify-items-start gap-x-2 gap-y-1 px-2 sm:hidden">
+              {FEATURES.map((f) => (
+                <div
+                  key={f.title}
+                  className="flex max-w-full items-center gap-1.5 rounded-full bg-black/50 px-2 py-0.5 backdrop-blur-sm"
+                >
+                  <Icon name={f.icon} size={13} />
+                  <span className="truncate text-[11px] font-semibold leading-4 text-white">
+                    {t(f.title)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </HeroSlideshow>
         </div>
 
         {/* Text */}
@@ -109,11 +133,36 @@ export default function HeroSection() {
             {t('findWhatYouNeed')}
           </p>
 
+          {!searchOpen && (
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full bg-amber px-5 text-base font-bold text-ink sm:hidden"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+              {t('search')}
+            </button>
+          )}
+
           <form
             action="/"
             method="get"
             role="search"
-            className="flex items-center gap-2 rounded-full border bg-white/5 p-1.5 pl-4 backdrop-blur-sm focus-within:bg-white/10 focus-within:ring-2 focus-within:ring-amber/50"
+            className={`${
+              searchOpen ? 'flex' : 'hidden sm:flex'
+            } items-center gap-2 rounded-full border bg-white/5 p-1.5 pl-4 backdrop-blur-sm focus-within:bg-white/10 focus-within:ring-2 focus-within:ring-amber/50`}
             style={{ borderColor: 'rgba(217,144,36,0.55)' }}
           >
             <svg
@@ -132,6 +181,7 @@ export default function HeroSection() {
             </svg>
 
             <input
+              ref={inputRef}
               type="search"
               name="q"
               placeholder={t('searchPlaceholder')}
@@ -172,4 +222,4 @@ export default function HeroSection() {
       </div>
     </section>
   );
-}
+                   }
