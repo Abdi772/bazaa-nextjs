@@ -1,5 +1,5 @@
- {
-  "name": "bazaa-marketplace",
+  {
+  "name": "jimma-marketplace",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -23,4 +23,4 @@
     "postcss": "^8.4.41",
     "autoprefixer": "^10.4.20"
   }
- }
+  }
