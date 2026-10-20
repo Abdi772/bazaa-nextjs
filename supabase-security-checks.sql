@@ -1,4 +1,4 @@
--- Bazaa: Supabase security checks. Run in Supabase -> SQL Editor.
+ -- Jimma: Supabase security checks. Run in Supabase -> SQL Editor.
 -- Run STEP 1 first and read the results before running anything else.
 
 -- STEP 1: is seller contact info readable by everyone?
