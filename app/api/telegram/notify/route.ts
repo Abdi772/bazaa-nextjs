@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+ import { NextResponse } from 'next/server';
 import {
   adminClient,
   sendTelegram,
@@ -7,7 +7,7 @@ import {
 import { SITE_URL } from '../../../../lib/siteUrl';
 
 // Called by the chat page right after a message is sent.
-// Tells the other person on Telegram, once per run of unread messages.
+// Tells the other person on Telegram for every message sent.
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
@@ -51,16 +51,6 @@ export async function POST(req: Request) {
   if (!recipient) {
     return NextResponse.json({ error: 'Not allowed.' }, { status: 403 });
   }
-
-  // Already told them about earlier unread messages from this sender? Stay quiet.
-  const { count } = await admin
-    .from('messages')
-    .select('id', { count: 'exact', head: true })
-    .eq('conversation_id', msg.conversation_id)
-    .eq('sender_id', user.id)
-    .is('read_at', null)
-    .lt('created_at', msg.created_at);
-  if ((count ?? 0) > 0) return NextResponse.json({ sent: false });
 
   const { data: link } = await admin
     .from('telegram_links')
