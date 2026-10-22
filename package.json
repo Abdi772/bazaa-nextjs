@@ -1,4 +1,4 @@
-  {
+   {
   "name": "jimma-marketplace",
   "version": "0.1.0",
   "private": true,
@@ -12,6 +12,7 @@
     "next": "^14.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "@sentry/nextjs": "^8.55.0",
     "@supabase/supabase-js": "^2.45.0"
   },
   "devDependencies": {
@@ -23,4 +24,4 @@
     "postcss": "^8.4.41",
     "autoprefixer": "^10.4.20"
   }
-  }
+   }
