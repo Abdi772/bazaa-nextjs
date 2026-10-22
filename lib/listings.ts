@@ -1,4 +1,4 @@
-    import { createClient } from '@supabase/supabase-js';
+     import { createClient } from '@supabase/supabase-js';
 import { CATEGORY_CONFIG } from './categories';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -6,6 +6,11 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 // Public columns only. Phone and email are NOT here on purpose.
 const PUBLIC_COLUMNS =
   'id, title, price, category, subcategory, brand, model, item_type, year, trim, model_number, bedrooms, bathrooms, size_sqm, furnished, negotiable, condition, region, location, description, specs, image_url, image_urls, user_id, created_at, status';
+
+// Lighter column list for card grids and home rows: no description, specs
+// or extra photos, because cards never show them. Smaller response = faster page.
+const CARD_COLUMNS =
+  'id, title, price, category, subcategory, brand, model, item_type, year, trim, model_number, bedrooms, bathrooms, size_sqm, furnished, negotiable, condition, region, location, image_url, user_id, created_at, status';
 
 // Server-side client: every query below runs on Vercel's server, not in
 // the visitor's browser. The database does the filtering (WHERE clauses),
@@ -71,7 +76,7 @@ export async function getListings(
 
   let q = db
     .from('listings')
-    .select(PUBLIC_COLUMNS)
+    .select(CARD_COLUMNS)
     .or('status.is.null,status.neq.sold')
     .order(byPrice ? 'price' : 'created_at', {
       ascending: filters.sort === 'price_asc',
@@ -308,7 +313,7 @@ export async function getJustListed(
 
   let q = db
     .from('listings')
-    .select(PUBLIC_COLUMNS)
+    .select(CARD_COLUMNS)
     .or('status.is.null,status.neq.sold')
     .order('created_at', { ascending: false })
     .order('id', { ascending: false })
@@ -348,7 +353,7 @@ export async function getTrending(
 
   const { data, error: err2 } = await db
     .from('listings')
-    .select(PUBLIC_COLUMNS)
+    .select(CARD_COLUMNS)
     .in('id', ids);
 
   if (err2 || !data) return [];
