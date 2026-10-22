@@ -1,8 +1,8 @@
-'use client';
+ 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '../ListingImage';
 
 import { supabase } from '../../lib/supabaseClient';
 import { listingSlug, type Listing } from '../../lib/listings';
@@ -322,4 +322,4 @@ export default function MyListingsPage() {
       )}
     </div>
   );
-        }
+}
