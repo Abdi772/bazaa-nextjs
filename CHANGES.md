@@ -1,4 +1,4 @@
-  # Changes in this version
+    # Changes in this version
 
 - manifest.ts: app icons now point to /categories/icon-192.png and icon-512.png (they were 404).
 - .gitignore and .env.example added.
@@ -26,4 +26,10 @@
 - SEO: Twitter cards, canonical URL, Product structured data (JSON-LD) on listing pages, default share image (app/opengraph-image.tsx).
 - New footer with brand, tagline and dynamic year.
 - Removed tsconfig.tsbuildinfo.
+
+## Cleanup (October 22, 2026)
+
+- Removed the temporary app/api/sentry-test route (Sentry test finished).
+- .env.example: added NEXT_PUBLIC_SENTRY_DSN.
+- SellerFeedback: replaced `any` types with real types.
 - 
