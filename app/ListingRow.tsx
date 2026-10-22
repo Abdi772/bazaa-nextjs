@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import Image from 'next/image';
+ import Link from 'next/link';
+import Image from './ListingImage';
 import { listingSlug } from '@/lib/listings';
 import { CATEGORY_CONFIG } from '@/lib/categories';
 import FavoriteButton from './FavoriteButton';
