@@ -1,13 +1,14 @@
- /** @type {import('next').NextConfig} */
+  /** @type {import('next').NextConfig} */
 const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
   : 'okxmpkrokqihhfdwtnmx.supabase.co';
 
 const nextConfig = {
   images: {
-    // Show every picture straight from its source. Listing photos are already
-    // compressed when they are uploaded, so this avoids broken thumbnails.
-    unoptimized: true,
+    // Vercel resizes and compresses listing photos for each screen size.
+    // Photos from other hosts are shown as-is by app/ListingImage.tsx.
+    // Listing photo file names are unique, so they can be cached for 30 days.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: 'https',
