@@ -5,18 +5,13 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
 
 const nextConfig = {
   images: {
-    // Show every picture straight from its source. Listing photos are already
-    // compressed when they are uploaded, so this avoids broken thumbnails.
-    unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
+    // Listing photos never change once uploaded, so cache them for 30 days.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: 'https',
         hostname: supabaseHost,
-        pathname: '/storage/v1/object/public/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'okxmpkrokqihhfdwtnmx.supabase.co',
         pathname: '/storage/v1/object/public/**',
       },
     ],
