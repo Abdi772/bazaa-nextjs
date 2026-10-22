@@ -1,7 +1,7 @@
- 'use client';
+  'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import Image from '../../ListingImage';
 
 export default function Gallery({
   images,
@@ -64,4 +64,4 @@ export default function Gallery({
 
     </div>
   );
-}
+             }
