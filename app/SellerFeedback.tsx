@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
@@ -10,6 +10,32 @@ const ICON: Record<string, string> = {
 
 const MAX_MB = 5;
 
+type Reply = {
+  id: string;
+  feedback_id: string;
+  author_id: string;
+  body: string;
+  created_at: string;
+  author: string;
+};
+
+type Like = {
+  feedback_id: string;
+  user_id: string;
+};
+
+type FeedbackItem = {
+  id: string;
+  author_id: string;
+  rating: string;
+  body: string | null;
+  image_url: string | null;
+  created_at: string;
+  author: string;
+  likes: Like[];
+  replies: Reply[];
+};
+
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', {
     day: '2-digit',
@@ -20,7 +46,7 @@ function fmtDate(iso: string) {
 
 export default function SellerFeedback({ sellerId }: { sellerId: string }) {
   const [me, setMe] = useState<string | null>(null);
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<FeedbackItem[]>([]);
   const [rating, setRating] = useState('positive');
   const [body, setBody] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -50,8 +76,8 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
         ])
       : [{ data: [] }, { data: [] }];
 
-    const replies: any[] = r.data ?? [];
-    const likes: any[] = l.data ?? [];
+    const replies = (r.data ?? []) as Omit<Reply, 'author'>[];
+    const likes = (l.data ?? []) as Like[];
 
     const uids = [
       ...new Set([
@@ -145,9 +171,9 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
     load();
   }
 
-  async function toggleLike(f: any) {
+  async function toggleLike(f: FeedbackItem) {
     if (!me) return;
-    const liked = f.likes.some((x: any) => x.user_id === me);
+    const liked = f.likes.some((x) => x.user_id === me);
     if (liked)
       await supabase
         .from('feedback_likes')
@@ -263,7 +289,7 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
       )}
 
       {items.map((f) => {
-        const liked = me && f.likes.some((x: any) => x.user_id === me);
+        const liked = me && f.likes.some((x) => x.user_id === me);
         return (
           <div key={f.id} className="mb-4 border-b border-line pb-3">
             <div className="rounded-lg bg-panel p-3">
@@ -299,7 +325,7 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
               )}
             </div>
 
-            {f.replies.map((r: any) => (
+            {f.replies.map((r) => (
               <div
                 key={r.id}
                 className="ml-6 mt-2 rounded-lg bg-amberSoft p-2 text-sm"
@@ -332,4 +358,4 @@ export default function SellerFeedback({ sellerId }: { sellerId: string }) {
       })}
     </section>
   );
-     }
+           }
