@@ -1,4 +1,4 @@
- 'use client';
+  'use client';
 
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
@@ -58,6 +58,7 @@ function LockIcon() {
   );
 }
 
+
 export default function ContactButtons({
   listingId,
   title,
@@ -65,39 +66,61 @@ export default function ContactButtons({
   listingId: number;
   title: string;
 }) {
-  const [state, setState] = useState<'loading' | 'out' | 'in'>('loading');
+  const [state, setState] = useState<'loading' | 'out' | 'ready' | 'busy' | 'in'>(
+    'loading',
+  );
   const [phone, setPhone] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     let alive = true;
 
-    async function load() {
+    async function check() {
       const { data: auth } = await supabase.auth.getSession();
+      if (!alive) return;
       if (!auth.session) {
-        if (alive) setState('out');
+        setState('out');
+        setPhone(null);
+        setEmail(null);
         return;
       }
-      const { data } = await supabase
-        .from('listing_contacts')
-.select('phone, email')
-.eq('listing_id', listingId)
-        .maybeSingle();
-      if (!alive) return;
-      setPhone(data?.phone ?? null);
-      setEmail(data?.email ?? null);
-      setState('in');
+      // Keep the contact visible if it was already revealed.
+      setState((s) => (s === 'in' || s === 'busy' ? s : 'ready'));
     }
 
-    load();
+    check();
     const { data: sub } = supabase.auth.onAuthStateChange(() => {
-      load();
+      check();
     });
     return () => {
       alive = false;
       sub.subscription.unsubscribe();
     };
   }, [listingId]);
+
+  // Contacts are only given out one listing at a time, with an hourly
+  // limit enforced by the database (get_listing_contact function).
+  async function reveal() {
+    setState('busy');
+    setError('');
+    const { data, error: err } = await supabase.rpc('get_listing_contact', {
+      p_listing_id: listingId,
+    });
+    if (err) {
+      setState('ready');
+      setError(
+        err.message.includes('rate_limited')
+          ? 'You have viewed many contact details in the last hour. Please try again later.'
+          : 'Could not load the contact details. Please try again.',
+      );
+      return;
+    }
+    const row = Array.isArray(data) ? data[0] : data;
+    setPhone(row?.phone ?? null);
+    setEmail(row?.email ?? null);
+    setState('in');
+  }
 
   if (state === 'loading') {
     return (
@@ -127,8 +150,37 @@ export default function ContactButtons({
     );
   }
 
+  if (state === 'ready' || state === 'busy') {
+    return (
+      <div className="mt-2">
+        <button
+          type="button"
+          onClick={reveal}
+          disabled={state === 'busy'}
+          className="inline-flex min-h-[50px] w-full items-center justify-center rounded-bazaa bg-inverse px-4 py-3 text-sm font-bold text-onInverse disabled:opacity-60"
+        >
+          <PhoneIcon />
+          <span className="ml-2">
+            {state === 'busy' ? 'Loading…' : 'Show contact details'}
+          </span>
+        </button>
+        {error && (
+          <p className="mt-2 text-center text-sm text-danger" role="alert">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div>
+      {!phone && !email && (
+        <p className="mt-2 text-center text-sm text-muted">
+          The seller has not added contact details. Use Chat with seller.
+        </p>
+      )}
+
       {phone && (
         <div className="grid grid-cols-2 gap-2">
           <a
@@ -163,5 +215,4 @@ export default function ContactButtons({
       )}
     </div>
   );
-            }
-            
+}
