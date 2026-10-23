@@ -1,8 +1,8 @@
- 'use client';
+  'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '../ListingImage';
 import { supabase } from '../../lib/supabaseClient';
 
 type Conv = {
@@ -42,6 +42,35 @@ function timeLabel(iso: string) {
     month: 'short',
     day: 'numeric',
   });
+}
+
+// Listing thumbnail. Falls back to a box icon if the photo can't load.
+// ListingImage retries Supabase photos un-resized once, so those get two
+// tries; other hosts only get one.
+function Thumb({ src }: { src: string }) {
+  const [errors, setErrors] = useState(0);
+  const isSupabase = src.includes('/storage/v1/object/public/');
+  const failed = errors >= (isSupabase ? 2 : 1);
+
+  if (failed) {
+    return (
+      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-bazaa bg-panel text-2xl sm:h-[72px] sm:w-[72px]">
+        📦
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={src}
+      alt=""
+      width={72}
+      height={72}
+      sizes="72px"
+      onError={() => setErrors((n) => n + 1)}
+      className="h-16 w-16 shrink-0 rounded-bazaa object-cover sm:h-[72px] sm:w-[72px]"
+    />
+  );
 }
 
 export default function MessagesPage() {
@@ -237,14 +266,7 @@ export default function MessagesPage() {
               >
                 {/* Listing image */}
                 {l?.image_url ? (
-                  <Image
-                    src={l.image_url}
-                    alt=""
-                    width={72}
-                    height={72}
-                    sizes="72px"
-                    className="h-16 w-16 shrink-0 rounded-bazaa object-cover sm:h-[72px] sm:w-[72px]"
-                  />
+                  <Thumb src={l.image_url} />
                 ) : (
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-bazaa bg-panel text-2xl sm:h-[72px] sm:w-[72px]">
                     📦
@@ -323,4 +345,4 @@ export default function MessagesPage() {
       )}
     </div>
   );
-            }
+                       }
