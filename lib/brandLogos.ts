@@ -1,4 +1,4 @@
-// Brand logo images, served as normal files from public/brands so the
+ // Brand logo images, served as normal files from public/brands so the
 // browser only downloads the ones it shows and can cache them.
 export const BRAND_LOGOS: Record<string, string> = {
   'xiaomi': '/brands/xiaomi.png',
@@ -20,6 +20,19 @@ export const BRAND_LOGOS: Record<string, string> = {
   'volkswagen': '/brands/volkswagen.png',
   'tvs': '/brands/tvs.png',
   'bajaj': '/brands/bajaj.png',
+  'google': '/brands/google.png',
+  'honor': '/brands/honor.png',
+  'itel': '/brands/itel.png',
+  'motorola': '/brands/motorola.png',
+  'nothing': '/brands/nothing.png',
+  'nokia': '/brands/nokia.png',
+  'oneplus': '/brands/oneplus.png',
+  'poco': '/brands/poco.png',
+  'realme': '/brands/realme.png',
+  'zte': '/brands/zte.png',
+  'vivo': '/brands/vivo.png',
+  'tcl': '/brands/tcl.png',
+  'sony': '/brands/sony.png',
 };
 
 // Some listed brand names differ from the logo file name (e.g. the
@@ -30,5 +43,7 @@ export const BRAND_LOGO_ALIASES: Record<string, string> = {
 
 export function getBrandLogo(brand: string): string | null {
   const key = BRAND_LOGO_ALIASES[brand.toLowerCase()] || brand.toLowerCase();
-  return BRAND_LOGOS[key] || null;
+  const path = BRAND_LOGOS[key];
+  // ?v= makes browsers fetch the updated logo files instead of old cached ones
+  return path ? `${path}?v=3` : null;
 }
